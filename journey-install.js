@@ -1,0 +1,1 @@
+(()=>{const link=document.createElement('link');link.rel='manifest';let token=new URLSearchParams(location.hash.slice(1)).get('invite');try{token=token||localStorage.getItem('journey-note-invite')}catch{}link.href=/^[a-f0-9]{64}$/.test(token||'')?'/api/install-manifest?invite='+encodeURIComponent(token):'/manifest.webmanifest';document.head.appendChild(link)})();
