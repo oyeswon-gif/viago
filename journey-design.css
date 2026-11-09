@@ -37,3 +37,16 @@ button, a, .date-tab, .place, .nav-item, .trip-change, .icon-btn, .more-btn {
 .timeline, .date-tabs {
   -webkit-overflow-scrolling: touch;
 }
+
+/* VIAGO concept B: blue travel planner, preserving existing controls and data. */
+:root{--blue:#0756e9;--blue-deep:#0647c6;--ink:#111b31;--sub:#667085;--line:#dbe6f6;--bg:#f7faff;--card:#fff;--shadow:0 4px 18px rgba(17,53,112,.06)}
+body{background:#f4f8ff;color:var(--ink)}
+.topbar{background:transparent}.brand{color:#0649c8;font-size:22px;font-weight:800;letter-spacing:-.8px}
+.trip-head{background:#eaf4ff;box-shadow:none;border:1px solid #daeaff;border-radius:20px}
+.trip-head:after{background:#d9ebff;opacity:.7}.trip-title h1{font-weight:750;color:#101c34}.trip-change{background:#fff;color:var(--blue-deep)}
+.date-tabs{gap:8px}.date-tab,.date-tab.candidate-tab{background:#e8f1fe;color:#31435e;border-radius:13px;text-align:center}.date-tab.active,.date-tab.candidate-tab.active{background:var(--blue);color:#fff;box-shadow:none}.date-tab strong{margin-bottom:3px}
+.panel{box-shadow:none;border:1px solid #e1ebfa;border-radius:20px;background:#fff}.panel-head h2,.today-head h2,.exchange-head h2{color:#101c34;font-weight:750}
+.timeline{padding-top:2px}.swipe-row{margin-bottom:9px;border-radius:13px}.place{border:1px solid #d8e6fa;border-radius:13px;min-height:96px;padding:13px 8px 13px 12px}.place.selected,.place:hover{background:#f2f7ff}.place-main{padding-left:42px}.place-main:before{width:30px;height:30px;background:#e7f2ff;color:#0756e9;border-radius:9px;font-weight:750}.place-main:after{display:none}.place-name{color:#111b31;font-weight:700}.place-note{color:#64738a}.place-add{background:#0756e9;color:#fff;border-radius:13px}.schedule-link-add{background:#e9f2ff;color:#0756e9}
+.today-card,.feature-block,.exchange-card,.candidate-card{border:1px solid #e0ebf9;background:#f7faff;border-radius:15px}.today-card.current,.exchange-result{background:#e7f2ff}.route-btn,.quick-route-btn,.today-route,.confirm{background:#0756e9;color:#fff;box-shadow:none}.today-complete{background:#e8f2ff;color:#0756e9}.map-frame{border:1px solid #dce8f8}.search-go{background:#0756e9;color:#fff}
+:focus-visible{outline:3px solid #80acff;outline-offset:2px}
+@media(max-width:850px){body{background:#fff}.shell{padding-left:16px;padding-right:16px}.topbar{height:64px}.trip-head{padding:20px;border-radius:18px}.trip-title h1{font-size:27px}.date-tabs{padding-top:14px;padding-bottom:14px}.date-tab{min-width:76px;padding:10px 12px}.panel{border:0;border-radius:0}.panel-head{padding:15px 2px}.timeline{padding:0 0 18px}.mobile-nav{left:0;right:0;bottom:0;height:calc(67px + env(safe-area-inset-bottom));padding:5px 10px env(safe-area-inset-bottom);border-radius:0;border-top:1px solid #e5ebf4;box-shadow:none;background:rgba(255,255,255,.97)}.nav-item.active{color:#0756e9}.today-panel,.exchange-panel{padding:20px 2px}.map-panel .panel-head{padding-left:2px;padding-right:2px}.journey-day-preview{margin-left:0;margin-right:0}}
