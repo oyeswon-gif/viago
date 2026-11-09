@@ -42,3 +42,43 @@
       }finally{clearTimeout(timer);exchangeLoading=false;renderExchange();if(!hasExchangeRates(exchangeData?.rates))$('#exchangeState').textContent='환율 조회 불가'}
     };
 })();
+
+// GitHub Pages is static: look up public link metadata and places without a paid API.
+(()=>{
+  if(typeof analyzeTravelLink!=='function'||typeof apiFetch!=='function')return;
+  const originalApiFetch=apiFetch,placeCache=new Map();
+  const labels=host=>/(^|\.)threads\.(com|net)$/.test(host)?'Threads':/(^|\.)instagram\.com$/.test(host)?'Instagram':/(^|\.)naver\.com$/.test(host)?'Naver':/(^|\.)youtube\.com$|^youtu\.be$/.test(host)?'YouTube':'웹 게시물';
+  function publicUrl(value){try{const u=new URL(value);if(!/^https?:$/.test(u.protocol)||u.username||u.password||u.port||/^(localhost|127\.|10\.|192\.168\.|169\.254\.|\[|0\.)/i.test(u.hostname)||!u.hostname.includes('.'))return null;return u}catch{return null}}
+  function candidateName(description,context){
+    const text=(description||'').replace(/\r/g,'\n'),lines=text.split('\n').map(x=>x.trim()).filter(Boolean);
+    const quoted=[...text.matchAll(/[“「『]([^”」』\n]{2,60})[”」』]/g)].map(m=>m[1].trim()).filter(x=>!/[.!?。！]/.test(x));
+    const japanese=lines.filter(x=>x.length>=3&&x.length<=55&&/[ぁ-んァ-ヶ]/.test(x)&&!/[。！？]/.test(x)).map(x=>x.replace(/^[^\p{L}\p{N}]+/u,'').trim());
+    const english=lines.filter(x=>x.length>=4&&x.length<=55&&/^[A-Za-z][A-Za-z0-9 &.'’\-]+$/.test(x)&&!/^(instagram|threads|youtube)$/i.test(x));
+    const marked=lines.filter(x=>/^(📍|🏠|店名|가게명|상호명)/.test(x)).map(x=>x.replace(/^(📍|🏠|店名|가게명|상호명)\s*[:：]?\s*/,'').trim()).filter(x=>x.length>=2&&x.length<=60);
+    const manual=(context||'').trim();return japanese.at(-1)||marked[0]||quoted[0]||english.at(-1)||(manual.length>=2&&manual.length<=80?manual:'');
+  }
+  async function freePlaces(q,country,lat,lng,signal){
+    const key=JSON.stringify([q,country,lat,lng]),cached=placeCache.get(key);if(cached&&Date.now()-cached.at<3600000)return cached.places;
+    const params=new URLSearchParams({q,limit:'6',lang:'en'});if(/^[a-z]{2}$/i.test(country||''))params.set('countrycode',country.toUpperCase());if(Number.isFinite(lat)&&Number.isFinite(lng)){params.set('lat',String(lat));params.set('lon',String(lng))}
+    const res=await fetch('https://photon.komoot.io/api/?'+params,{signal});if(!res.ok)throw Error('place_unavailable');const json=await res.json();
+    const places=(json.features||[]).map(f=>{const p=f.properties||{},c=f.geometry?.coordinates||[];return{name:String(p.name||p.street||'').slice(0,180),address:[p.housenumber,p.street,p.city,p.state,p.country].filter(Boolean).join(', ').slice(0,400),placeId:'osm:'+String(p.osm_type||'')+String(p.osm_id||''),lat:c[1],lng:c[0],kind:'장소',source:'osm'}}).filter(p=>p.name&&Number.isFinite(p.lat)&&Number.isFinite(p.lng)&&Math.abs(p.lat)<=90&&Math.abs(p.lng)<=180);placeCache.set(key,{at:Date.now(),places});return places
+  }
+  apiFetch=function(url,options={}){const parsed=new URL(url,location.href);if(parsed.origin===location.origin&&parsed.pathname==='/api/place-search'){
+    const p=parsed.searchParams;if(p.get('mode')!=='free'&&p.get('mode')!=='text')return Promise.resolve(Response.json({suggestions:[]}));
+    const q=(p.get('q')||'').trim(),num=k=>p.has(k)?Number(p.get(k)):undefined;if(q.length<2)return Promise.resolve(Response.json({suggestions:[]}));
+    return freePlaces(q,p.get('country')||'',num('lat'),num('lng'),options.signal).then(places=>Response.json({suggestions:places,place:places[0]||null,source:'osm'})).catch(()=>Response.json({error:'search_unavailable',suggestions:[]},{status:503}))
+  }return originalApiFetch(url,options)};
+  analyzeTravelLink=async function(){
+    const raw=$('#travelLink').value.trim(),sourceUrl=publicUrl(raw);if(!sourceUrl){$('#linkResult').className='link-result open';$('#linkResult').textContent='https://로 시작하는 공개 게시물 링크를 입력해주세요.';return}
+    const context=$('#linkContext').value.trim(),result=$('#linkResult');$('#linkAnalyze').disabled=true;$('#linkAnalyze').textContent='분석 중';result.className='link-result open';result.innerHTML='<div class="link-loading">공개 게시물의 설명에서 장소를 찾고 있어요…</div>';
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),18000);let metadata=null,blocked=false;
+    try{const endpoint='https://api.microlink.io/?'+new URLSearchParams({url:sourceUrl.href});const response=await fetch(endpoint,{signal:controller.signal});const data=await response.json();if(!response.ok||data.status!=='success'||!data.data)throw Error('metadata_unavailable');metadata=data.data}catch{blocked=true}finally{clearTimeout(timer)}
+    const name=candidateName(metadata?.description||'',context),finalUrl=publicUrl(metadata?.url||'')||sourceUrl,image=publicUrl(metadata?.image?.url||'');
+    const source={url:sourceUrl.href,finalUrl:finalUrl.href,platform:labels(sourceUrl.hostname),title:String(metadata?.title||'공개 게시물').slice(0,180),description:String(metadata?.description||'').slice(0,1500),image:image?.href||''};
+    let places=[];if(name){try{const center=days.flatMap(d=>d.places).filter(p=>p.kind!=='항공').map(coordsFor).find(Boolean),signal=AbortSignal.timeout(7000),found=await freePlaces(name,destinationCountry()||'',center?.[0],center?.[1],signal);const norm=x=>String(x).toLocaleLowerCase().replace(/[^\p{L}\p{N}]/gu,'');places=found.filter(p=>norm(p.name).includes(norm(name))||norm(name).includes(norm(p.name)))}catch{}if(!places.length)places=[{name,address:'',placeId:'',kind:'게시물에서 추출 · 지점 확인 필요',source:'post'}]}
+    linkAnalysis={ok:true,source,places,query:name,reason:blocked&&!name?'blocked':!name?'lookup_error':'',needsPlaceConfirmation:true};linkPlaceSelection=null;renderLinkAnalysis();
+    if(name){const note=document.createElement('p');note.className='link-help';note.textContent='게시물에서 찾은 이름입니다. Google 지도에서 지점과 주소를 확인한 뒤 선택해 저장해주세요.';const verify=document.createElement('a');verify.className='link-direct-search';verify.textContent='Google 지도에서 장소 확인';verify.href='https://www.google.com/maps/search/?'+new URLSearchParams({api:'1',query:name+' '+activeTrip.destination});verify.target='_blank';verify.rel='noopener noreferrer';result.append(note,verify)}
+    if(blocked&&!name){const note=document.createElement('p');note.className='link-help';note.textContent='게시물을 공개로 열 수 없어요. 원문에서 가게 이름을 복사해 위의 입력란에 넣고 다시 분석하거나 직접 검색해주세요.';result.append(note)}
+    $('#linkAnalyze').disabled=false;$('#linkAnalyze').textContent='다시 분석';
+  };
+})();
