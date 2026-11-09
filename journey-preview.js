@@ -10,3 +10,35 @@
  }
  button.onclick=()=>setView('map');new MutationObserver(visibility).observe(document.getElementById('timeline'),{childList:true});visibility();
 })();
+
+// GitHub Pages has no server-side exchange route. Keep the existing UI and cache.
+(()=>{
+  if(typeof loadExchange!=='function')return;
+    let exchangeRetryAt=0;
+    function hasExchangeRates(rates){return Object.keys(currencyMeta).every(code=>Number.isFinite(rates?.[code])&&rates[code]>0)}
+    loadExchange=async function(force=false){
+      if(exchangeLoading||(!force&&document.hidden))return;
+      const now=Date.now(),hasRates=hasExchangeRates(exchangeData?.rates);
+      if(hasRates)renderExchange();
+      if(!force&&hasRates&&now-exchangeData.fetchedAt<3600000)return;
+      if(now<exchangeRetryAt){if(force)toast('잠시 후 환율을 다시 확인해주세요');return}
+      exchangeLoading=true;
+      renderExchange();
+      $('#exchangeState').textContent='환율 확인 중';
+      $('#exchangeState').className='exchange-state stale';
+      const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);
+      try{
+        const response=await fetch('https://open.er-api.com/v6/latest/USD',{signal:controller.signal});
+        if(response.status===429)exchangeRetryAt=Date.now()+3600000;
+        if(!response.ok)throw new Error('exchange_failed');
+        const data=await response.json(),updatedAt=Date.parse(data.time_last_update_utc);
+        if(data.result!=='success'||data.base_code!=='USD'||!hasExchangeRates(data.rates)||!Number.isFinite(updatedAt))throw new Error('invalid_exchange_data');
+        const rates=Object.fromEntries(Object.keys(currencyMeta).map(code=>[code,data.rates[code]]));
+        exchangeData={rates,updatedAt:new Date(updatedAt).toISOString(),fetchedAt:Date.now(),source:'ExchangeRate-API'};
+        try{localStorage.setItem(EXCHANGE_CACHE_KEY,JSON.stringify(exchangeData))}catch{}
+      }catch{
+        exchangeRetryAt=Math.max(exchangeRetryAt,Date.now()+60000);
+        if(!exchangeData)toast('환율을 불러오지 못했어요');else toast('저장된 최근 환율을 보여드려요');
+      }finally{clearTimeout(timer);exchangeLoading=false;renderExchange();if(!hasExchangeRates(exchangeData?.rates))$('#exchangeState').textContent='환율 조회 불가'}
+    };
+})();
