@@ -1,1 +1,466 @@
-{"payload":{"trips":[{"id":"nagoya-2026","destination":"나고야","name":"나고야 여행✈️","start":"2026-12-10","end":"2026-12-13","mode":"transit","days":[{"date":"12.10","dow":"목","title":"12월 10일 목요일","summary":"나고야 도착 & 사카에 탐방","places":[{"time":"08:10","name":"인천국제공항","note":"아시아나항공 OZ122 · NGO 10:05 도착","kind":"항공","id":"legacy-1wqkt5o"},{"time":"11:30","name":"JR 나고야 다카시마야","note":"나고야역 주변 쇼핑 · 꼼데가르송 구입","kind":"쇼핑","id":"legacy-f20cmq"},{"time":"12:30","name":"컴포트 인 나고야 사카에","note":"호텔에 짐 맡기기","kind":"숙소","id":"legacy-adxl8v"},{"time":"13:10","name":"라무치이","note":"사카에역 16번 출구 · 런치 15시까지","kind":"식당","id":"legacy-13yk4m4"},{"time":"15:10","name":"오아시스 21","note":"사카에 대표 복합공간 산책","kind":"관광","id":"legacy-gj9m78"},{"time":"16:00","name":"HARBS 나고야 파르코점","note":"500엔 쿠폰이 없으면 HARBS 본점으로 이동","kind":"카페","id":"legacy-wpmdbe"},{"time":"17:10","name":"오스 관음","note":"오스 상점가 입구의 사찰 둘러보기","kind":"관광","id":"legacy-pdbmur"},{"time":"17:40","name":"오스 상점가","note":"먹거리와 상점 자유 구경","kind":"관광","id":"legacy-kkjkf"},{"time":"19:10","name":"사카에 로프트","note":"사카에 NOVA 3~6F · 슈파토 구입","kind":"쇼핑","id":"legacy-zaseq0","placeId":"ChIJ-_Spm_l7A2ARCw5qE15kXOw","address":"〒460-0008 Aichi, Nagoya, Naka Ward, Sakae, 3-chōme−4−５ 栄 NOVA 3F-6F","lat":35.1682173,"lng":136.9065688,"hoursText":"10:00-20:00"},{"time":"20:10","name":"츄니치 빌딩","note":"B1 텐푸라 키시멘에서 저녁 식사","kind":"식당","id":"legacy-1woyzjx"},{"time":"21:30","name":"로바타야키 이부시긴 나고야","note":"첫날 야식","kind":"식당","id":"legacy-19qqida"},{"time":"23:00","name":"컴포트 인 나고야 사카에","note":"숙소 복귀","kind":"숙소","id":"legacy-10wdc8p"}],"id":"nagoya-2026-day-0"},{"date":"12.11","dow":"금","title":"12월 11일 금요일","summary":"시라카와고 & 다카야마 투어","places":[{"time":"07:35","name":"컴포트 인 나고야 사카에","note":"투어 집결지로 출발","kind":"숙소","id":"legacy-ygojz6"},{"time":"07:50","name":"중부전력 미라이 타워","note":"시라카와고·다카야마 투어 집결 · 숙소에서 도보 5분","kind":"투어","id":"legacy-6bfw9n"},{"time":"19:30","name":"중부전력 미라이 타워","note":"투어 종료 후 야경 감상","kind":"관광","id":"legacy-6yxnkm"},{"name":"고토니 스시","note":"","kind":"스시/초밥집","placeId":"ChIJrclJzvJxA2ARfWC_fJlqQfM","address":"3-chōme-8-115 Sakae, Naka Ward, Nagoya, Aichi 460-0008","lat":35.167057,"lng":136.9052829,"id":"legacy-ytxfu9"},{"name":"테바사키 무츠미 본점","note":"","kind":"장소","id":"legacy-d99i3q","lat":35.167210499999996,"lng":136.9049889},{"time":"23:20","name":"컴포트 인 나고야 사카에","note":"숙소 복귀","kind":"숙소","id":"legacy-tgs2yh"}],"id":"nagoya-2026-day-1"},{"date":"12.12","dow":"토","title":"12월 12일 토요일","summary":"나고야 시내 관광 & 맛집","places":[{"time":"08:50","name":"컴포트 인 나고야 사카에","note":"시내 관광 출발","kind":"숙소","id":"legacy-1q9xqsv"},{"time":"09:10","name":"이치란 라멘 나고야 사카에점","note":"아침 라멘","kind":"식당","id":"legacy-bktp3o"},{"time":"10:20","name":"콘파루 사카에니시점","note":"커피와 나고야식 샌드위치","kind":"카페","id":"legacy-41jl7f"},{"time":"11:40","name":"나고야성","note":"나고야성과 도쿠가와 정원 구역 관광","kind":"관광","id":"legacy-1fgu5vt"},{"time":"14:10","name":"킨샤치 요코초","note":"나고야성 옆 상점가 둘러보기","kind":"관광","id":"legacy-1ymplmb"},{"time":"16:00","name":"히츠마부시 하나오카","note":"1순위 · 먼저 웨이팅 등록, 예상 대기 1~3시간","kind":"식당","id":"legacy-g6kors"},{"time":"16:20","name":"아츠타 호라이켄 마츠자카야점","note":"히츠마부시 대안 1","kind":"식당","id":"legacy-1wcey39"},{"time":"16:40","name":"히츠마부시 나고야 빈초 라시크점","note":"히츠마부시 대안 2","kind":"식당","id":"legacy-gm8iuu"},{"time":"18:30","name":"오아시스 21","note":"야경과 쇼핑","kind":"관광","id":"legacy-10ptphi"},{"time":"19:20","name":"시마쇼우 나고야","note":"저녁 식사","kind":"식당","id":"legacy-x80qus"},{"time":"21:00","name":"EXIT NISHIKI","note":"이자카야 거리 산책","kind":"관광","id":"legacy-116xjyt"},{"time":"22:30","name":"컴포트 인 나고야 사카에","note":"숙소 복귀","kind":"숙소","id":"legacy-xwg5zr"}],"id":"nagoya-2026-day-2"},{"date":"12.13","dow":"일","title":"12월 13일 일요일","summary":"쇼핑 후 귀국","places":[{"time":"09:00","name":"컴포트 인 나고야 사카에","note":"체크아웃 준비와 짐 보관","kind":"숙소","id":"legacy-65xk9o"},{"name":"키와미야 나고야 파르코점","note":"","kind":"서양음식전문점","placeId":"ChIJG10vuyRxA2ARbg3J89sqQ90","address":"〒460-0008 Aichi, Nagoya, Naka Ward, Sakae, 3-chōme−29−１ 名古屋パルコ西館 7F","lat":35.1636275,"lng":136.90733319999998,"id":"legacy-lcmuhv"},{"time":"15:10","name":"미소카츠 야바톤 중부국제공항점","note":"공항점 식사 대안","kind":"식당","id":"legacy-szmu5s"},{"time":"15:40","name":"주부 센트레아 국제공항","note":"쇼핑 후 출국 수속","kind":"공항","id":"legacy-1j7sb0s"},{"time":"18:20","name":"주부 센트레아 국제공항","note":"아시아나항공 OZ123 · ICN 20:30 도착","kind":"항공","id":"legacy-141nycb"}],"id":"nagoya-2026-day-3"}],"restaurants":[],"scheduleVersion":2,"candidates":[{"id":"candidate-1789530194864","name":"야바돈","note":"미소카츠","kind":"맛집","day":3,"votes":["재원"],"lat":35.161678099999996,"lng":136.9062361,"voteNames":{"legacy-0":"재원"}},{"id":"candidate-1789530249493","name":"히츠마부시 하나오카","note":"히츠마부시","kind":"맛집","day":2,"votes":["재원"]},{"id":"candidate-1789530279432","name":"히츠마부시 나고야 빈초 라시크점","note":"히츠마부히","kind":"맛집","day":2,"votes":["재원"]},{"id":"candidate-1789994076451","name":"고토니 스시","note":"","kind":"맛집","day":1,"votes":["재원"],"lat":35.167057,"lng":136.9052829},{"id":"candidate-1790695220394","name":"야마모토야 소혼케","note":"","kind":"맛집","day":0,"votes":["재원"],"lat":35.1659387,"lng":136.9045562},{"id":"candidate-1791280131918","name":"사카에 니시키 에비멘야","note":"","kind":"맛집","day":0,"votes":[],"voteNames":{},"lat":35.1644583,"lng":136.9047419},{"id":"candidate-1791725938548","day":0,"votes":["재원"],"voteNames":{"ea50ab56-816e-4dc8-a0f7-ebe58ac4e49b":"재원"},"name":"Tsubame Bread & Milk Meieki Branch","note":"Instagram에서 저장","kind":"장소","placeId":"ChIJJX5mDJx3A2ARRkSisgKVHXU","address":"일본 〒450-0002 Aichi, Nagoya, Nakamura Ward, Meieki, 4-chōme−26−２５ メイフィス名駅 1階","lat":35.1685886,"lng":136.8869159,"sourceUrl":"https://www.instagram.com/reel/Dc3ZMBIs45z/?mdxt=MWpvMWVnN2V6cHB4YQ==","sourcePlatform":"Instagram","sourceTitle":"Instagram의 얌욤님 : \"🇯🇵나고야 여행갔는데 여길 안가보셨다구요?? 현지인들도 다 극찬하는 계토맛집‼️ 이렇게 퐁신퐁신하고 소스까지 맛있는 계란토스트는 처음 먹어봐요 ㅜㅠ 인생 토스트 갱신했습니다 솔직히 웨이팅 길어서 살짝 힘들긴 했는데 웨이팅 걸어놓고 근처에서 놀다보면 시간 금방가요!ㅋㅋ 기다리는거 싫은 분들은 오픈런 추천합니다! 📌 Tsubame Bread & Milk Meieki Branch 일본 〒450-","sourceImage":"https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/793945605_18163355935483905_803811661755395876_n.jpg?stp=cmp1_dst-jpg_e35_s640x640_tt6&_nc_cat=102&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_ohc=RuPvwwXC8lcQ7kNvwH8npHi&_nc_oc=AdqTS_eBt6y1IJ4aTOrhsOru8FVBn2U3Q_wWS_YJUsEJ28bWZVkVZxiVpx2XFuYqs3E&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=0cz4Kswm-Ew-LcnIfRPO9g&_nc_ss=7860f&oh=00_AQPKpcPz0J-ltyWhClu3yWg_tVYoE-B7fmwSy9ZD8HowQQ&oe=6AD176D8","sourceSummary":"528 likes, 44 comments - _yamiyomi_ - September 4, 2026: \"🇯🇵나고야 여행갔는데 여길 안가보셨다구요?? 현지인들도 다 극찬하는 계토맛집‼️ 이렇게 퐁신퐁신하고 소스까지 맛있는 계란토스트는 처음 먹어봐요 ㅜㅠ 인생 토스트 갱신했습니다 솔직히 웨이팅 길어서 살짝 힘들긴 했는데 웨이팅 걸어놓고 근처에서 놀다보면 시간 금방가요!ㅋㅋ 기다리는거 싫은 분들은 오픈런 추천합니다! 📌 Tsubame Bread & Milk Meieki Branch 일본 〒450-0002 Aichi, Nagoya, Nakamura Ward, Meieki, 4 Chome−26−25 メイフィス名駅 1階 #나고야 #나고야여행 #나고야맛집 #계토 #일본여행\"."},{"id":"candidate-1793198617710","name":"니치와 제면 나고야","note":"","kind":"맛집","day":0,"votes":["재원"],"voteNames":{"af21ba76-cecc-4de1-89bb-a8049e4f64b4":"재원"}}],"todayProgress":{},"weatherAlternatives":[{"day":2,"original":"나고야성","replacement":"도요타 산업기술기념관","note":"비 오는 날 편하게 관람할 수 있는 실내 장소"}],"weatherBackups":[],"completedPlaceIds":{"nagoya-2026-day-0":[],"nagoya-2026-day-1":[],"nagoya-2026-day-2":[],"nagoya-2026-day-3":[]}}]},"revision":66,"updatedAt":"2026-10-28 15:00:56","owner":false,"voterId":"guest:c4d18fbae2e294da630e617f"}
+{
+  "payload": {
+    "trips": [
+      {
+        "id": "nagoya-2026",
+        "destination": "나고야",
+        "name": "나고야 여행✈️",
+        "start": "2026-12-10",
+        "end": "2026-12-13",
+        "mode": "transit",
+        "days": [
+          {
+            "date": "12.10",
+            "dow": "목",
+            "title": "12월 10일 목요일",
+            "summary": "나고야 도착 & 사카에 탐방",
+            "places": [
+              {
+                "time": "08:10",
+                "name": "인천국제공항",
+                "note": "아시아나항공 OZ122 · NGO 10:05 도착",
+                "kind": "항공",
+                "id": "legacy-1wqkt5o"
+              },
+              {
+                "id": "place-1794359397474",
+                "time": "10:45",
+                "name": "센주 텐무스 센트레아점",
+                "note": "공항 1,000엔 쿠폰으로 새우튀김 주먹밥 테이크아웃 · 4F 초친요코초",
+                "kind": "식당",
+                "lat": 34.8584,
+                "lng": 136.8125
+              },
+              {
+                "time": "11:30",
+                "name": "JR 나고야 다카시마야",
+                "note": "나고야역 주변 쇼핑 · 꼼데가르송 구입",
+                "kind": "쇼핑",
+                "id": "legacy-f20cmq"
+              },
+              {
+                "time": "12:30",
+                "name": "컴포트 인 나고야 사카에",
+                "note": "호텔에 짐 맡기기",
+                "kind": "숙소",
+                "id": "legacy-adxl8v"
+              },
+              {
+                "time": "13:10",
+                "name": "라무치이",
+                "note": "사카에역 16번 출구 · 런치 15시까지",
+                "kind": "식당",
+                "id": "legacy-13yk4m4"
+              },
+              {
+                "time": "15:10",
+                "name": "오아시스 21",
+                "note": "사카에 대표 복합공간 산책",
+                "kind": "관광",
+                "id": "legacy-gj9m78"
+              },
+              {
+                "time": "16:00",
+                "name": "HARBS 나고야 파르코점",
+                "note": "500엔 쿠폰이 없으면 HARBS 본점으로 이동",
+                "kind": "카페",
+                "id": "legacy-wpmdbe"
+              },
+              {
+                "time": "17:10",
+                "name": "오스 관음",
+                "note": "오스 상점가 입구의 사찰 둘러보기",
+                "kind": "관광",
+                "id": "legacy-pdbmur"
+              },
+              {
+                "time": "17:40",
+                "name": "오스 상점가",
+                "note": "먹거리와 상점 자유 구경",
+                "kind": "관광",
+                "id": "legacy-kkjkf"
+              },
+              {
+                "time": "19:10",
+                "name": "사카에 로프트",
+                "note": "사카에 NOVA 3~6F · 슈파토 구입",
+                "kind": "쇼핑",
+                "id": "legacy-zaseq0",
+                "placeId": "ChIJ-_Spm_l7A2ARCw5qE15kXOw",
+                "address": "〒460-0008 Aichi, Nagoya, Naka Ward, Sakae, 3-chōme−4−５ 栄 NOVA 3F-6F",
+                "lat": 35.1682173,
+                "lng": 136.9065688,
+                "hoursText": "10:00-20:00"
+              },
+              {
+                "time": "20:10",
+                "name": "츄니치 빌딩",
+                "note": "B1 텐푸라 키시멘에서 저녁 식사",
+                "kind": "식당",
+                "id": "legacy-1woyzjx"
+              },
+              {
+                "time": "21:30",
+                "name": "로바타야키 이부시긴 나고야",
+                "note": "첫날 야식",
+                "kind": "식당",
+                "id": "legacy-19qqida"
+              },
+              {
+                "time": "23:00",
+                "name": "컴포트 인 나고야 사카에",
+                "note": "숙소 복귀",
+                "kind": "숙소",
+                "id": "legacy-10wdc8p"
+              }
+            ],
+            "id": "nagoya-2026-day-0"
+          },
+          {
+            "date": "12.11",
+            "dow": "금",
+            "title": "12월 11일 금요일",
+            "summary": "시라카와고 & 다카야마 투어",
+            "places": [
+              {
+                "time": "07:35",
+                "name": "컴포트 인 나고야 사카에",
+                "note": "투어 집결지로 출발",
+                "kind": "숙소",
+                "id": "legacy-ygojz6"
+              },
+              {
+                "time": "07:50",
+                "name": "중부전력 미라이 타워",
+                "note": "시라카와고·다카야마 투어 집결 · 숙소에서 도보 5분",
+                "kind": "투어",
+                "id": "legacy-6bfw9n"
+              },
+              {
+                "time": "19:30",
+                "name": "중부전력 미라이 타워",
+                "note": "투어 종료 후 야경 감상",
+                "kind": "관광",
+                "id": "legacy-6yxnkm"
+              },
+              {
+                "name": "고토니 스시",
+                "note": "",
+                "kind": "스시/초밥집",
+                "placeId": "ChIJrclJzvJxA2ARfWC_fJlqQfM",
+                "address": "3-chōme-8-115 Sakae, Naka Ward, Nagoya, Aichi 460-0008",
+                "lat": 35.167057,
+                "lng": 136.9052829,
+                "id": "legacy-ytxfu9"
+              },
+              {
+                "name": "테바사키 무츠미 본점",
+                "note": "",
+                "kind": "장소",
+                "id": "legacy-d99i3q",
+                "lat": 35.167210499999996,
+                "lng": 136.9049889
+              },
+              {
+                "time": "23:20",
+                "name": "컴포트 인 나고야 사카에",
+                "note": "숙소 복귀",
+                "kind": "숙소",
+                "id": "legacy-tgs2yh"
+              }
+            ],
+            "id": "nagoya-2026-day-1"
+          },
+          {
+            "date": "12.12",
+            "dow": "토",
+            "title": "12월 12일 토요일",
+            "summary": "나고야 시내 관광 & 맛집",
+            "places": [
+              {
+                "time": "08:50",
+                "name": "컴포트 인 나고야 사카에",
+                "note": "시내 관광 출발",
+                "kind": "숙소",
+                "id": "legacy-1q9xqsv"
+              },
+              {
+                "time": "09:10",
+                "name": "이치란 라멘 나고야 사카에점",
+                "note": "아침 라멘",
+                "kind": "식당",
+                "id": "legacy-bktp3o"
+              },
+              {
+                "time": "10:20",
+                "name": "콘파루 사카에니시점",
+                "note": "커피와 나고야식 샌드위치",
+                "kind": "카페",
+                "id": "legacy-41jl7f"
+              },
+              {
+                "time": "11:40",
+                "name": "나고야성",
+                "note": "나고야성과 도쿠가와 정원 구역 관광",
+                "kind": "관광",
+                "id": "legacy-1fgu5vt"
+              },
+              {
+                "time": "14:10",
+                "name": "킨샤치 요코초",
+                "note": "나고야성 옆 상점가 둘러보기",
+                "kind": "관광",
+                "id": "legacy-1ymplmb"
+              },
+              {
+                "time": "16:00",
+                "name": "히츠마부시 하나오카",
+                "note": "1순위 · 먼저 웨이팅 등록, 예상 대기 1~3시간",
+                "kind": "식당",
+                "id": "legacy-g6kors"
+              },
+              {
+                "time": "16:20",
+                "name": "아츠타 호라이켄 마츠자카야점",
+                "note": "히츠마부시 대안 1",
+                "kind": "식당",
+                "id": "legacy-1wcey39"
+              },
+              {
+                "time": "16:40",
+                "name": "히츠마부시 나고야 빈초 라시크점",
+                "note": "히츠마부시 대안 2",
+                "kind": "식당",
+                "id": "legacy-gm8iuu"
+              },
+              {
+                "time": "18:30",
+                "name": "오아시스 21",
+                "note": "야경과 쇼핑",
+                "kind": "관광",
+                "id": "legacy-10ptphi"
+              },
+              {
+                "time": "19:20",
+                "name": "시마쇼우 나고야",
+                "note": "저녁 식사",
+                "kind": "식당",
+                "id": "legacy-x80qus"
+              },
+              {
+                "time": "21:00",
+                "name": "EXIT NISHIKI",
+                "note": "이자카야 거리 산책",
+                "kind": "관광",
+                "id": "legacy-116xjyt"
+              },
+              {
+                "time": "22:30",
+                "name": "컴포트 인 나고야 사카에",
+                "note": "숙소 복귀",
+                "kind": "숙소",
+                "id": "legacy-xwg5zr"
+              }
+            ],
+            "id": "nagoya-2026-day-2"
+          },
+          {
+            "date": "12.13",
+            "dow": "일",
+            "title": "12월 13일 일요일",
+            "summary": "쇼핑 후 귀국",
+            "places": [
+              {
+                "time": "09:00",
+                "name": "컴포트 인 나고야 사카에",
+                "note": "체크아웃 준비와 짐 보관",
+                "kind": "숙소",
+                "id": "legacy-65xk9o"
+              },
+              {
+                "name": "키와미야 나고야 파르코점",
+                "note": "",
+                "kind": "서양음식전문점",
+                "placeId": "ChIJG10vuyRxA2ARbg3J89sqQ90",
+                "address": "〒460-0008 Aichi, Nagoya, Naka Ward, Sakae, 3-chōme−29−１ 名古屋パルコ西館 7F",
+                "lat": 35.1636275,
+                "lng": 136.90733319999998,
+                "id": "legacy-lcmuhv"
+              },
+              {
+                "time": "15:10",
+                "name": "미소카츠 야바톤 중부국제공항점",
+                "note": "공항점 식사 대안",
+                "kind": "식당",
+                "id": "legacy-szmu5s"
+              },
+              {
+                "time": "15:40",
+                "name": "주부 센트레아 국제공항",
+                "note": "쇼핑 후 출국 수속",
+                "kind": "공항",
+                "id": "legacy-1j7sb0s"
+              },
+              {
+                "time": "18:20",
+                "name": "주부 센트레아 국제공항",
+                "note": "아시아나항공 OZ123 · ICN 20:30 도착",
+                "kind": "항공",
+                "id": "legacy-141nycb"
+              }
+            ],
+            "id": "nagoya-2026-day-3"
+          }
+        ],
+        "restaurants": [],
+        "scheduleVersion": 2,
+        "candidates": [
+          {
+            "id": "candidate-1789530194864",
+            "name": "야바돈",
+            "note": "미소카츠",
+            "kind": "맛집",
+            "day": 3,
+            "votes": [
+              "재원"
+            ],
+            "lat": 35.161678099999996,
+            "lng": 136.9062361,
+            "voteNames": {
+              "legacy-0": "재원"
+            }
+          },
+          {
+            "id": "candidate-1789530249493",
+            "name": "히츠마부시 하나오카",
+            "note": "히츠마부시",
+            "kind": "맛집",
+            "day": 2,
+            "votes": [
+              "재원"
+            ]
+          },
+          {
+            "id": "candidate-1789530279432",
+            "name": "히츠마부시 나고야 빈초 라시크점",
+            "note": "히츠마부히",
+            "kind": "맛집",
+            "day": 2,
+            "votes": [
+              "재원"
+            ]
+          },
+          {
+            "id": "candidate-1789994076451",
+            "name": "고토니 스시",
+            "note": "",
+            "kind": "맛집",
+            "day": 1,
+            "votes": [
+              "재원"
+            ],
+            "lat": 35.167057,
+            "lng": 136.9052829
+          },
+          {
+            "id": "candidate-1790695220394",
+            "name": "야마모토야 소혼케",
+            "note": "",
+            "kind": "맛집",
+            "day": 0,
+            "votes": [
+              "재원"
+            ],
+            "lat": 35.1659387,
+            "lng": 136.9045562
+          },
+          {
+            "id": "candidate-1791280131918",
+            "name": "사카에 니시키 에비멘야",
+            "note": "",
+            "kind": "맛집",
+            "day": 0,
+            "votes": [],
+            "voteNames": {},
+            "lat": 35.1644583,
+            "lng": 136.9047419
+          },
+          {
+            "id": "candidate-1791725938548",
+            "day": 0,
+            "votes": [
+              "재원"
+            ],
+            "voteNames": {
+              "ea50ab56-816e-4dc8-a0f7-ebe58ac4e49b": "재원"
+            },
+            "name": "Tsubame Bread & Milk Meieki Branch",
+            "note": "Instagram에서 저장",
+            "kind": "장소",
+            "placeId": "ChIJJX5mDJx3A2ARRkSisgKVHXU",
+            "address": "일본 〒450-0002 Aichi, Nagoya, Nakamura Ward, Meieki, 4-chōme−26−２５ メイフィス名駅 1階",
+            "lat": 35.1685886,
+            "lng": 136.8869159,
+            "sourceUrl": "https://www.instagram.com/reel/Dc3ZMBIs45z/?mdxt=MWpvMWVnN2V6cHB4YQ==",
+            "sourcePlatform": "Instagram",
+            "sourceTitle": "Instagram의 얌욤님 : \"🇯🇵나고야 여행갔는데 여길 안가보셨다구요?? 현지인들도 다 극찬하는 계토맛집‼️ 이렇게 퐁신퐁신하고 소스까지 맛있는 계란토스트는 처음 먹어봐요 ㅜㅠ 인생 토스트 갱신했습니다 솔직히 웨이팅 길어서 살짝 힘들긴 했는데 웨이팅 걸어놓고 근처에서 놀다보면 시간 금방가요!ㅋㅋ 기다리는거 싫은 분들은 오픈런 추천합니다! 📌 Tsubame Bread & Milk Meieki Branch 일본 〒450-",
+            "sourceImage": "https://scontent-icn2-1.cdninstagram.com/v/t51.82787-15/793945605_18163355935483905_803811661755395876_n.jpg?stp=cmp1_dst-jpg_e35_s640x640_tt6&_nc_cat=102&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_ohc=RuPvwwXC8lcQ7kNvwH8npHi&_nc_oc=AdqTS_eBt6y1IJ4aTOrhsOru8FVBn2U3Q_wWS_YJUsEJ28bWZVkVZxiVpx2XFuYqs3E&_nc_zt=23&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_gid=0cz4Kswm-Ew-LcnIfRPO9g&_nc_ss=7860f&oh=00_AQPKpcPz0J-ltyWhClu3yWg_tVYoE-B7fmwSy9ZD8HowQQ&oe=6AD176D8",
+            "sourceSummary": "528 likes, 44 comments - _yamiyomi_ - September 4, 2026: \"🇯🇵나고야 여행갔는데 여길 안가보셨다구요?? 현지인들도 다 극찬하는 계토맛집‼️ 이렇게 퐁신퐁신하고 소스까지 맛있는 계란토스트는 처음 먹어봐요 ㅜㅠ 인생 토스트 갱신했습니다 솔직히 웨이팅 길어서 살짝 힘들긴 했는데 웨이팅 걸어놓고 근처에서 놀다보면 시간 금방가요!ㅋㅋ 기다리는거 싫은 분들은 오픈런 추천합니다! 📌 Tsubame Bread & Milk Meieki Branch 일본 〒450-0002 Aichi, Nagoya, Nakamura Ward, Meieki, 4 Chome−26−25 メイフィス名駅 1階 #나고야 #나고야여행 #나고야맛집 #계토 #일본여행\"."
+          },
+          {
+            "id": "candidate-1793198617710",
+            "name": "니치와 제면 나고야",
+            "note": "",
+            "kind": "맛집",
+            "day": 0,
+            "votes": [
+              "재원"
+            ],
+            "voteNames": {
+              "af21ba76-cecc-4de1-89bb-a8049e4f64b4": "재원"
+            }
+          },
+          {
+            "id": "candidate-1794217758877",
+            "day": 0,
+            "votes": [
+              "재원"
+            ],
+            "voteNames": {
+              "7238b09e-8ae5-49bd-9d4d-37c7f248ad35": "재원"
+            },
+            "name": "屋台ラーメンヤムヤム",
+            "note": "Threads에서 저장",
+            "kind": "게시물에서 추출 · 지점 확인 필요",
+            "placeId": "",
+            "address": "",
+            "sourceUrl": "https://www.threads.com/@sun.travel.diary/post/Dfg_c7HEZCR",
+            "sourcePlatform": "Threads",
+            "sourceTitle": "유튜브 써니(sunny single travel) (@sun.travel.diary) on Threads",
+            "sourceImage": "https://scontent.cdninstagram.com/v/t51.71878-15/899793675_1619614639098028_7888089146573165786_n.jpg?stp=cmp1_dst-jpg_e35_s640x640_tt6&_nc_cat=100&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiRkVFRC5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=g09TtAh59z0Q7kNvwE2KSQY&_nc_oc=Ado6wM2--EBdUxQxHVxyrsA9cGF2P7s94u6lDXjD4ezNI_Nnm7EgHOM8b_V8RLmxLZQ&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&_nc_gid=OCJdjLjFUwrjHL1oRmQLPw&_nc_ss=7f289&oh=00_AQRgEYTnqAKTCk0DWR0IxW6Pg4PmWVWMJf1F_FeszVXITw&oe=6AF78035",
+            "sourceSummary": "나고야에서 해장할때 가야하는 라멘 포장마차\n쯔양님과 유우키님도 인정했던 라멘집\n주차장 한켠에 마련된 이곳에서 마무리 해장하면 일본여행 완성 🍜 여기 나온 로컬 스팟들, 나중에 또 찾으려면 저장 필수! 팔로우도 해두시면 다음 편 놓치지 않으실 거예요. 🙋같이 갈 사람 태그해서 공유도 잊지 마세요 📸자세한 여행기는 유튜브에 있습니다 🍜 야타이라멘\nRamen Stall Yumyum\n屋台ラーメンヤムヤム"
+          }
+        ],
+        "todayProgress": {},
+        "weatherAlternatives": [
+          {
+            "day": 2,
+            "original": "나고야성",
+            "replacement": "도요타 산업기술기념관",
+            "note": "비 오는 날 편하게 관람할 수 있는 실내 장소"
+          }
+        ],
+        "weatherBackups": [],
+        "completedPlaceIds": {
+          "nagoya-2026-day-0": [],
+          "nagoya-2026-day-1": [],
+          "nagoya-2026-day-2": [],
+          "nagoya-2026-day-3": []
+        }
+      }
+    ]
+  },
+  "revision": 68,
+  "updatedAt": "2026-11-11 10:09:57",
+  "owner": false
+}
