@@ -1,0 +1,8 @@
+# 비공개 백업·시크릿은 공개 저장소에 올리지 않습니다.
+viago-backup/
+*.bundle
+*.bundle.lock
+current_schedule.json
+*.local.json
+.env
+.env.*
