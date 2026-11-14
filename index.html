@@ -268,7 +268,7 @@
       try{
         const out=await sharedSync.saveWithMerge({base:sharedBase,payload:snapshot,revision:sharedRevision+1,updatedBy:localStorage.getItem('journey-note-participant')||'재원',expectedUpdateTime:sharedUpdateTime});
         if(out.status==='saved'||out.status==='merged'){
-          const applied=out.payload||snapshot;
+          const applied=out.payload||out.merged||snapshot;
           sharedRevision=out.revision;sharedUpdateTime=out.updateTime;sharedBase=structuredClone(applied);
           if(out.status==='merged'&&JSON.stringify(applied)!==JSON.stringify(snapshot))applySharedPayload(applied);
           sharedDirty=sharedChange!==sentChange;saveRetry=1000;
