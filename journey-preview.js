@@ -3,7 +3,7 @@
 // 사용자가 옮긴 지도 위치 유지, 좌표 없는 장소는 '위치 확인 필요'로 안내.
 (()=>{
  const preview=document.getElementById('journeyDayPreview'),button=document.getElementById('journeyPreviewOpen'),container=document.getElementById('journeyDayMap'),note=document.getElementById('journeyPreviewNote');
- let value,objects=[],layer,generation=0,signature='',frame,noteFrame=0,userMoved=false,fitContext='',lastTabDay=null;
+ let value,objects=[],layer,generation=0,signature='',frame,noteFrame=0,userMoved=false,fitContext='',lastTabDay=null,framingUntil=0;
  // 지도 가장자리와 우측 하단 '전체 동선' 버튼·안내 문구가 차지하는 자리는 비워 둔다.
  const ZOOM_MAX=17,FIT_MAX=16,PAD_TOP=14,PAD_LEFT=14,PAD_RIGHT=98,PAD_BOTTOM=58;
  function visibility(){const entries=overviewEntries();preview.hidden=foodMode||!entries.length;if(preview.hidden||!sharedReady)return;const next=JSON.stringify([activeTrip.id,candidateMode,dayIndex,entries.map(x=>[x.p.id,x.p.name,x.c,x.label])]);if(next===signature)return;signature=next;cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>update().catch(()=>{signature='';container.textContent='지도를 연결하지 못했어요. Google 지도에서 길찾기는 계속 사용할 수 있어요.'}))}
@@ -40,13 +40,13 @@
   return parts.join(' · ');
  }
  function paintView(points,missing,w,h,zoom,lat,lng){paintNote(noteLine(points,missing,w,h,zoom,lat,lng),noteDetail(points,missing,w,h,zoom,lat,lng))}
- function applyFrame(map,provider,points,missing){const {w,h}=size();if(w<40||h<40)return false;
+ function applyFrame(map,provider,points,missing){const {w,h}=size();if(w<40||h<40)return false;framingUntil=Date.now()+600;
   const pad=pads(w,h),f=fitView(points,w,h,pad);
   if(provider==='google'){map.setCenter({lat:f.lat,lng:f.lng});map.setZoom(f.zoom);google.maps.event.trigger(map,'resize')}
   else{map.invalidateSize();map.setView([f.lat,f.lng],f.zoom,{animate:false})}
   paintView(points,missing,w,h,f.zoom,f.lat,f.lng);return true}
  // 사용자가 지도를 움직인 뒤에도 '화면 밖' 안내가 실제 화면과 맞도록 다시 계산한다.
- function followView(map,provider,points,missing){cancelAnimationFrame(noteFrame);noteFrame=requestAnimationFrame(()=>{const {w,h}=size();if(w<40||h<40)return;let zoom,center;try{zoom=map.getZoom();center=map.getCenter();center=[center.lat(),center.lng()]}catch{return}if(!Number.isFinite(zoom)||!center)return;paintView(points,missing,w,h,zoom,center[0],center[1])})}
+ function followView(map,provider,points,missing){if(Date.now()<framingUntil)return;cancelAnimationFrame(noteFrame);noteFrame=requestAnimationFrame(()=>{const {w,h}=size();if(w<40||h<40)return;let zoom,center;try{zoom=map.getZoom();center=map.getCenter();center=typeof center.lat==='function'?[center.lat(),center.lng()]:[center.lat,center.lng]}catch{return}if(!Number.isFinite(zoom)||!center)return;paintView(points,missing,w,h,zoom,center[0],center[1])})}
  // 한 손가락 드래그로 이동, 두 손가락 핀치로 확대. (cooperative 의 '두 손가락' 안내 없음)
  function enableGestures(map,provider){if(provider==='google'){try{map.setOptions({gestureHandling:'greedy',disableDefaultUI:true,zoomControl:false,streetViewControl:false,mapTypeControl:false,fullscreenControl:false,clickableIcons:false,keyboardShortcuts:false})}catch{}}else{try{map.dragging.enable();map.touchZoom.enable();map.doubleClickZoom.enable()}catch{}}}
  async function update(){const run=++generation;value=await createTravelMap('journeyDayMap',{center:{lat:35.1709,lng:136.9065},zoom:13,disableDefaultUI:true,gestureHandling:'greedy',clickableIcons:false,zoomControl:false,streetViewControl:false,mapTypeControl:false,fullscreenControl:false,keyboardShortcuts:false});if(run!==generation)return;const {map,provider}=value,entries=overviewEntries(),points=entries.filter(x=>x.c),missing=entries.filter(x=>!x.c),color=candidateMode?'#8764df':'#3187ff';
