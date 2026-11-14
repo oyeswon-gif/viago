@@ -53,9 +53,15 @@
   const pad=pads(w,h),f=fitView(points,w,h,pad);
   if(provider==='google'){map.setCenter({lat:f.lat,lng:f.lng});map.setZoom(f.zoom);google.maps.event.trigger(map,'resize')}
   else{map.invalidateSize();map.setView([f.lat,f.lng],f.zoom,{animate:false})}
-  paintView(points,missing,w,h,f.zoom,f.lat,f.lng);return true}
+  paintView(points,missing,w,h,f.zoom,f.lat,f.lng);lastZoom=f.zoom;return true}
  // 사용자가 지도를 움직인 뒤에도 '화면 밖' 안내가 실제 화면과 맞도록 다시 계산한다.
- function followView(map,provider,points,missing){if(Date.now()<framingUntil)return;cancelAnimationFrame(noteFrame);noteFrame=requestAnimationFrame(()=>{const {w,h}=size();if(w<40||h<40)return;let zoom,center;try{zoom=map.getZoom();center=map.getCenter();center=typeof center.lat==='function'?[center.lat(),center.lng()]:[center.lat,center.lng]}catch{return}if(!Number.isFinite(zoom)||!center)return;paintView(points,missing,w,h,zoom,center[0],center[1])})}
+ // 가장 빽빽한 장소 무리(예: 사카에 11곳)의 좌표 — 확대했을 때 빈 곳 대신 일정 쪽을 보여주는 기준
+ function densestCenter(points){let best=points[0],bestN=-1;for(const p of points){let n=0;for(const q of points){if(Math.abs(q.c[0]-p.c[0])<0.02&&Math.abs(q.c[1]-p.c[1])<0.02)n++}if(n>bestN){bestN=n;best=p}}return best&&best.c}
+ let lastZoom=null;
+ function followView(map,provider,points,missing){if(Date.now()<framingUntil)return;cancelAnimationFrame(noteFrame);noteFrame=requestAnimationFrame(()=>{const {w,h}=size();if(w<40||h<40)return;let zoom,center;try{zoom=map.getZoom();center=map.getCenter();center=typeof center.lat==='function'?[center.lat(),center.lng()]:[center.lat,center.lng]}catch{return}if(!Number.isFinite(zoom)||!center)return;
+  // 확대했는데 그날 장소가 하나도 화면에 없으면 가장 빽빽한 무리로 중심을 옮긴다. (빈 땅만 확대되는 것 방지)
+  if(points.length&&lastZoom!==null&&zoom>lastZoom&&outsideList(points,w,h,zoom,center[0],center[1]).length===points.length){const target=densestCenter(points);if(target){lastZoom=zoom;try{provider==='google'?map.setCenter({lat:target[0],lng:target[1]}):map.panTo([target[0],target[1]],{animate:false})}catch(e){}center=[target[0],target[1]]}}
+  lastZoom=zoom;paintView(points,missing,w,h,zoom,center[0],center[1])})}
  // 한 손가락 드래그로 이동, 두 손가락 핀치로 확대. (cooperative 의 '두 손가락' 안내 없음)
  function enableGestures(map,provider){if(provider==='google'){try{map.setOptions({gestureHandling:'greedy',disableDefaultUI:true,zoomControl:false,streetViewControl:false,mapTypeControl:false,fullscreenControl:false,clickableIcons:false,keyboardShortcuts:false})}catch{}}else{try{map.dragging.enable();map.touchZoom.enable();map.doubleClickZoom.enable()}catch{}}}
  async function update(){const run=++generation;value=await createTravelMap('journeyDayMap',{center:{lat:35.1709,lng:136.9065},zoom:13,maxZoom:ZOOM_MAX,disableDefaultUI:true,gestureHandling:'greedy',clickableIcons:false,zoomControl:false,streetViewControl:false,mapTypeControl:false,fullscreenControl:false,keyboardShortcuts:false});if(run!==generation)return;const {map,provider}=value,entries=overviewEntries(),points=entries.filter(x=>x.c),missing=entries.filter(x=>!x.c),color=candidateMode?'#8764df':'#3187ff';
