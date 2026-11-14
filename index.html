@@ -450,9 +450,20 @@
     function loadScriptOnce(src,ready){if(ready())return Promise.resolve(true);return new Promise(resolve=>{const existing=document.querySelector(`script[src="${src}"]`);if(existing){existing.addEventListener('load',()=>resolve(ready()),{once:true});existing.addEventListener('error',()=>resolve(false),{once:true});return}const script=document.createElement('script');script.src=src;script.async=true;script.onload=()=>resolve(ready());script.onerror=()=>resolve(false);document.head.appendChild(script)})}
     function loadLeaflet(){if(window.L)return Promise.resolve(true);if(leafletReady)return leafletReady;loadStyleOnce('./vendor/leaflet/leaflet.css');leafletReady=loadScriptOnce('./vendor/leaflet/leaflet.js',()=>!!window.L);return leafletReady}
     function loadSortable(){if(window.Sortable)return Promise.resolve(true);if(sortableReady)return sortableReady;sortableReady=loadScriptOnce('https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js',()=>!!window.Sortable);return sortableReady}
-    let mapLoadIssue='',googleMapCreations=new Map(),travelMapCreations=new Map();
+    let mapLoadIssue='',googleMapCreations=new Map(),travelMapCreations=new Map(),googleMapsBlocked=false;
     function mapFailureMessage(){return {daily_limit:'오늘의 무료 지도 사용 한도에 도달했어요. 외부 Google 지도는 열 수 있어요.',monthly_limit:'이번 달 무료 지도 사용 한도에 도달했어요. 외부 Google 지도는 열 수 있어요.',invite_required:'초대 링크로 다시 접속해주세요.',key_missing:'Google 지도 키가 설정되지 않았어요.',budget_unavailable:'사용량 확인에 실패해 지도 호출을 차단했어요.',google_auth:'Google 지도 키의 인증 또는 도메인 설정을 확인해주세요.'}[mapLoadIssue]||'Google 지도 연결에 실패했어요. 인터넷 연결을 확인해주세요.'}
-    function loadGoogleMaps(){if(googleMapsReady)return googleMapsReady;googleMapsReady=(async()=>{try{const config={enabled:!!MAPS_CONFIG.enabled,key:MAPS_CONFIG.key};if(window.google?.maps)return true;return await new Promise(resolve=>{const callback='journeyGoogleMapsReady',script=document.createElement('script');let settled=false;const done=value=>{if(settled)return;settled=true;clearTimeout(timer);delete window[callback];resolve(value)};const timer=setTimeout(()=>{mapLoadIssue='connection';done(false)},12000);window.gm_authFailure=()=>{mapLoadIssue='google_auth';done(false)};window[callback]=()=>done(true);script.async=true;script.defer=true;script.onerror=()=>{mapLoadIssue='connection';done(false)};script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(config.key)+'&language=ko&region=JP&v=weekly&callback='+callback;document.head.appendChild(script)})}catch(e){mapLoadIssue='connection';return false}})();return googleMapsReady}
+    // Google 지도 키·한도·도메인 문제로 지도가 깨졌을 때(구글 오류 문구가 뜰 때):
+    //   새 지도는 OpenStreetMap 으로 만들고, 이미 만들어진 지도는 비워서 다시 그리게 한다.
+    function recoverFromGoogleFailure(){
+      if(googleMapsBlocked)return;
+      googleMapsBlocked=true;mapLoadIssue=mapLoadIssue||'google_auth';
+      googleMapsReady=Promise.resolve(false);
+      try{travelMapCreations.clear();googleMapCreations.clear()}catch(e){}
+      mapInstance=null;quickMapInstance=null;mapLayer=null;quickMapLayer=null;
+      ['overviewMap','quickLeafletMap','journeyDayMap'].forEach(id=>{const el=document.getElementById(id);if(el)el.replaceChildren()});
+      window.dispatchEvent(new CustomEvent('viago:google-failed'));
+    }
+    function loadGoogleMaps(){if(googleMapsBlocked)return Promise.resolve(false);if(googleMapsReady)return googleMapsReady;googleMapsReady=(async()=>{try{const config={enabled:!!MAPS_CONFIG.enabled,key:MAPS_CONFIG.key};if(window.google?.maps)return true;return await new Promise(resolve=>{const callback='journeyGoogleMapsReady',script=document.createElement('script');let settled=false;const done=value=>{if(settled)return;settled=true;clearTimeout(timer);delete window[callback];resolve(value)};const timer=setTimeout(()=>{mapLoadIssue='connection';done(false)},12000);window.gm_authFailure=()=>{if(googleMapsBlocked)return;mapLoadIssue='google_auth';done(false);recoverFromGoogleFailure()};window[callback]=()=>done(true);script.async=true;script.defer=true;script.onerror=()=>{mapLoadIssue='connection';done(false)};script.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(config.key)+'&language=ko&region=JP&v=weekly&callback='+callback;document.head.appendChild(script)})}catch(e){mapLoadIssue='connection';return false}})();return googleMapsReady}
     function createGoogleMap(id,options){if(googleMapCreations.has(id))return googleMapCreations.get(id);const pending=(async()=>{if(!await loadGoogleMaps())throw Error(mapFailureMessage());return new google.maps.Map($('#'+id),options)})();googleMapCreations.set(id,pending);pending.catch(()=>googleMapCreations.delete(id));return pending}
     function destinationCountry(){return activeTrip.country||(/발리|자카르타|인도네시아/.test(activeTrip.destination)?'id':/나고야|도쿄|오사카|교토|일본/.test(activeTrip.destination)?'jp':/서울|부산|인천|한국|대한민국/.test(activeTrip.destination)?'kr':null)}
     function closeSuggestions(input,list){list.classList.remove('open');list.replaceChildren();input.setAttribute('aria-expanded','false')}
@@ -652,13 +663,17 @@
       if(travelMapCreations.has(id)){const existing=travelMapCreations.get(id);return existing.then(value=>{if(value.provider==='leaflet'&&['daily_limit','monthly_limit'].includes(value.reason)&&value.day!==googleBudgetDay()){value.map.remove();travelMapCreations.delete(id);googleMapCreations.delete(id);googleMapsReady=null;mapLoadIssue='';return createTravelMap(id,options)}return value})}
       const task=(async()=>{let provider=await chooseMapProvider(),map;
         if(provider==='google'){try{map=await createGoogleMap(id,options)}catch{provider='leaflet'}}
-        if(provider==='leaflet'){if(!await loadLeaflet())throw Error('free_map_unavailable');map=L.map(id,{zoomControl:id!=='journeyDayMap',dragging:id!=='journeyDayMap',scrollWheelZoom:id!=='journeyDayMap',touchZoom:id!=='journeyDayMap',doubleClickZoom:id!=='journeyDayMap',boxZoom:id!=='journeyDayMap',keyboard:id!=='journeyDayMap'});addBaseLayer(map)}
+        if(provider==='leaflet'){if(!await loadLeaflet())throw Error('free_map_unavailable');map=L.map(id,{zoomControl:id!=='journeyDayMap',dragging:id!=='journeyDayMap',scrollWheelZoom:id!=='journeyDayMap',touchZoom:id!=='journeyDayMap',doubleClickZoom:id!=='journeyDayMap',boxZoom:id!=='journeyDayMap',keyboard:id!=='journeyDayMap'});if(Number.isFinite(options?.maxZoom))map.setMaxZoom(options.maxZoom);addBaseLayer(map)}
         return{map,provider,reason:provider==='leaflet'?mapLoadIssue:'',day:googleBudgetDay()}
       })();travelMapCreations.set(id,task);task.catch(()=>travelMapCreations.delete(id));return task
     }
-    function providerLabel(value){return value.provider==='google'?'Google 지도':(['daily_limit','monthly_limit'].includes(value.reason)?'Google 무료 한도 도달 · OpenStreetMap':'Google 지도 연결 대기 · OpenStreetMap')}
-    async function ensureMainMap(){const value=await createTravelMap('overviewMap',{center:{lat:35.1709,lng:136.9065},zoom:13,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});mapInstance=value.map;$('#mapProviderNote').textContent=providerLabel(value);return value}
-    async function ensureQuickMap(){const value=await createTravelMap('quickLeafletMap',{center:{lat:35.1709,lng:136.9065},zoom:13,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});quickMapInstance=value.map;$('#quickMap').dataset.provider=value.provider;$('#quickMapProvider').textContent=providerLabel(value);return value}
+    function providerLabel(value){return value.provider==='google'?'Google 지도':(['daily_limit','monthly_limit'].includes(value.reason)?'Google 무료 한도 도달 · OpenStreetMap':value.reason==='google_auth'?'Google 지도 연결 실패 · OpenStreetMap':'Google 지도 연결 대기 · OpenStreetMap')}
+    // 오프라인에서는 지도 배경 타일을 받을 수 없다는 사실을 상태줄에 분명히 적는다. (마커만으로 위치를 정확히 알 수 있다고 안내하지 않는다)
+    const OFFLINE_MAP_NOTE='오프라인 — 지도 배경은 표시되지 않아요. 저장된 일정·마커만 볼 수 있어요';
+    function offlineMapNote(base){return navigator.onLine===false?base+' · '+OFFLINE_MAP_NOTE:base}
+    function paintProviderNotes(){['#mapProviderNote','#quickMapProvider'].forEach(sel=>{const el=$(sel);if(!el)return;const base=el.dataset.base||el.textContent.split(' · 오프라인')[0];el.dataset.base=base;const text=offlineMapNote(base);if(el.textContent!==text)el.textContent=text})}
+    async function ensureMainMap(){const value=await createTravelMap('overviewMap',{center:{lat:35.1709,lng:136.9065},zoom:13,maxZoom:19,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});mapInstance=value.map;const el=$('#mapProviderNote');el.dataset.base=providerLabel(value);el.textContent=offlineMapNote(el.dataset.base);return value}
+    async function ensureQuickMap(){const value=await createTravelMap('quickLeafletMap',{center:{lat:35.1709,lng:136.9065},zoom:13,maxZoom:18,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});quickMapInstance=value.map;$('#quickMap').dataset.provider=value.provider;const el=$('#quickMapProvider');el.dataset.base=providerLabel(value);el.textContent=offlineMapNote(el.dataset.base);return value}
     function markerIcon(label,color){return L.divIcon({className:'viago-map-marker',html:`<div class="number-marker" style="--marker:${color}">${label}</div>`,iconSize:[32,32],iconAnchor:[16,16]})}
     function clearMapLayer(which,provider){const current=which==='main'?mapLayer:quickMapLayer;if(!current)return;if(Array.isArray(current))current.forEach(x=>x.setMap?.(null));else current.remove();if(which==='main')mapLayer=null;else quickMapLayer=null}
     /* ===== 개별 순번 마커 · 화면 픽셀 펼치기(지시선) (2026-11-15) =====
@@ -756,7 +771,7 @@ function viagoDrawLocated(key,map,provider,located,color,options){
   const opts=Object.assign({connect:true,labels:false,holder:null,compact:false,zoomMax:VIAGO_MARKER_ZOOM_MAX},options||{});
   viagoDetachMarkers(key);
   const holder=opts.holder||(provider==='google'?[]:L.layerGroup().addTo(map));
-  const state={map,provider,holder,opts,color,timer:0,listener:null,zoomHandler:null};
+  const state={map,provider,holder,opts,color,timer:0,listener:null,zoomHandler:null,zoom:-Infinity,info:null};
   viagoMarkerLayers.set(key,state);
   const radius=opts.compact?13:16,gap=opts.compact?14:10,maxShift=150;
   // 표시 위치가 지도 가장자리·버튼 영역으로 밀려 들어가지 않도록 (실제 위치가 화면 안에 있는 마커만)
@@ -792,12 +807,13 @@ function viagoDrawLocated(key,map,provider,located,color,options){
   };
   const add=provider==='google'?(o=>holder.push(o)):(o=>holder.addLayer(o));
   const reset=()=>{
-    if(provider==='google'){holder.forEach(o=>{try{o.setMap(null)}catch(e){}});holder.length=0}
+    if(provider==='google'){try{state.info?.close()}catch(e){}holder.forEach(o=>{try{o.setMap(null)}catch(e){}});holder.length=0}
     else holder.clearLayers();
   };
   const render=()=>{
     reset();
     const zoom=viagoCurrentZoom(map),points=located.filter(x=>x&&x.c);
+    state.zoom=zoom;
     if(opts.connect&&points.length>1){
       if(provider==='google')add(new google.maps.Polyline({map,path:points.map(x=>({lat:x.c[0],lng:x.c[1]})),strokeColor:color,strokeOpacity:.78,strokeWeight:4,zIndex:1}));
       else add(L.polyline(points.map(x=>x.c),{color,weight:4,opacity:.76,dashArray:'8 7'}));
@@ -817,16 +833,22 @@ function viagoDrawLocated(key,map,provider,located,color,options){
       if(row.moved)viagoLeaderLine(map,provider,row.trueAt,row.edge,color,zIndex).forEach(add);
       const marker=viagoNumberMarker(map,provider,row.at,shown,color,name,zIndex,opts.labels,opts.compact);
       if(provider==='google'){
-        const info=new google.maps.InfoWindow({content:viagoMarkerInfo(row.item,shown)});
-        marker.addListener('click',()=>info.open({map,anchor:marker}));
+        // 마커마다 InfoWindow를 새로 만들면 확대·축소마다 객체가 쌓여 아이폰에서 느려지므로 하나를 돌려 쓴다.
+        if(!state.info)state.info=new google.maps.InfoWindow({content:''});
+        marker.addListener('click',()=>{state.info.setContent(viagoMarkerInfo(row.item,shown));state.info.open({map,anchor:marker})});
       }else marker.bindPopup(viagoMarkerInfo(row.item,shown));
       add(marker);
     });
   };
   render();
+  // 확대 단계가 실제로 바뀐 경우에만 다시 그린다. (핀치 중 잦은 재생성으로 느려지거나 끊기는 것 방지)
   const onZoom=()=>{
     clearTimeout(state.timer);
-    state.timer=setTimeout(()=>{if(viagoMarkerLayers.get(key)===state)render()},120);
+    state.timer=setTimeout(()=>{
+      if(viagoMarkerLayers.get(key)!==state)return;
+      if(viagoCurrentZoom(map)===state.zoom)return;
+      render();
+    },180);
   };
   if(provider==='google')state.listener=google.maps.event.addListener(map,'zoom_changed',onZoom);
   else{state.zoomHandler=onZoom;map.on('zoomend',onZoom)}
@@ -1007,13 +1029,15 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     // No fixed loading wait: paint first; decorative cover never blocks recovery.
     setTimeout(hideLaunchCover,1200);
     $('#inviteRecovery').onsubmit=e=>{e.preventDefault();try{const url=new URL($('#recoveryLink').value.trim());const token=new URLSearchParams(url.hash.slice(1)).get('invite');if(url.origin!==location.origin||!/^\/travel\/?$/.test(url.pathname)||!/^[a-f0-9]{64}$/.test(token||''))throw Error();localStorage.setItem('journey-note-invite',token);location.replace('/travel#invite='+token)}catch{$('#recoveryError').textContent='이 여행 앱에서 받은 전체 초대 링크를 붙여넣어주세요.'}};
-    window.addEventListener('online',()=>{googleMapsReady=null;if(!sharedReady&&!accessDenied)startSharedSync();else{pollShared();if(sharedDirty)pushSharedState()}});
+    window.addEventListener('online',()=>{googleMapsReady=null;paintProviderNotes();if(!sharedReady&&!accessDenied)startSharedSync();else{pollShared();if(sharedDirty)pushSharedState()}});
+    window.addEventListener('offline',paintProviderNotes);
+    paintProviderNotes();
     startSharedSync();
     setInterval(refreshOpeningHours,3600000);
     setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
-    if('serviceWorker' in navigator)navigator.serviceWorker.register('/service-worker.js?v=46').then(registration=>registration.update()).catch(()=>{});
+    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=47',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>

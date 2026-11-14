@@ -1,4 +1,4 @@
-// VIAGO 서비스 워커 (2026-11-15 준비, 등록은 아직 켜지 않음)
+// VIAGO 서비스 워커 (2026-11-15 활성화)
 //
 // 원칙
 // 1) 앱 껍데기(HTML·CSS·JS·아이콘)만 캐시한다. 일정 데이터는 건드리지 않는다.
@@ -12,6 +12,8 @@
 //    앱을 완전히 닫았다 열 때 적용된다.
 const VERSION = 'v1';
 const SHELL = `viago-shell-${VERSION}`;
+// 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
+const OUR_PREFIX = 'viago-';
 const SHELL_FILES = [
   './',
   './index.html',
@@ -40,7 +42,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== SHELL).map(key => caches.delete(key))))
+      .then(keys => Promise.all(keys.filter(key => key !== SHELL && key.startsWith(OUR_PREFIX)).map(key => caches.delete(key))))
       .catch(() => null)
   );
 });
