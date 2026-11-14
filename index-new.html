@@ -484,7 +484,7 @@
       const noteError='장소 검색에 연결하지 못했어요. 저장된 장소에서 고르거나 이름을 직접 입력해 주세요.';
       function ensureSession(){const now=Date.now();if(!sessionToken||now-sessionAt>180000){sessionToken=placesSessionId()}sessionAt=now;return sessionToken}
       function resetSession(){sessionToken=null;sessionAt=0}
-      const close=()=>{requestId++;clearTimeout(timer);controller?.abort();closeSuggestions(input,list)};
+      const close=()=>{requestId++;clearTimeout(timer);controller?.abort();googleMatches=[];closeSuggestions(input,list)};
       input.freeSearch=()=>{list.classList.add('open');input.setAttribute('aria-expanded','true');return runSearch(input.value.trim())};
       function openList(){list.classList.add('open');input.setAttribute('aria-expanded','true')}
       function itemHtml(p,source){
@@ -550,7 +550,7 @@
         savedMatches=savedPlaceSuggestions(q);googleMatches=[];render();
         timer=setTimeout(()=>runSearch(q),320);
       });
-      input.addEventListener('focus',()=>{const q=input.value.trim();if(q.length>=2){savedMatches=savedPlaceSuggestions(q);render()}});
+      input.addEventListener('focus',()=>{const q=input.value.trim();if(q.length>=2){googleMatches=[];savedMatches=savedPlaceSuggestions(q);render()}});
       input.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
       input.closest('dialog')?.addEventListener('close',close);
       document.addEventListener('pointerdown',e=>{if(!input.parentElement.contains(e.target))close()});
