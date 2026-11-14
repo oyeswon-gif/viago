@@ -686,7 +686,7 @@ function viagoDisplace(items,zoom,radius,gap,maxShift){
         const push=(minDist-d)/2,ux=dx/d,uy=dy/d;
         pos[a][0]-=ux*push;pos[a][1]-=uy*push;pos[b][0]+=ux*push;pos[b][1]+=uy*push;moved=true;
       }
-      for(let k=0;k<n;k++){pos[k][0]+=(truth[k][0]-pos[k][0])*0.03;pos[k][1]+=(truth[k][1]-pos[k][1])*0.03}
+      for(let k=0;k<n;k++){pos[k][0]+=(truth[k][0]-pos[k][0])*0.02;pos[k][1]+=(truth[k][1]-pos[k][1])*0.02}
       if(!moved)break;
     }
     for(let round=0;round<60;round++){   // 마지막엔 실제 위치로 당기지 않고 겹침만 확실히 푼다
@@ -732,14 +732,14 @@ function viagoNumberMarker(map,provider,at,shown,color,name,zIndex,labels,compac
 function viagoLeaderLine(map,provider,truth,show,color,zIndex){
   if(provider==='google'){
     return [
-      new google.maps.Polyline({map,path:[{lat:truth[0],lng:truth[1]},{lat:show[0],lng:show[1]}],strokeColor:'#5d6b80',strokeOpacity:.55,strokeWeight:1.5,zIndex:zIndex-1,clickable:false}),
+      new google.maps.Polyline({map,path:[{lat:truth[0],lng:truth[1]},{lat:show[0],lng:show[1]}],strokeColor:'#46536a',strokeOpacity:.75,strokeWeight:2,zIndex:zIndex-1,clickable:false}),
       new google.maps.Marker({map,position:{lat:truth[0],lng:truth[1]},clickable:false,zIndex:zIndex-1,
-        icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:'#ffffff',fillOpacity:1,strokeColor:color,strokeWeight:2,scale:3}})
+        icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:color,fillOpacity:1,strokeColor:'#ffffff',strokeWeight:1.5,scale:3}})
     ];
   }
   return [
-    L.polyline([truth,show],{color:'#5d6b80',weight:1.5,opacity:.55,dashArray:'3 3',interactive:false}),
-    L.circleMarker(truth,{radius:3.5,color,weight:2,fillColor:'#fff',fillOpacity:1,interactive:false})
+    L.polyline([truth,show],{color:'#46536a',weight:2,opacity:.75,dashArray:'4 3',interactive:false}),
+    L.circleMarker(truth,{radius:3.2,color:'#fff',weight:1.5,fillColor:color,fillOpacity:1,interactive:false})
   ];
 }
 function viagoDetachMarkers(key){
@@ -758,7 +758,7 @@ function viagoDrawLocated(key,map,provider,located,color,options){
   const holder=opts.holder||(provider==='google'?[]:L.layerGroup().addTo(map));
   const state={map,provider,holder,opts,color,timer:0,listener:null,zoomHandler:null};
   viagoMarkerLayers.set(key,state);
-  const radius=opts.compact?13:16,gap=opts.compact?4:6,maxShift=opts.compact?96:132;
+  const radius=opts.compact?13:16,gap=opts.compact?12:10,maxShift=opts.compact?110:150;
   const add=provider==='google'?(o=>holder.push(o)):(o=>holder.addLayer(o));
   const reset=()=>{
     if(provider==='google'){holder.forEach(o=>{try{o.setMap(null)}catch(e){}});holder.length=0}
@@ -774,12 +774,16 @@ function viagoDrawLocated(key,map,provider,located,color,options){
     const layout=viagoDisplace(points,zoom,radius,gap,maxShift);
     const rows=layout.map(row=>{
       const show=viagoLatLngAt(row.show[0],row.show[1],zoom),truth=viagoLatLngAt(row.truth[0],row.truth[1],zoom);
-      const moved=Math.hypot(row.show[0]-row.truth[0],row.show[1]-row.truth[1])>2.5;
-      return {item:row.item,at:show,trueAt:truth,moved,y:row.show[1]};
+      const dx=row.show[0]-row.truth[0],dy=row.show[1]-row.truth[1],dist=Math.hypot(dx,dy);
+      // 마커 반경보다 적게 밀린 경우엔 실제 위치가 마커에 가려지므로 지시선·점을 그리지 않는다.
+      const moved=dist>radius+4;
+      // 지시선은 마커 테두리에서 시작해 실제 위치까지 보이도록 줄여서 그린다.
+      const edge=moved?viagoLatLngAt(row.show[0]-dx/dist*(radius+2),row.show[1]-dy/dist*(radius+2),zoom):null;
+      return {item:row.item,at:show,trueAt:truth,edge,moved,y:row.show[1]};
     }).sort((a,b)=>a.y-b.y);      // 화면 아래쪽 마커가 위로 오게
     rows.forEach((row,k)=>{
       const zIndex=200+k,shown=viagoShownOf(row.item),name=(row.item.p&&row.item.p.name)||'';
-      if(row.moved)viagoLeaderLine(map,provider,row.trueAt,row.at,color,zIndex).forEach(add);
+      if(row.moved)viagoLeaderLine(map,provider,row.trueAt,row.edge,color,zIndex).forEach(add);
       const marker=viagoNumberMarker(map,provider,row.at,shown,color,name,zIndex,opts.labels,opts.compact);
       if(provider==='google'){
         const info=new google.maps.InfoWindow({content:viagoMarkerInfo(row.item,shown)});
