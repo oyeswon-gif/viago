@@ -1,42 +1,79 @@
 // Google first; free OSM fallback is selected before creating a new map.
-// 2026-11-15: 일정 탭 하루 미리보기 — 크게, 밀집 지역 중심, 터치·확대 허용, 화면 밖 장소 안내.
+// 2026-11-15: 일정 탭 하루 미리보기 — 한 손가락으로 이동(greedy), 일차 전체 일정 맞춤,
+// 사용자가 옮긴 지도 위치 유지, 좌표 없는 장소는 '위치 확인 필요'로 안내.
 (()=>{
  const preview=document.getElementById('journeyDayPreview'),button=document.getElementById('journeyPreviewOpen'),container=document.getElementById('journeyDayMap'),note=document.getElementById('journeyPreviewNote');
- let value,objects=[],layer,generation=0,signature='',frame,noteFrame=0;
- const ZOOM_MAX=17,FIT_MAX=16,CORE_M=4000,EDGE_PX=26,KEEP_SHARE=0.75;
+ let value,objects=[],layer,generation=0,signature='',frame,noteFrame=0,userMoved=false,fitContext='',lastTabDay=null;
+ // 지도 가장자리와 우측 하단 '전체 동선' 버튼·안내 문구가 차지하는 자리는 비워 둔다.
+ const ZOOM_MAX=17,FIT_MAX=16,PAD_TOP=14,PAD_LEFT=14,PAD_RIGHT=98,PAD_BOTTOM=58;
  function visibility(){const entries=overviewEntries();preview.hidden=foodMode||!entries.length;if(preview.hidden||!sharedReady)return;const next=JSON.stringify([activeTrip.id,candidateMode,dayIndex,entries.map(x=>[x.p.id,x.p.name,x.c,x.label])]);if(next===signature)return;signature=next;cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>update().catch(()=>{signature='';container.textContent='지도를 연결하지 못했어요. Google 지도에서 길찾기는 계속 사용할 수 있어요.'}))}
  function project(point,zoom){const size=256*Math.pow(2,zoom),rad=point[0]*Math.PI/180;return [(point[1]+180)/360*size,(1-Math.log(Math.tan(rad)+1/Math.cos(rad))/Math.PI)/2*size]}
  function size(){return {w:container.clientWidth,h:container.clientHeight}}
- function fitZoom(points,w,h,pad){for(let zoom=FIT_MAX;zoom>=1;zoom--){const px=points.map(x=>project(x.c,zoom));const dx=Math.max(...px.map(q=>q[0]))-Math.min(...px.map(q=>q[0])),dy=Math.max(...px.map(q=>q[1]))-Math.min(...px.map(q=>q[1]));if(dx<=w-2*pad&&dy<=h-2*pad)return zoom}return 1}
- // 하루 전체가 아니라 '한 지역'이 보이도록, 가운데서 4km 넘게 떨어진 장소(공항·다른 도시)는 범위에서 뺀다.
- function denseCore(points,limit=CORE_M){if(points.length<3)return points;let best=null,bestScore=-1;points.forEach((seed,si)=>{const cos=Math.cos(seed.c[0]*Math.PI/180),members=points.filter((x,xi)=>{const dy=(x.c[0]-seed.c[0])*111320,dx=(x.c[1]-seed.c[1])*111320*cos;return Math.sqrt(dx*dx+dy*dy)<=limit});const score=members.length*100+members.reduce((s,x)=>s+points.indexOf(x),0)/points.length+(si/points.length)*0.5;if(score>bestScore){bestScore=score;best=members}});return best&&best.length>=2?best:points}
- function noteText(points,w,h,zoom,lat,lng){if(!points.length)return '';const center=project([lat,lng],zoom),outside=points.filter(x=>{const p=project(x.c,zoom);return Math.abs(p[0]-center[0])>w/2-8||Math.abs(p[1]-center[1])>h/2-8});if(!outside.length)return '';const names=outside.slice(0,2).map(x=>x.p.name).join(', ');return `화면 밖 ${outside.length}곳${names?' · '+names+(outside.length>2?' 외':''):''}`}
- function paintNote(text){if(!note)return;note.textContent=text||'';note.hidden=!text;note.title=text?text+' · 전체 동선에서 확인':''}
- // 화면 안에 남는 장소 비율(마커 반지름만큼 여유를 두고 센다)
- function visibleShare(points,zoom,w,h){const px=points.map(x=>project(x.c,zoom));if(!px.length)return 1;const inside=px.filter(p=>p[0]>EDGE_PX-8&&p[0]<w-EDGE_PX+8&&p[1]>EDGE_PX-8&&p[1]<h-EDGE_PX+8).length;return inside/px.length}
- function frameOf(points,w,h){const core=denseCore(points);let zoom=fitZoom(core,w,h,EDGE_PX);
-  // 묶음 없이 번호를 모두 보여주려면 조금 더 당기는 편이 읽기 쉽다. 장소 75% 이상이 화면에 남는 최대 단계까지 올린다.
-  for(let z=zoom+1;z<=FIT_MAX;z++){if(visibleShare(core,z,w,h)>=KEEP_SHARE)zoom=z;else break}
-  if(new Set(core.map(x=>x.c[0].toFixed(6)+','+x.c[1].toFixed(6))).size===1)zoom=Math.max(zoom,16);const lat=(Math.min(...core.map(x=>x.c[0]))+Math.max(...core.map(x=>x.c[0])))/2,lng=(Math.min(...core.map(x=>x.c[1]))+Math.max(...core.map(x=>x.c[1])))/2;return {zoom,lat,lng,w,h}}
- function applyFrame(map,provider,points){const {w,h}=size();if(w<40||h<40)return false;if(!points.length){if(provider==='google'){map.setCenter({lat:35.1709,lng:136.9065});map.setZoom(13);google.maps.event.trigger(map,'resize')}else map.setView([35.1709,136.9065],13);paintNote('');return true}
-  const f=frameOf(points,w,h);if(provider==='google'){map.setCenter({lat:f.lat,lng:f.lng});map.setZoom(f.zoom);google.maps.event.trigger(map,'resize')}else map.setView([f.lat,f.lng],f.zoom);
-  paintNote(noteText(points,w,h,f.zoom,f.lat,f.lng));return true}
+ function pads(w,h){const right=Math.min(PAD_RIGHT,Math.max(56,Math.round(w*0.32))),bottom=Math.min(PAD_BOTTOM,Math.max(44,Math.round(h*0.2)));return {top:PAD_TOP,left:PAD_LEFT,right,bottom}}
+ // 좌표가 있는 장소 전부가 들어가는 최대 확대 단계를 고르고, 비어 둔 여백만큼 중심을 옮긴다.
+ function fitView(points,w,h,pad){
+  if(!points.length)return {zoom:13,lat:35.1709,lng:136.9065};
+  if(new Set(points.map(x=>x.c[0].toFixed(6)+','+x.c[1].toFixed(6))).size===1)return {zoom:FIT_MAX,lat:points[0].c[0],lng:points[0].c[1]};
+  const aw=Math.max(60,w-pad.left-pad.right),ah=Math.max(60,h-pad.top-pad.bottom);
+  let zoom=1;
+  for(let z=FIT_MAX;z>=1;z--){const px=points.map(x=>project(x.c,z)),xs=px.map(p=>p[0]),ys=px.map(p=>p[1]);if(Math.max(...xs)-Math.min(...xs)<=aw&&Math.max(...ys)-Math.min(...ys)<=ah){zoom=z;break}}
+  const px=points.map(x=>project(x.c,zoom)),xs=px.map(p=>p[0]),ys=px.map(p=>p[1]);
+  const midX=(Math.min(...xs)+Math.max(...xs))/2,midY=(Math.min(...ys)+Math.max(...ys))/2;
+  const [lat,lng]=viagoLatLngAt(midX+(w/2-(pad.left+aw/2)),midY+(h/2-(pad.top+ah/2)),zoom);
+  return {zoom,lat,lng};
+ }
+ function outsideList(points,w,h,zoom,lat,lng){if(!points.length)return [];const center=project([lat,lng],zoom);return points.filter(x=>{const p=project(x.c,zoom);return Math.abs(p[0]-center[0])>w/2-8||Math.abs(p[1]-center[1])>h/2-8})}
+ function paintNote(text,full){if(!note)return;note.textContent=text||'';note.hidden=!text;note.title=full||text||''}
+ // 화면 밖 장소와 좌표를 확인하지 못한 장소를 한 줄로 알린다. (좌표 없는 장소는 지도에 임의로 찍지 않는다)
+ function noteLine(points,missing,w,h,zoom,lat,lng){
+  const parts=[];
+  if(missing.length)parts.push('위치 확인 필요 '+missing.length+'곳'+(missing.length<=2?': '+missing.map(x=>x.p.name).join(', '):''));
+  const out=missing.length?[]:outsideList(points,w,h,zoom,lat,lng);
+  if(out.length)parts.push('화면 밖 '+out.length+'곳');
+  return parts.join(' · ');
+ }
+ function noteDetail(points,missing,w,h,zoom,lat,lng){
+  const parts=[];
+  if(missing.length)parts.push('위치 확인 필요 '+missing.length+'곳: '+missing.map(x=>x.p.name).join(', '));
+  const out=outsideList(points,w,h,zoom,lat,lng);
+  if(out.length)parts.push('화면 밖 '+out.length+'곳: '+out.map(x=>x.p.name).join(', '));
+  return parts.join(' · ');
+ }
+ function paintView(points,missing,w,h,zoom,lat,lng){paintNote(noteLine(points,missing,w,h,zoom,lat,lng),noteDetail(points,missing,w,h,zoom,lat,lng))}
+ function applyFrame(map,provider,points,missing){const {w,h}=size();if(w<40||h<40)return false;
+  const pad=pads(w,h),f=fitView(points,w,h,pad);
+  if(provider==='google'){map.setCenter({lat:f.lat,lng:f.lng});map.setZoom(f.zoom);google.maps.event.trigger(map,'resize')}
+  else{map.invalidateSize();map.setView([f.lat,f.lng],f.zoom,{animate:false})}
+  paintView(points,missing,w,h,f.zoom,f.lat,f.lng);return true}
  // 사용자가 지도를 움직인 뒤에도 '화면 밖' 안내가 실제 화면과 맞도록 다시 계산한다.
- function followView(map,provider,points){cancelAnimationFrame(noteFrame);noteFrame=requestAnimationFrame(()=>{const {w,h}=size();if(w<40||h<40)return;let zoom,center;try{zoom=map.getZoom();center=map.getCenter();center=[center.lat(),center.lng()]}catch{return}if(!Number.isFinite(zoom)||!center)return;paintNote(noteText(points,w,h,zoom,center[0],center[1]))})}
- function enableGestures(map,provider){if(provider==='google'){try{map.setOptions({gestureHandling:'cooperative',disableDefaultUI:true,zoomControl:false,streetViewControl:false,mapTypeControl:false,fullscreenControl:false,clickableIcons:false,keyboardShortcuts:false})}catch{}}else{try{map.dragging.enable();map.touchZoom.enable();map.doubleClickZoom.enable()}catch{}}}
- async function update(){const run=++generation;value=await createTravelMap('journeyDayMap',{center:{lat:35.1709,lng:136.9065},zoom:13,disableDefaultUI:true,gestureHandling:'cooperative',clickableIcons:false,zoomControl:false,streetViewControl:false,mapTypeControl:false,fullscreenControl:false,keyboardShortcuts:false});if(run!==generation)return;const {map,provider}=value,points=overviewEntries().filter(x=>x.c),color=candidateMode?'#8764df':'#3187ff';
+ function followView(map,provider,points,missing){cancelAnimationFrame(noteFrame);noteFrame=requestAnimationFrame(()=>{const {w,h}=size();if(w<40||h<40)return;let zoom,center;try{zoom=map.getZoom();center=map.getCenter();center=[center.lat(),center.lng()]}catch{return}if(!Number.isFinite(zoom)||!center)return;paintView(points,missing,w,h,zoom,center[0],center[1])})}
+ // 한 손가락 드래그로 이동, 두 손가락 핀치로 확대. (cooperative 의 '두 손가락' 안내 없음)
+ function enableGestures(map,provider){if(provider==='google'){try{map.setOptions({gestureHandling:'greedy',disableDefaultUI:true,zoomControl:false,streetViewControl:false,mapTypeControl:false,fullscreenControl:false,clickableIcons:false,keyboardShortcuts:false})}catch{}}else{try{map.dragging.enable();map.touchZoom.enable();map.doubleClickZoom.enable()}catch{}}}
+ async function update(){const run=++generation;value=await createTravelMap('journeyDayMap',{center:{lat:35.1709,lng:136.9065},zoom:13,disableDefaultUI:true,gestureHandling:'greedy',clickableIcons:false,zoomControl:false,streetViewControl:false,mapTypeControl:false,fullscreenControl:false,keyboardShortcuts:false});if(run!==generation)return;const {map,provider}=value,entries=overviewEntries(),points=entries.filter(x=>x.c),missing=entries.filter(x=>!x.c),color=candidateMode?'#8764df':'#3187ff';
  enableGestures(map,provider);
+ // 일차·여행·후보 탭이 바뀔 때만 다시 맞춘다. 같은 일차의 동기화·재렌더로는 위치를 건드리지 않는다.
+ const context=[activeTrip.id,candidateMode?'candidate':foodMode?'food':'day',dayIndex].join('|');if(context!==fitContext){fitContext=context;userMoved=false}
  if(provider==='google'){objects.forEach(x=>x.setMap(null));objects=[]}
  else{layer?.remove();layer=L.layerGroup().addTo(map)}
- const draw=()=>viagoDrawLocated('preview',map,provider,points,color,{connect:!candidateMode,labels:false,holder:provider==='google'?objects:layer,compact:true,zoomMax:ZOOM_MAX});
- if(!applyFrame(map,provider,points))setTimeout(()=>{if(run===generation){applyFrame(map,provider,points);draw()}},220);
- else draw();
- if(provider==='google'){google.maps.event.clearListeners(map,'idle');google.maps.event.addListener(map,'idle',()=>followView(map,provider,points))}
- else{map.off('moveend');map.on('moveend',()=>followView(map,provider,points))}
- container.setAttribute('aria-label',providerLabel(value)+' · '+points.length+'곳 표시 · 손가락으로 이동하고 확대할 수 있어요');button.title=providerLabel(value);button.textContent=candidateMode?'후보 전체 지도':'전체 동선';
+ const draw=()=>viagoDrawLocated('preview',map,provider,points,color,{connect:!candidateMode,labels:false,holder:provider==='google'?objects:layer,compact:true,zoomMax:ZOOM_MAX,pad:userMoved?null:{top:8,left:8,right:pads(size().w,size().h).right,bottom:PAD_BOTTOM}});
+ if(!userMoved){
+  if(!applyFrame(map,provider,points,missing))setTimeout(()=>{if(run===generation&&!userMoved){applyFrame(map,provider,points,missing);draw()}},220);
+  else draw();
+ }else draw();
+ if(provider==='google'){google.maps.event.clearListeners(map,'idle');google.maps.event.addListener(map,'idle',()=>followView(map,provider,points,missing))}
+ else{map.off('moveend');map.on('moveend',()=>followView(map,provider,points,missing))}
+ const label=providerLabel(value)+' · '+points.length+'곳 표시 · 손가락으로 이동하고 확대할 수 있어요'+(missing.length?' · 위치 확인 필요 '+missing.length+'곳':'');container.setAttribute('aria-label',label);button.title=providerLabel(value);button.textContent=candidateMode?'후보 전체 지도':'전체 동선';
  }
+ // 사용자가 지도를 만진 뒤에는 백그라운드 동기화·재렌더가 지도 위치를 되돌리지 않는다.
+ const markMoved=()=>{userMoved=true};
+ container.addEventListener('pointerdown',markMoved,{passive:true});
+ container.addEventListener('touchstart',markMoved,{passive:true});
+ container.addEventListener('wheel',markMoved,{passive:true});
+ // 같은 일차 탭을 한 번 더 누르면 그날 전체가 보이도록 명시적으로 다시 맞춘다.
+ document.getElementById('dateTabs')?.addEventListener('click',event=>{const tab=event.target&&event.target.closest?event.target.closest('[data-i]'):null;if(!tab)return;const index=Number(tab.dataset.i);if(index===lastTabDay){userMoved=false;signature='';visibility()}lastTabDay=index});
  button.onclick=()=>setView('map');new MutationObserver(visibility).observe(document.getElementById('timeline'),{childList:true});visibility();
 })();
+
 
 // GitHub Pages has no server-side exchange route. Keep the existing UI and cache.
 (()=>{

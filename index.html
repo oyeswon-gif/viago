@@ -758,7 +758,38 @@ function viagoDrawLocated(key,map,provider,located,color,options){
   const holder=opts.holder||(provider==='google'?[]:L.layerGroup().addTo(map));
   const state={map,provider,holder,opts,color,timer:0,listener:null,zoomHandler:null};
   viagoMarkerLayers.set(key,state);
-  const radius=opts.compact?13:16,gap=opts.compact?12:10,maxShift=opts.compact?110:150;
+  const radius=opts.compact?13:16,gap=opts.compact?14:10,maxShift=150;
+  // 표시 위치가 지도 가장자리·버튼 영역으로 밀려 들어가지 않도록 (실제 위치가 화면 안에 있는 마커만)
+  const keepInView=rows=>{
+    if(!opts.pad||!rows.length)return rows;
+    let node=null;try{node=map.getDiv?map.getDiv():map.getContainer()}catch(e){node=null}
+    if(!node||node.clientWidth<40||node.clientHeight<40)return rows;
+    let c=null;try{c=map.getCenter()}catch(e){return rows}
+    if(!c)return rows;
+    const z=viagoCurrentZoom(map),w=node.clientWidth,h=node.clientHeight,
+      lat=typeof c.lat==='function'?c.lat():c.lat,lng=typeof c.lng==='function'?c.lng():c.lng,
+      origin=viagoWorldPx([lat,lng],z),ox=origin[0]-w/2,oy=origin[1]-h/2,
+      x0=opts.pad.left+radius*0.6,x1=w-opts.pad.right-radius*0.6,y0=opts.pad.top+radius*0.6,y1=h-opts.pad.bottom-radius*0.6,
+      clamp=p=>[Math.max(x0,Math.min(x1,p[0])),Math.max(y0,Math.min(y1,p[1]))];
+    const rowsIn=rows.map(row=>{const t=[row.truth[0]-ox,row.truth[1]-oy],inside=t[0]>=x0-2&&t[0]<=x1+2&&t[1]>=y0-2&&t[1]<=y1+2;
+      return {row,inside,pos:inside?clamp([row.show[0]-ox,row.show[1]-oy]):[row.show[0]-ox,row.show[1]-oy]}});
+    // 가장자리로 밀린 뒤 다시 가까워진 마커는 서로 조금 띄운다(영역은 넘지 않게).
+    const pool=rowsIn.filter(x=>x.inside),minSep=2*radius+12;
+    for(let round=0;round<40;round++){
+      let hit=false;
+      for(let a=0;a<pool.length;a++)for(let b=a+1;b<pool.length;b++){
+        let dx=pool[b].pos[0]-pool[a].pos[0],dy=pool[b].pos[1]-pool[a].pos[1],d=Math.hypot(dx,dy);
+        if(d>=minSep)continue;
+        if(d<0.01){const ang=((a*137.508+b*71.3)%360)*Math.PI/180;dx=Math.cos(ang);dy=Math.sin(ang);d=1}
+        const push=(minSep-d)/2,ux=dx/d,uy=dy/d;
+        pool[a].pos=clamp([pool[a].pos[0]-ux*push,pool[a].pos[1]-uy*push]);
+        pool[b].pos=clamp([pool[b].pos[0]+ux*push,pool[b].pos[1]+uy*push]);
+        hit=true;
+      }
+      if(!hit)break;
+    }
+    return rowsIn.map(x=>x.inside?{...x.row,show:[x.pos[0]+ox,x.pos[1]+oy]}:x.row);
+  };
   const add=provider==='google'?(o=>holder.push(o)):(o=>holder.addLayer(o));
   const reset=()=>{
     if(provider==='google'){holder.forEach(o=>{try{o.setMap(null)}catch(e){}});holder.length=0}
@@ -771,7 +802,7 @@ function viagoDrawLocated(key,map,provider,located,color,options){
       if(provider==='google')add(new google.maps.Polyline({map,path:points.map(x=>({lat:x.c[0],lng:x.c[1]})),strokeColor:color,strokeOpacity:.78,strokeWeight:4,zIndex:1}));
       else add(L.polyline(points.map(x=>x.c),{color,weight:4,opacity:.76,dashArray:'8 7'}));
     }
-    const layout=viagoDisplace(points,zoom,radius,gap,maxShift);
+    const layout=keepInView(viagoDisplace(points,zoom,radius,gap,maxShift));
     const rows=layout.map(row=>{
       const show=viagoLatLngAt(row.show[0],row.show[1],zoom),truth=viagoLatLngAt(row.truth[0],row.truth[1],zoom);
       const dx=row.show[0]-row.truth[0],dy=row.show[1]-row.truth[1],dist=Math.hypot(dx,dy);
@@ -809,17 +840,20 @@ function viagoFrameMap(map,provider,located,options){
     return;
   }
   const unique=new Set(located.map(x=>x.c[0].toFixed(6)+','+x.c[1].toFixed(6))).size;
+  // 숫자 하나면 사방 같은 여백, 객체({top,right,bottom,left})면 지도 아래 상태바·우측 버튼을 피한 여백.
+  const pad=opts.padding;
   if(provider==='google'){
     if(!located.length){map.setCenter({lat:35.1709,lng:136.9065});map.setZoom(13)}
     else if(unique===1){map.setCenter({lat:located[0].c[0],lng:located[0].c[1]});map.setZoom(Math.max(opts.single,16))}
-    else{const bounds=new google.maps.LatLngBounds();located.forEach(x=>bounds.extend({lat:x.c[0],lng:x.c[1]}));map.fitBounds(bounds,opts.padding)}
+    else{const bounds=new google.maps.LatLngBounds();located.forEach(x=>bounds.extend({lat:x.c[0],lng:x.c[1]}));map.fitBounds(bounds,pad)}
     google.maps.event.trigger(map,'resize');
     return;
   }
   map.invalidateSize();
   if(!located.length)map.setView([35.1709,136.9065],13);
   else if(unique===1)map.setView(located[0].c,Math.max(opts.single,16));
-  else map.fitBounds(located.map(x=>x.c),{padding:[opts.padding,opts.padding],maxZoom:opts.maxZoom});
+  else if(typeof pad==='number')map.fitBounds(located.map(x=>x.c),{padding:[pad,pad],maxZoom:opts.maxZoom});
+  else map.fitBounds(located.map(x=>x.c),{paddingTopLeft:[pad.left,pad.top],paddingBottomRight:[pad.right,pad.bottom],maxZoom:opts.maxZoom});
 }
 function viagoOpenMarkerSheet(group,color){
   const sheet=document.getElementById('markerSheet'),list=document.getElementById('markerSheetList');
@@ -846,9 +880,11 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       const holder=provider==='google'?[]:L.layerGroup().addTo(map);
       if(which==='main')mapLayer=holder;else quickMapLayer=holder;
       const points=(located||[]).filter(x=>x&&x.c);
-      viagoFrameMap(map,provider,points,{single:15,padding:which==='quick'?42:48,maxZoom:which==='quick'?16:15});
-      viagoDrawLocated(which,map,provider,points,color,{connect,labels,holder,compact:which==='quick'});
-      setTimeout(()=>{if(viagoMarkerLayers.has(which))viagoFrameMap(map,provider,points,{single:15,padding:which==='quick'?42:48,maxZoom:which==='quick'?16:15})},70);
+      // 상세 지도는 아래 상태바를 피해 여백을 넉넉히 둔다.
+      const frame={single:15,padding:which==='quick'?42:{top:44,right:44,bottom:76,left:44},maxZoom:which==='quick'?16:15},pad=which==='quick'?null:{top:8,left:8,right:8,bottom:72};
+      viagoFrameMap(map,provider,points,frame);
+      viagoDrawLocated(which,map,provider,points,color,{connect,labels,holder,compact:which==='quick',pad});
+      setTimeout(()=>{if(viagoMarkerLayers.has(which))viagoFrameMap(map,provider,points,frame)},70);
     }
     async function locatePlace(p){let c=coordsFor(p);if(c)return c;c=await findCoords(p.name);if(c){p.lat=c[0];p.lng=c[1]}return c}
     let placePreviewRequest=0;
@@ -959,7 +995,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     $('#exchangeRefresh').onclick=()=>loadExchange(true);
     let pageSwipe=null,tabTransitioning=false;
     function resetSwipePanel(panel,spring=false){if(!panel)return;panel.classList.remove('tab-dragging');panel.style.transition=spring?'transform .24s cubic-bezier(.22,1,.36,1)':'';panel.style.transform='';panel.style.opacity='';if(spring)setTimeout(()=>{panel.style.transition=''},260)}
-    $('#workspace').addEventListener('touchstart',e=>{const t=e.touches[0],blocked=e.target.closest('button,input,select,a,dialog,.map-frame,.quick-amounts,.place,.swipe-row');if(tabTransitioning||innerWidth>850||e.touches.length!==1||blocked){pageSwipe=null;return}const panel=panelForView(currentView);pageSwipe={x:t.clientX,y:t.clientY,view:currentView,panel,horizontal:false,cancelled:false,lastX:t.clientX,lastAt:performance.now(),velocity:0}},{passive:true});
+    $('#workspace').addEventListener('touchstart',e=>{const t=e.touches[0],blocked=e.target.closest('button,input,select,a,dialog,.map-frame,.journey-day-preview,.quick-amounts,.place,.swipe-row');if(tabTransitioning||innerWidth>850||e.touches.length!==1||blocked){pageSwipe=null;return}const panel=panelForView(currentView);pageSwipe={x:t.clientX,y:t.clientY,view:currentView,panel,horizontal:false,cancelled:false,lastX:t.clientX,lastAt:performance.now(),velocity:0}},{passive:true});
     $('#workspace').addEventListener('touchmove',e=>{if(!pageSwipe||!e.touches[0])return;const t=e.touches[0],dx=t.clientX-pageSwipe.x,dy=t.clientY-pageSwipe.y;if(!pageSwipe.horizontal){if(Math.abs(dy)>10&&Math.abs(dy)>Math.abs(dx)){pageSwipe.cancelled=true;return}if(Math.abs(dx)<8)return;pageSwipe.horizontal=Math.abs(dx)>Math.abs(dy);if(!pageSwipe.horizontal)return}e.preventDefault();const now=performance.now(),elapsed=Math.max(1,now-pageSwipe.lastAt);pageSwipe.velocity=(t.clientX-pageSwipe.lastX)/elapsed;pageSwipe.lastX=t.clientX;pageSwipe.lastAt=now;const index=tabViews.indexOf(pageSwipe.view),next=index+(dx<0?1:-1),available=next>=0&&next<tabViews.length,limit=available?64:24,drag=Math.max(-limit,Math.min(limit,dx*(available ? .34 : .14))),panel=pageSwipe.panel;panel.classList.add('tab-dragging');panel.style.transform=`translate3d(${drag}px,0,0)`},{passive:false});
     $('#workspace').addEventListener('touchend',e=>{if(!pageSwipe||!e.changedTouches[0])return;const swipe=pageSwipe,t=e.changedTouches[0],dx=t.clientX-swipe.x,dy=t.clientY-swipe.y;pageSwipe=null;if(swipe.cancelled||!swipe.horizontal||currentView!==swipe.view){resetSwipePanel(swipe.panel,true);return}const index=tabViews.indexOf(currentView),direction=dx<0?1:-1,next=index+direction,available=next>=0&&next<tabViews.length,committed=available&&(Math.abs(dx)>Math.min(82,innerWidth*.19)||(Math.abs(dx)>30&&Math.abs(swipe.velocity)>.48));if(!committed){resetSwipePanel(swipe.panel,true);return}tabTransitioning=true;resetSwipePanel(swipe.panel);setView(tabViews[next],direction);setTimeout(()=>{tabTransitioning=false},340)},{passive:true});
     $('#workspace').addEventListener('touchcancel',()=>{if(pageSwipe)resetSwipePanel(pageSwipe.panel,true);pageSwipe=null},{passive:true});
