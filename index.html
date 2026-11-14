@@ -66,7 +66,7 @@
     .suggestion-section{padding:9px 10px 3px;color:#8b95a1;font-size:11px;font-weight:800;letter-spacing:.02em}
     .suggestion-credit{padding:7px 10px 9px;text-align:right;color:#8b95a1;font-size:11px;font-weight:700}
 
-    .number-marker.cluster{font-size:13px;font-weight:850;border-width:4px;box-shadow:0 7px 18px rgba(20,32,48,.38)}
+    .number-marker.cluster{background:#fff;color:var(--marker,#3187ff);border:4px solid var(--marker,#3187ff);font-size:13px;font-weight:850;box-shadow:0 7px 18px rgba(20,32,48,.28)}
     .marker-sheet{position:fixed;inset:0;z-index:15;display:flex;align-items:flex-end;justify-content:center;background:rgba(15,23,34,.34)}
     .marker-sheet[hidden]{display:none}
     .marker-sheet-card{width:100%;max-width:560px;max-height:66vh;display:flex;flex-direction:column;padding:16px 16px calc(16px + env(safe-area-inset-bottom));background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -14px 40px rgba(15,23,34,.24)}
@@ -700,8 +700,8 @@ function viagoClusterMarker(map,provider,group,color,onClick){
   const count=group.members.length,title=`같은 위치 ${count}곳 · 눌러서 펼치기`;
   if(provider==='google'){
     const marker=new google.maps.Marker({map,position:{lat:group.center[0],lng:group.center[1]},title,zIndex:50,
-      label:{text:String(count),color:'#fff',fontWeight:'850',fontSize:'13px'},
-      icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:color,fillOpacity:1,strokeColor:'#fff',strokeWeight:4,scale:20}});
+      label:{text:String(count),color:color,fontWeight:'850',fontSize:'13px'},
+      icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:'#ffffff',fillOpacity:1,strokeColor:color,strokeWeight:5,scale:19}});
     marker.addListener('click',onClick);
     return marker;
   }
@@ -799,7 +799,13 @@ function viagoDrawLocated(key,map,provider,located,color,options){
   else{state.zoomHandler=onZoom;map.on('zoomend',onZoom)}
 }
 function viagoFrameMap(map,provider,located,options){
-  const opts=Object.assign({single:15,padding:48,maxZoom:15},options||{});
+  const opts=Object.assign({single:15,padding:48,maxZoom:15,attempt:0},options||{});
+  let node=null;
+  try{node=provider==='google'?(map.getDiv&&map.getDiv()):(map.getContainer&&map.getContainer())}catch(e){node=null}
+  if(node&&(node.clientWidth<40||node.clientHeight<40)){
+    if(opts.attempt<4)setTimeout(()=>viagoFrameMap(map,provider,located,Object.assign({},opts,{attempt:opts.attempt+1})),180);
+    return;
+  }
   const unique=new Set(located.map(x=>x.c[0].toFixed(6)+','+x.c[1].toFixed(6))).size;
   if(provider==='google'){
     if(!located.length){map.setCenter({lat:35.1709,lng:136.9065});map.setZoom(13)}
