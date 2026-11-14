@@ -422,7 +422,7 @@
     // ── Google Places (New) 장소 자동완성 ──────────────────────────────
     // GitHub Pages 같은 정적 호스팅에는 서버가 없으므로, 브라우저에서 Places API(New)를
     // 직접 호출한다. 세션 토큰·필드 마스크·디바운스로 호출량을 최소화한다.
-    const MAPS_CONFIG={enabled:true,key:'AIzaSyAIPqNGcXxivxF_KPQ5qSJz5Fa4P0COB2A'};
+    const MAPS_CONFIG={enabled:true,key:'AIzaSyCw9v6SvqcHkc3WCpKSocZwMS-wRxBGFJc'};
     const PLACES_ENDPOINT='https://places.googleapis.com/v1';
     let placesLastIssue='';
     function placesSessionId(){try{return crypto.randomUUID()}catch(e){return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return (c==='x'?r:(r&0x3|0x8)).toString(16)})}}
