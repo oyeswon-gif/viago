@@ -65,7 +65,22 @@
 .viago-map-marker{background:transparent!important;border:0!important}
     .suggestion-section{padding:9px 10px 3px;color:#8b95a1;font-size:11px;font-weight:800;letter-spacing:.02em}
     .suggestion-credit{padding:7px 10px 9px;text-align:right;color:#8b95a1;font-size:11px;font-weight:700}
-</style>
+
+    .number-marker.cluster{font-size:13px;font-weight:850;border-width:4px;box-shadow:0 7px 18px rgba(20,32,48,.38)}
+    .marker-sheet{position:fixed;inset:0;z-index:15;display:flex;align-items:flex-end;justify-content:center;background:rgba(15,23,34,.34)}
+    .marker-sheet[hidden]{display:none}
+    .marker-sheet-card{width:100%;max-width:560px;max-height:66vh;display:flex;flex-direction:column;padding:16px 16px calc(16px + env(safe-area-inset-bottom));background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -14px 40px rgba(15,23,34,.24)}
+    .marker-sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:2px 4px 10px}
+    .marker-sheet-head strong{display:block;font-size:17px;letter-spacing:-.4px;color:var(--ink)}
+    .marker-sheet-head span{display:block;margin-top:5px;color:var(--sub);font-size:12.5px;line-height:1.45}
+    .marker-sheet-close{flex:0 0 auto;width:34px;height:34px;border-radius:12px;background:#f2f4f6;color:#4e5968;font-size:20px;font-weight:700;line-height:1}
+    .marker-sheet-list{list-style:none;margin:0;padding:0 2px 4px;overflow:auto;-webkit-overflow-scrolling:touch}
+    .marker-sheet-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:11px;padding:11px 2px;border-top:1px solid #eef1f4}
+    .marker-sheet-badge{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--marker,#3187ff);color:#fff;font-size:13px;font-weight:850}
+    .marker-sheet-copy strong{display:block;font-size:14.5px;font-weight:780;letter-spacing:-.2px;color:var(--ink)}
+    .marker-sheet-copy span{display:block;margin-top:3px;color:var(--sub);font-size:12px;line-height:1.45}
+    .marker-sheet-row a{flex:0 0 auto;padding:8px 12px;border-radius:11px;background:#e8f3ff;color:#1b64da;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap}
+  </style>
   <link rel="stylesheet" href="./journey-design.css" />
 </head>
 <body class="booting">
@@ -142,6 +157,15 @@
   <dialog id="tripDialog"><div class="dialog-inner"><h3>내 여행 보관함</h3><p>여행을 선택하거나 새 여행을 만들어 일정을 관리할 수 있어요.</p><div class="trip-list" id="tripList"></div><div class="section-divider"></div><form method="dialog" id="newTripForm"><span class="setting-label">새 여행 만들기</span><div class="destination-chips"><button type="button" class="destination-chip" data-destination="나고야">나고야</button><button type="button" class="destination-chip" data-destination="발리">발리</button><button type="button" class="destination-chip" data-destination="도쿄">도쿄</button><button type="button" class="destination-chip" data-destination="오사카">오사카</button></div><label class="field"><span>여행지</span><input id="destinationInput" required placeholder="도시나 지역을 입력해주세요" /></label><div class="field-row trip-date-row"><label class="field"><span>출발일</span><input id="tripStartInput" type="date" required /></label><label class="field"><span>도착일</span><input id="tripEndInput" type="date" required /></label></div><div class="dialog-actions"><button type="button" class="cancel" value="cancel">닫기</button><button class="confirm" value="default">여행 만들기</button></div></form></div></dialog>
   <div class="toast" id="toast" role="status"><span id="toastText"></span><button class="toast-action hidden" id="toastAction">되돌리기</button></div>
 
+  <div id="markerSheet" class="marker-sheet" hidden>
+    <div class="marker-sheet-card" role="dialog" aria-modal="false" aria-labelledby="markerSheetTitle">
+      <div class="marker-sheet-head">
+        <div><strong id="markerSheetTitle">같은 위치의 장소</strong><span id="markerSheetSub">목록에서 장소를 확인해주세요</span></div>
+        <button type="button" class="marker-sheet-close" id="markerSheetClose" aria-label="닫기">×</button>
+      </div>
+      <ul class="marker-sheet-list" id="markerSheetList"></ul>
+    </div>
+  </div>
   <script src="./journey-sync.js"></script>
   <script>
     const initialDays=[
@@ -407,7 +431,7 @@
     function coordsFor(p){if(!p)return null;return Number.isFinite(p.lat)&&Number.isFinite(p.lng)?[p.lat,p.lng]:KNOWN_COORDS[p.name]||null}
     function loadStyleOnce(href){if(document.querySelector(`link[href="${href}"]`))return;const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link)}
     function loadScriptOnce(src,ready){if(ready())return Promise.resolve(true);return new Promise(resolve=>{const existing=document.querySelector(`script[src="${src}"]`);if(existing){existing.addEventListener('load',()=>resolve(ready()),{once:true});existing.addEventListener('error',()=>resolve(false),{once:true});return}const script=document.createElement('script');script.src=src;script.async=true;script.onload=()=>resolve(ready());script.onerror=()=>resolve(false);document.head.appendChild(script)})}
-    function loadLeaflet(){if(window.L)return Promise.resolve(true);if(leafletReady)return leafletReady;loadStyleOnce('/vendor/leaflet/leaflet.css');leafletReady=loadScriptOnce('/vendor/leaflet/leaflet.js',()=>!!window.L);return leafletReady}
+    function loadLeaflet(){if(window.L)return Promise.resolve(true);if(leafletReady)return leafletReady;loadStyleOnce('./vendor/leaflet/leaflet.css');leafletReady=loadScriptOnce('./vendor/leaflet/leaflet.js',()=>!!window.L);return leafletReady}
     function loadSortable(){if(window.Sortable)return Promise.resolve(true);if(sortableReady)return sortableReady;sortableReady=loadScriptOnce('https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js',()=>!!window.Sortable);return sortableReady}
     let mapLoadIssue='',googleMapCreations=new Map(),travelMapCreations=new Map();
     function mapFailureMessage(){return {daily_limit:'오늘의 무료 지도 사용 한도에 도달했어요. 외부 Google 지도는 열 수 있어요.',monthly_limit:'이번 달 무료 지도 사용 한도에 도달했어요. 외부 Google 지도는 열 수 있어요.',invite_required:'초대 링크로 다시 접속해주세요.',key_missing:'Google 지도 키가 설정되지 않았어요.',budget_unavailable:'사용량 확인에 실패해 지도 호출을 차단했어요.',google_auth:'Google 지도 키의 인증 또는 도메인 설정을 확인해주세요.'}[mapLoadIssue]||'Google 지도 연결에 실패했어요. 인터넷 연결을 확인해주세요.'}
@@ -620,7 +644,187 @@
     async function ensureQuickMap(){const value=await createTravelMap('quickLeafletMap',{center:{lat:35.1709,lng:136.9065},zoom:13,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});quickMapInstance=value.map;$('#quickMap').dataset.provider=value.provider;$('#quickMapProvider').textContent=providerLabel(value);return value}
     function markerIcon(label,color){return L.divIcon({className:'viago-map-marker',html:`<div class="number-marker" style="--marker:${color}">${label}</div>`,iconSize:[32,32],iconAnchor:[16,16]})}
     function clearMapLayer(which,provider){const current=which==='main'?mapLayer:quickMapLayer;if(!current)return;if(Array.isArray(current))current.forEach(x=>x.setMap?.(null));else current.remove();if(which==='main')mapLayer=null;else quickMapLayer=null}
-    async function drawLocated(target,which,located,color,{connect=true,labels=false}={}){const {map,provider}=await target;clearMapLayer(which,provider);if(provider==='google'){const objects=[],bounds=new google.maps.LatLngBounds(),path=located.map(x=>({lat:x.c[0],lng:x.c[1]}));located.forEach(({p,i,c,label})=>{const shown=String(label??i+1),position={lat:c[0],lng:c[1]},marker=new google.maps.Marker({map,position,title:p.name,label:{text:shown,color:'#fff',fontWeight:'800',fontSize:'13px'},icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:color,fillOpacity:1,strokeColor:'#fff',strokeWeight:3,scale:16}}),info=new google.maps.InfoWindow({content:`<div class="marker-popup"><strong>${shown}. ${esc(p.name)}</strong><span>${esc(p.note||p.kind||'장소')}</span><a href="${esc(gmapsPlace(p))}" target="_blank" rel="noopener">Google 지도에서 열기</a></div>`});marker.addListener('click',()=>info.open({map,anchor:marker}));objects.push(marker);bounds.extend(position)});if(connect&&path.length>1){const line=new google.maps.Polyline({map,path,strokeColor:color,strokeOpacity:.78,strokeWeight:4});objects.push(line)}if(which==='main')mapLayer=objects;else quickMapLayer=objects;setTimeout(()=>{if(path.length===1){map.setCenter(path[0]);map.setZoom(15)}else if(path.length)map.fitBounds(bounds,48);else{map.setCenter({lat:35.1709,lng:136.9065});map.setZoom(13)}google.maps.event.trigger(map,'resize')},70);return}const layer=L.layerGroup().addTo(map);if(which==='main')mapLayer=layer;else quickMapLayer=layer;const points=[];located.forEach(({p,i,c,label})=>{points.push(c);const shown=label??i+1,marker=L.marker(c,{icon:markerIcon(shown,color)}).bindPopup(`<div class="marker-popup"><strong>${shown}. ${esc(p.name)}</strong><span>${esc(p.note||p.kind||'장소')}</span></div>`).addTo(layer);if(labels)marker.bindTooltip(esc(p.name),{permanent:true,direction:'top',offset:[0,-16],className:'route-label'})});if(connect&&points.length>1)L.polyline(points,{color,weight:4,opacity:.76,dashArray:'8 7'}).addTo(layer);setTimeout(()=>{map.invalidateSize();if(points.length===1)map.setView(points[0],15);else if(points.length)map.fitBounds(points,{padding:[42,42],maxZoom:15});else map.setView([35.1709,136.9065],13)},70)}
+    /* ===== 마커 겹침 해결 (2026-11-14): 가까운 마커 묶기 · 같은 좌표 펼치기 ===== */
+const VIAGO_CLUSTER_PX=46,VIAGO_CLUSTER_PX_SMALL=30,VIAGO_MARKER_ZOOM_MAX=19;
+const viagoMarkerLayers=new Map();
+function viagoMetersPerPixel(lat,zoom){return 156543.03392*Math.cos(lat*Math.PI/180)/Math.pow(2,zoom)}
+function viagoCurrentZoom(map){const z=map.getZoom();return Number.isFinite(z)?z:13}
+function viagoGroupLocated(located,zoom,px){
+  const n=located.length,parent=located.map((_,k)=>k);
+  const find=x=>{while(parent[x]!==x){parent[x]=parent[parent[x]];x=parent[x]}return x};
+  if(n>1){
+    const lat0=located.reduce((s,x)=>s+x.c[0],0)/n,cos=Math.cos(lat0*Math.PI/180),limit=px*viagoMetersPerPixel(lat0,zoom);
+    for(let a=0;a<n;a++){for(let b=a+1;b<n;b++){
+      const dy=(located[a].c[0]-located[b].c[0])*111320,dx=(located[a].c[1]-located[b].c[1])*111320*cos;
+      if(Math.sqrt(dx*dx+dy*dy)<=limit){const ra=find(a),rb=find(b);if(ra!==rb)parent[rb]=ra}
+    }}
+  }
+  const groups=new Map();
+  located.forEach((x,k)=>{const r=find(k);if(!groups.has(r))groups.set(r,[]);groups.get(r).push(x)});
+  return [...groups.entries()].map(([key,members])=>({key:'g'+key,members,
+    center:[members.reduce((s,x)=>s+x.c[0],0)/members.length,members.reduce((s,x)=>s+x.c[1],0)/members.length],
+    same:new Set(members.map(x=>x.c[0].toFixed(7)+','+x.c[1].toFixed(7))).size===1}));
+}
+function viagoSpiderPositions(center,count,zoom){
+  const mpp=viagoMetersPerPixel(center[0],zoom),cos=Math.cos(center[0]*Math.PI/180);
+  const radius=Math.max(28,16/Math.sin(Math.PI/Math.max(count,2))+10);
+  return Array.from({length:count},(_,k)=>{
+    const angle=-Math.PI/2+k*2*Math.PI/count;
+    return [center[0]+(radius*mpp*Math.cos(angle))/111320,center[1]+(radius*mpp*Math.sin(angle))/(111320*cos)];
+  });
+}
+function viagoShownOf(item){return String(item.label??(Number.isFinite(item.i)?item.i+1:'·'))}
+function viagoPlaceMeta(p){
+  const kind=(p&&p.kind)||'장소',note=(p&&p.note)||'';
+  return [kind,(p&&p.time)||'',note&&note!==kind?note:''].filter(Boolean).map(esc).join(' · ');
+}
+function viagoMarkerInfo(item,shown){
+  const p=item.p||{};
+  return `<div class="marker-popup"><strong>${shown}. ${esc(p.name||'')}</strong><span>${viagoPlaceMeta(p)}</span><a href="${esc(gmapsPlace(p))}" target="_blank" rel="noopener">Google 지도에서 열기</a></div>`;
+}
+function viagoSingleMarker(map,provider,item,color,labels){
+  const shown=viagoShownOf(item),name=(item.p&&item.p.name)||'';
+  if(provider==='google'){
+    const marker=new google.maps.Marker({map,position:{lat:item.c[0],lng:item.c[1]},title:name,
+      label:{text:shown,color:'#fff',fontWeight:'800',fontSize:'13px'},
+      icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:color,fillOpacity:1,strokeColor:'#fff',strokeWeight:3,scale:16}});
+    const info=new google.maps.InfoWindow({content:viagoMarkerInfo(item,shown)});
+    marker.addListener('click',()=>info.open({map,anchor:marker}));
+    return marker;
+  }
+  const marker=L.marker(item.c,{icon:markerIcon(shown,color),title:name}).bindPopup(viagoMarkerInfo(item,shown));
+  if(labels)marker.bindTooltip(esc(name),{permanent:true,direction:'top',offset:[0,-16],className:'route-label'});
+  return marker;
+}
+function viagoClusterMarker(map,provider,group,color,onClick){
+  const count=group.members.length,title=`같은 위치 ${count}곳 · 눌러서 펼치기`;
+  if(provider==='google'){
+    const marker=new google.maps.Marker({map,position:{lat:group.center[0],lng:group.center[1]},title,zIndex:50,
+      label:{text:String(count),color:'#fff',fontWeight:'850',fontSize:'13px'},
+      icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:color,fillOpacity:1,strokeColor:'#fff',strokeWeight:4,scale:20}});
+    marker.addListener('click',onClick);
+    return marker;
+  }
+  const size=count>9?40:36;
+  const icon=L.divIcon({className:'viago-map-marker',html:`<div class="number-marker cluster" style="--marker:${color};width:${size}px;height:${size}px">${count}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});
+  return L.marker(group.center,{icon,title,zIndexOffset:500}).on('click',onClick);
+}
+function viagoSpiderMarkers(map,provider,group,color,zoom,add){
+  const positions=viagoSpiderPositions(group.center,group.members.length,zoom);
+  group.members.forEach((item,k)=>{
+    const point=positions[k],shown=viagoShownOf(item),name=(item.p&&item.p.name)||'';
+    if(provider==='google'){
+      add(new google.maps.Polyline({map,path:[{lat:group.center[0],lng:group.center[1]},{lat:point[0],lng:point[1]}],strokeColor:'#9aa4b2',strokeOpacity:.9,strokeWeight:1.5,zIndex:1}));
+      const marker=new google.maps.Marker({map,position:{lat:point[0],lng:point[1]},title:name,zIndex:60,
+        label:{text:shown,color:'#fff',fontWeight:'800',fontSize:'13px'},
+        icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:color,fillOpacity:1,strokeColor:'#fff',strokeWeight:3,scale:16}});
+      const info=new google.maps.InfoWindow({content:viagoMarkerInfo(item,shown)});
+      marker.addListener('click',()=>info.open({map,anchor:marker}));
+      add(marker);
+    }else{
+      add(L.polyline([group.center,point],{color:'#9aa4b2',weight:1.5,opacity:.9}));
+      add(L.marker(point,{icon:markerIcon(shown,color),title:name,zIndexOffset:600}).bindPopup(viagoMarkerInfo(item,shown)));
+    }
+  });
+}
+function viagoOpenMarkerSheet(group,color){
+  const sheet=document.getElementById('markerSheet'),list=document.getElementById('markerSheetList');
+  if(!sheet||!list)return;
+  const title=document.getElementById('markerSheetTitle'),sub=document.getElementById('markerSheetSub');
+  if(title)title.textContent=`같은 위치에 ${group.members.length}곳`;
+  if(sub)sub.textContent='목록에서 장소를 확인하고 Google 지도로 바로 열 수 있어요';
+  list.innerHTML=group.members.map(item=>{
+    const p=item.p||{};
+    return `<li class="marker-sheet-row"><span class="marker-sheet-badge" style="--marker:${color}">${esc(viagoShownOf(item))}</span><div class="marker-sheet-copy"><strong>${esc(p.name||'')}</strong><span>${viagoPlaceMeta(p)}</span></div><a href="${esc(gmapsPlace(p))}" target="_blank" rel="noopener">지도</a></li>`;
+  }).join('');
+  sheet.hidden=false;
+}
+function viagoCloseMarkerSheet(){
+  const sheet=document.getElementById('markerSheet');
+  if(sheet)sheet.hidden=true;
+}
+function viagoDetachMarkers(key){
+  const state=viagoMarkerLayers.get(key);
+  if(!state)return;
+  clearTimeout(state.timer);
+  try{
+    if(state.provider==='google'){if(state.listener)google.maps.event.removeListener(state.listener)}
+    else if(state.zoomHandler)state.map.off('zoomend',state.zoomHandler);
+  }catch(e){}
+  viagoMarkerLayers.delete(key);
+}
+function viagoDrawLocated(key,map,provider,located,color,options){
+  const opts=Object.assign({connect:true,labels:false,holder:null,compact:false,zoomMax:VIAGO_MARKER_ZOOM_MAX},options||{});
+  viagoDetachMarkers(key);
+  const holder=opts.holder||(provider==='google'?[]:L.layerGroup().addTo(map));
+  const state={map,provider,holder,opts,color,spider:null,timer:0,listener:null,zoomHandler:null};
+  viagoMarkerLayers.set(key,state);
+  const px=opts.compact?VIAGO_CLUSTER_PX_SMALL:VIAGO_CLUSTER_PX;
+  const add=provider==='google'?(o=>holder.push(o)):(o=>holder.addLayer(o));
+  const reset=()=>{
+    if(provider==='google'){holder.forEach(o=>{try{o.setMap(null)}catch(e){}});holder.length=0}
+    else holder.clearLayers();
+  };
+  const render=spiderKey=>{
+    reset();
+    const zoom=viagoCurrentZoom(map);
+    if(opts.connect&&located.length>1){
+      if(provider==='google')add(new google.maps.Polyline({map,path:located.map(x=>({lat:x.c[0],lng:x.c[1]})),strokeColor:color,strokeOpacity:.78,strokeWeight:4}));
+      else add(L.polyline(located.map(x=>x.c),{color,weight:4,opacity:.76,dashArray:'8 7'}));
+    }
+    viagoGroupLocated(located,zoom,px).forEach(group=>{
+      if(group.members.length===1){add(viagoSingleMarker(map,provider,group.members[0],color,opts.labels));return}
+      if(spiderKey===group.key){viagoSpiderMarkers(map,provider,group,color,zoom,add);return}
+      const canSplit=!group.same&&zoom<opts.zoomMax-0.4;
+      const onClick=()=>{
+        if(canSplit){
+          if(provider==='google'){map.setCenter({lat:group.center[0],lng:group.center[1]});map.setZoom(Math.min(opts.zoomMax,zoom+2))}
+          else map.setView(group.center,Math.min(opts.zoomMax,zoom+2));
+          return;
+        }
+        state.spider=group.key;
+        render(group.key);
+        viagoOpenMarkerSheet(group,color);
+      };
+      add(viagoClusterMarker(map,provider,group,color,onClick));
+    });
+  };
+  render(null);
+  const onZoom=()=>{
+    state.spider=null;
+    clearTimeout(state.timer);
+    state.timer=setTimeout(()=>{if(viagoMarkerLayers.get(key)===state)render(null)},120);
+  };
+  if(provider==='google')state.listener=google.maps.event.addListener(map,'zoom_changed',onZoom);
+  else{state.zoomHandler=onZoom;map.on('zoomend',onZoom)}
+}
+function viagoFrameMap(map,provider,located,options){
+  const opts=Object.assign({single:15,padding:48,maxZoom:15},options||{});
+  const unique=new Set(located.map(x=>x.c[0].toFixed(6)+','+x.c[1].toFixed(6))).size;
+  if(provider==='google'){
+    if(!located.length){map.setCenter({lat:35.1709,lng:136.9065});map.setZoom(13)}
+    else if(unique===1){map.setCenter({lat:located[0].c[0],lng:located[0].c[1]});map.setZoom(Math.max(opts.single,16))}
+    else{const bounds=new google.maps.LatLngBounds();located.forEach(x=>bounds.extend({lat:x.c[0],lng:x.c[1]}));map.fitBounds(bounds,opts.padding)}
+    google.maps.event.trigger(map,'resize');
+    return;
+  }
+  map.invalidateSize();
+  if(!located.length)map.setView([35.1709,136.9065],13);
+  else if(unique===1)map.setView(located[0].c,Math.max(opts.single,16));
+  else map.fitBounds(located.map(x=>x.c),{padding:[opts.padding,opts.padding],maxZoom:opts.maxZoom});
+}
+document.getElementById('markerSheetClose')?.addEventListener('click',viagoCloseMarkerSheet);
+document.getElementById('markerSheet')?.addEventListener('click',event=>{if(event.target&&event.target.id==='markerSheet')viagoCloseMarkerSheet()});
+
+    async function drawLocated(target,which,located,color,{connect=true,labels=false}={}){
+      const {map,provider}=await target;
+      clearMapLayer(which,provider);
+      const holder=provider==='google'?[]:L.layerGroup().addTo(map);
+      if(which==='main')mapLayer=holder;else quickMapLayer=holder;
+      const points=(located||[]).filter(x=>x&&x.c);
+      viagoDrawLocated(which,map,provider,points,color,{connect,labels,holder,compact:which==='quick'});
+      setTimeout(()=>{if(viagoMarkerLayers.has(which))viagoFrameMap(map,provider,points,{single:15,padding:which==='quick'?42:48,maxZoom:which==='quick'?16:15})},70);
+    }
     async function locatePlace(p){let c=coordsFor(p);if(c)return c;c=await findCoords(p.name);if(c){p.lat=c[0];p.lng=c[1]}return c}
     let placePreviewRequest=0;
     async function selectPlace(i,el,focus=true){
