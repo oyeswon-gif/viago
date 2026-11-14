@@ -3,7 +3,7 @@
 (()=>{
  const preview=document.getElementById('journeyDayPreview'),button=document.getElementById('journeyPreviewOpen'),container=document.getElementById('journeyDayMap'),note=document.getElementById('journeyPreviewNote');
  let value,objects=[],layer,generation=0,signature='',frame,noteFrame=0;
- const ZOOM_MAX=17,FIT_MAX=15,CORE_M=4000;
+ const ZOOM_MAX=17,FIT_MAX=16,CORE_M=4000,EDGE_PX=26,KEEP_SHARE=0.75;
  function visibility(){const entries=overviewEntries();preview.hidden=foodMode||!entries.length;if(preview.hidden||!sharedReady)return;const next=JSON.stringify([activeTrip.id,candidateMode,dayIndex,entries.map(x=>[x.p.id,x.p.name,x.c,x.label])]);if(next===signature)return;signature=next;cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>update().catch(()=>{signature='';container.textContent='지도를 연결하지 못했어요. Google 지도에서 길찾기는 계속 사용할 수 있어요.'}))}
  function project(point,zoom){const size=256*Math.pow(2,zoom),rad=point[0]*Math.PI/180;return [(point[1]+180)/360*size,(1-Math.log(Math.tan(rad)+1/Math.cos(rad))/Math.PI)/2*size]}
  function size(){return {w:container.clientWidth,h:container.clientHeight}}
@@ -12,7 +12,12 @@
  function denseCore(points,limit=CORE_M){if(points.length<3)return points;let best=null,bestScore=-1;points.forEach((seed,si)=>{const cos=Math.cos(seed.c[0]*Math.PI/180),members=points.filter((x,xi)=>{const dy=(x.c[0]-seed.c[0])*111320,dx=(x.c[1]-seed.c[1])*111320*cos;return Math.sqrt(dx*dx+dy*dy)<=limit});const score=members.length*100+members.reduce((s,x)=>s+points.indexOf(x),0)/points.length+(si/points.length)*0.5;if(score>bestScore){bestScore=score;best=members}});return best&&best.length>=2?best:points}
  function noteText(points,w,h,zoom,lat,lng){if(!points.length)return '';const center=project([lat,lng],zoom),outside=points.filter(x=>{const p=project(x.c,zoom);return Math.abs(p[0]-center[0])>w/2-8||Math.abs(p[1]-center[1])>h/2-8});if(!outside.length)return '';const names=outside.slice(0,2).map(x=>x.p.name).join(', ');return `화면 밖 ${outside.length}곳${names?' · '+names+(outside.length>2?' 외':''):''}`}
  function paintNote(text){if(!note)return;note.textContent=text||'';note.hidden=!text;note.title=text?text+' · 전체 동선에서 확인':''}
- function frameOf(points,w,h){const core=denseCore(points);let zoom=fitZoom(core,w,h,12);if(new Set(core.map(x=>x.c[0].toFixed(6)+','+x.c[1].toFixed(6))).size===1)zoom=Math.max(zoom,16);const lat=(Math.min(...core.map(x=>x.c[0]))+Math.max(...core.map(x=>x.c[0])))/2,lng=(Math.min(...core.map(x=>x.c[1]))+Math.max(...core.map(x=>x.c[1])))/2;return {zoom,lat,lng,w,h}}
+ // 화면 안에 남는 장소 비율(마커 반지름만큼 여유를 두고 센다)
+ function visibleShare(points,zoom,w,h){const px=points.map(x=>project(x.c,zoom));if(!px.length)return 1;const inside=px.filter(p=>p[0]>EDGE_PX-8&&p[0]<w-EDGE_PX+8&&p[1]>EDGE_PX-8&&p[1]<h-EDGE_PX+8).length;return inside/px.length}
+ function frameOf(points,w,h){const core=denseCore(points);let zoom=fitZoom(core,w,h,EDGE_PX);
+  // 묶음 없이 번호를 모두 보여주려면 조금 더 당기는 편이 읽기 쉽다. 장소 75% 이상이 화면에 남는 최대 단계까지 올린다.
+  for(let z=zoom+1;z<=FIT_MAX;z++){if(visibleShare(core,z,w,h)>=KEEP_SHARE)zoom=z;else break}
+  if(new Set(core.map(x=>x.c[0].toFixed(6)+','+x.c[1].toFixed(6))).size===1)zoom=Math.max(zoom,16);const lat=(Math.min(...core.map(x=>x.c[0]))+Math.max(...core.map(x=>x.c[0])))/2,lng=(Math.min(...core.map(x=>x.c[1]))+Math.max(...core.map(x=>x.c[1])))/2;return {zoom,lat,lng,w,h}}
  function applyFrame(map,provider,points){const {w,h}=size();if(w<40||h<40)return false;if(!points.length){if(provider==='google'){map.setCenter({lat:35.1709,lng:136.9065});map.setZoom(13);google.maps.event.trigger(map,'resize')}else map.setView([35.1709,136.9065],13);paintNote('');return true}
   const f=frameOf(points,w,h);if(provider==='google'){map.setCenter({lat:f.lat,lng:f.lng});map.setZoom(f.zoom);google.maps.event.trigger(map,'resize')}else map.setView([f.lat,f.lng],f.zoom);
   paintNote(noteText(points,w,h,f.zoom,f.lat,f.lng));return true}
@@ -23,8 +28,9 @@
  enableGestures(map,provider);
  if(provider==='google'){objects.forEach(x=>x.setMap(null));objects=[]}
  else{layer?.remove();layer=L.layerGroup().addTo(map)}
- viagoDrawLocated('preview',map,provider,points,color,{connect:!candidateMode,labels:false,holder:provider==='google'?objects:layer,compact:true,zoomMax:ZOOM_MAX});
- if(!applyFrame(map,provider,points))setTimeout(()=>{if(run===generation)applyFrame(map,provider,points)},220);
+ const draw=()=>viagoDrawLocated('preview',map,provider,points,color,{connect:!candidateMode,labels:false,holder:provider==='google'?objects:layer,compact:true,zoomMax:ZOOM_MAX});
+ if(!applyFrame(map,provider,points))setTimeout(()=>{if(run===generation){applyFrame(map,provider,points);draw()}},220);
+ else draw();
  if(provider==='google'){google.maps.event.clearListeners(map,'idle');google.maps.event.addListener(map,'idle',()=>followView(map,provider,points))}
  else{map.off('moveend');map.on('moveend',()=>followView(map,provider,points))}
  container.setAttribute('aria-label',providerLabel(value)+' · '+points.length+'곳 표시 · 손가락으로 이동하고 확대할 수 있어요');button.title=providerLabel(value);button.textContent=candidateMode?'후보 전체 지도':'전체 동선';
