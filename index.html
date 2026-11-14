@@ -167,6 +167,7 @@
     </div>
   </div>
   <script src="./journey-sync.js"></script>
+  <script src="./viago-sync-v3.js"></script>
   <script>
     const initialDays=[
       {date:'12.10',dow:'목',title:'12월 10일 목요일',summary:'나고야 도착 & 사카에 탐방',places:[
@@ -230,7 +231,10 @@
     let embedConfig=null,exchangeData=null,exchangeLoading=false,editingPlace=null,addPlaceSelection=null,editPlaceSelection=null,candidatePlaceSelection=null,mapSearchSelection=null,linkAnalysis=null,linkPlaceSelection=null;
     try{exchangeData=JSON.parse(localStorage.getItem(EXCHANGE_CACHE_KEY)||'null')}catch(e){exchangeData=null}
     const hoursCache=new Map();let lastHoursRefresh=0,hoursGeneration=0;
-    let sharedRevision=0,sharedReady=false,sharedSaving=false,sharedDirty=false,sharedTimer=null,applyingRemote=false,sharedChange=0,sharedBase=structuredClone({trips}),syncConflictState=null,accessOwner=false,accessDenied=false,sharedPolling=false,saveRetry=1000;
+    let sharedRevision=0,sharedReady=false,sharedSaving=false,sharedDirty=false,sharedTimer=null,applyingRemote=false,sharedChange=0,sharedBase=structuredClone({trips}),syncConflictState=null,accessOwner=false,accessDenied=false,sharedPolling=false,saveRetry=1000,sharedUpdateTime=null;
+    // 동시 편집 보호: 저장은 :commit + currentDocument.updateTime 사전 조건으로 보낸다.
+    const SHARED_ROOM_COLLECTION='weddingRingRooms',SHARED_ROOM_CODE='VIAGO-NAGOYA-2026';
+    const sharedSync=createViagoSync({config:{roomCollection:SHARED_ROOM_COLLECTION,roomCode:SHARED_ROOM_CODE},fetchImpl:apiFetch,mergeJourney:(b,l,r,p)=>mergeJourney(b,l,r,p)});
     const inviteInUrl=new URLSearchParams(location.hash.slice(1)).get('invite');if(inviteInUrl&&/^[a-f0-9]{64}$/.test(inviteInUrl)){localStorage.setItem('journey-note-invite',inviteInUrl)}
     const inviteToken=localStorage.getItem('journey-note-invite')||'',participantId=localStorage.getItem('journey-note-participant')||crypto.randomUUID();localStorage.setItem('journey-note-participant',participantId);
     // Keep the invitation in the URL when handing off to Safari or installing the PWA.
@@ -262,37 +266,48 @@
       if(!sharedReady||sharedSaving||!sharedDirty||syncConflictState)return;
       const snapshot=structuredClone({trips}),sentChange=sharedChange;sharedSaving=true;setSyncStatus('공유 저장 중','saving');
       try{
-        const newRev = (sharedRevision || 0) + 1;
-        const body = {
-          fields: {
-            revision: { integerValue: String(newRev) },
-            payload: { stringValue: JSON.stringify(snapshot) },
-            updatedAt: { timestampValue: new Date().toISOString() },
-            updatedBy: { stringValue: localStorage.getItem('journey-note-participant') || '재원' }
-          }
-        };
-        const res = await fetch('https://firestore.googleapis.com/v1/projects/wedding-ring-app-810cd/databases/(default)/documents/weddingRingRooms/VIAGO-NAGOYA-2026', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-        if (!res.ok) throw Error('save_failed');
-        sharedRevision = newRev;
-        sharedBase = snapshot;
-        sharedDirty = sharedChange !== sentChange;
-        if (sharedDirty) storePending();
-        else localStorage.removeItem('journey-note-pending');
-        saveRetry = 1000;
-        setSyncStatus(sharedDirty ? '추가 변경 저장 중' : '실시간 동기화 완료', sharedDirty ? 'saving' : 'online');
+        const out=await sharedSync.saveWithMerge({base:sharedBase,payload:snapshot,revision:sharedRevision+1,updatedBy:localStorage.getItem('journey-note-participant')||'재원',expectedUpdateTime:sharedUpdateTime});
+        if(out.status==='saved'||out.status==='merged'){
+          const applied=out.payload||snapshot;
+          sharedRevision=out.revision;sharedUpdateTime=out.updateTime;sharedBase=structuredClone(applied);
+          if(out.status==='merged'&&JSON.stringify(applied)!==JSON.stringify(snapshot))applySharedPayload(applied);
+          sharedDirty=sharedChange!==sentChange;saveRetry=1000;
+          if(sharedDirty)storePending();else localStorage.removeItem('journey-note-pending');
+          setSyncStatus(sharedDirty?'추가 변경 저장 중':'실시간 동기화 완료',sharedDirty?'saving':'online');
+        }else if(out.status==='conflict'){
+          openSyncConflict(out);
+        }else{
+          throw Error('save_failed');
+        }
       }catch(err){
-        saveRetry = Math.min(30000, saveRetry * 2);
-        setSyncStatus('저장 대기 · 휴대폰에 보관됨', 'offline');
+        saveRetry=Math.min(30000,saveRetry*2);
+        setSyncStatus('저장 대기 · 휴대폰에 보관됨','offline');
       }finally{
-        sharedSaving = false;
-        if(sharedDirty&&!syncConflictState) sharedTimer = setTimeout(pushSharedState, saveRetry);
+        sharedSaving=false;
+        if(sharedDirty&&!syncConflictState)sharedTimer=setTimeout(pushSharedState,saveRetry);
       }
     }
-    function resolveSyncConflict(preferRemote){if(!syncConflictState)return;const {base,local,remote}=syncConflictState,result=mergeJourney(base,local,remote,preferRemote);syncConflictState=null;applySharedPayload(result.payload);sharedDirty=true;sharedChange++;storePending();$('#syncConflict').close();queueSharedSave()}
+    // 충돌: 겹친 항목만 사용자가 고르게 하고, 나머지는 병합본으로 이미 합쳐져 있다.
+    function openSyncConflict(out){
+      syncConflictState={base:out.base,local:out.local,remote:out.remote,paths:out.paths,remoteRevision:out.remoteRevision,remoteUpdateTime:out.remoteUpdateTime};
+      sharedRevision=out.remoteRevision||sharedRevision;sharedUpdateTime=out.remoteUpdateTime||sharedUpdateTime;
+      const detail=(out.paths||[]).map(p=>'· '+String(p).split('/').slice(-2).join(' / ')).join('\n');
+      $('#syncConflictDetails').textContent='겹친 항목:\n'+(detail||'· 겹친 항목을 확인하지 못했어요');
+      $('#syncConflict').showModal();
+      setSyncStatus('충돌 · 선택 대기','offline');
+    }
+    async function resolveSyncConflict(preferRemote){
+      if(!syncConflictState)return;const state=syncConflictState;
+      syncConflictState=null;applySharedPayload(mergeJourney(state.base,state.local,state.remote,preferRemote).payload);
+      sharedDirty=true;sharedChange++;storePending();$('#syncConflict').close();setSyncStatus('공유 저장 중','saving');
+      const saved=await sharedSync.saveResolved(state,preferRemote);
+      if(saved.ok){
+        sharedRevision=(state.remoteRevision||sharedRevision)+1;sharedUpdateTime=saved.updateTime;sharedBase=structuredClone(saved.payload||{trips});
+        localStorage.removeItem('journey-note-pending');setSyncStatus('실시간 동기화 완료','online');
+      }else{
+        setSyncStatus('저장 대기 · 휴대폰에 보관됨','offline');storePending();queueSharedSave();
+      }
+    }
     $('#syncLocal').onclick=()=>resolveSyncConflict(false);$('#syncRemote').onclick=()=>resolveSyncConflict(true);
     function applySharedPayload(payload){if(!payload||!Array.isArray(payload.trips))return;normalizeShared(payload);applyingRemote=true;trips=payload.trips;activeTrip=trips.find(t=>t.id===currentTripId)||trips[0];if(!activeTrip){applyingRemote=false;return}currentTripId=activeTrip.id;ensureTripFeatures(activeTrip);days=activeTrip.days||[];restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=Math.min(dayIndex,Math.max(0,days.length-1));localStorage.setItem('journey-note-trips',JSON.stringify(trips));localStorage.setItem('journey-note-current-trip',currentTripId);applyingRemote=false;render();if(currentView==='today')renderToday()}
     async function pollShared(){
@@ -305,10 +320,11 @@
         const doc = await res.json();
         const fields = doc.fields || {};
         const rev = parseInt(fields.revision?.integerValue || '1', 10);
-        if(rev > sharedRevision){
+        const remoteUpdateTime = doc.updateTime || null;
+        if(rev > sharedRevision || (remoteUpdateTime && sharedUpdateTime && remoteUpdateTime !== sharedUpdateTime)){
           const rawPayload = JSON.parse(fields.payload?.stringValue || '{}');
           if(rawPayload && rawPayload.trips){
-            sharedRevision = rev;
+            sharedRevision = rev; sharedUpdateTime = remoteUpdateTime;
             const remote = normalizeShared(rawPayload);
             sharedBase = structuredClone(remote);
             applySharedPayload(remote);
@@ -336,6 +352,7 @@
         accessOwner = true;
         setupFreeEmbed();
         sharedRevision = rev;
+        sharedUpdateTime = doc.updateTime || null;
         sharedReady = true;
         if(rawPayload && rawPayload.trips){
           const remote = normalizeShared(rawPayload);
