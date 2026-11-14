@@ -469,13 +469,13 @@
         fullText:p.text?.text||''
       }));
     }
-    async function googlePlaceDetails(placeId,sessionToken){
+    async function googlePlaceDetails(placeId,sessionToken,signal){
       const params=new URLSearchParams({languageCode:'ko'});if(sessionToken)params.set('sessionToken',sessionToken);
-      const data=await placesRequest('/places/'+encodeURIComponent(placeId)+'?'+params.toString(),{headers:{'X-Goog-Api-Key':MAPS_CONFIG.key,'X-Goog-FieldMask':'id,formattedAddress,location,types'}});
+      const data=await placesRequest('/places/'+encodeURIComponent(placeId)+'?'+params.toString(),{headers:{'X-Goog-Api-Key':MAPS_CONFIG.key,'X-Goog-FieldMask':'id,formattedAddress,location,types'},...(signal?{signal}:{})});
       return {placeId:data.id||placeId,address:data.formattedAddress||'',lat:data.location?.latitude,lng:data.location?.longitude,types:data.types||[]};
     }
     function setupPlaceAutocomplete(input,list,onSelect){
-      let requestId=0,timer=null,controller=null,sessionToken=null,sessionAt=0,googleMatches=[],savedMatches=[];
+      let requestId=0,timer=null,controller=null,detailsController=null,sessionToken=null,sessionAt=0,googleMatches=[],savedMatches=[];
       const cache=new Map();
       const noteQuota='오늘의 장소 검색 한도에 도달했어요. 저장된 장소에서 고르거나 이름을 직접 입력해 주세요.';
       const noteAuth='Google 장소 검색을 사용할 수 없어요. 저장된 장소에서 고르거나 이름을 직접 입력해 주세요.';
@@ -484,7 +484,9 @@
       const noteError='장소 검색에 연결하지 못했어요. 저장된 장소에서 고르거나 이름을 직접 입력해 주세요.';
       function ensureSession(){const now=Date.now();if(!sessionToken||now-sessionAt>180000){sessionToken=placesSessionId()}sessionAt=now;return sessionToken}
       function resetSession(){sessionToken=null;sessionAt=0}
-      const close=()=>{requestId++;clearTimeout(timer);controller?.abort();googleMatches=[];closeSuggestions(input,list)};
+      // 진행 중인 검색·상세 요청을 모두 무효화한다. 응답이 늦게 도착해도 requestId 가 달라 반영되지 않는다.
+      function invalidate(){requestId++;controller?.abort();detailsController?.abort();detailsController=null}
+      const close=()=>{invalidate();clearTimeout(timer);googleMatches=[];closeSuggestions(input,list)};
       input.freeSearch=()=>{list.classList.add('open');input.setAttribute('aria-expanded','true');return runSearch(input.value.trim())};
       function openList(){list.classList.add('open');input.setAttribute('aria-expanded','true')}
       function itemHtml(p,source){
@@ -528,29 +530,41 @@
         }
       }
       async function selectGooglePlace(prediction){
+        // 이 선택을 새로운 요청 세대로 등록한다. 이후 입력·닫기·여행 전환은 requestId 를 올려
+        // 늦게 도착한 상세 응답이 입력창/선택 상태를 덮어쓰지 못하게 한다.
+        const run=++requestId;
+        const queryAtSelect=input.value.trim(),tripAtSelect=activeTrip.id,dialog=input.closest('dialog');
         clearTimeout(timer);controller?.abort();
+        detailsController?.abort();detailsController=new AbortController();
+        const detailsSignal=detailsController.signal;
         list.innerHTML='<div class="suggestion-state">장소 정보를 확인하고 있어요</div>';openList();
-        const base={name:prediction.name||input.value.trim(),address:prediction.address||'',placeId:prediction.placeId,source:'google',mapsUrl:googlePlacesLink(prediction.name||input.value.trim(),prediction.address,prediction.placeId)};
-        let details=null;
-        try{details=await googlePlaceDetails(prediction.placeId,ensureSession())}catch(err){details=null}
+        const base={name:prediction.name||queryAtSelect,address:prediction.address||'',placeId:prediction.placeId,source:'google',mapsUrl:googlePlacesLink(prediction.name||queryAtSelect,prediction.address,prediction.placeId)};
+        let details=null,detailIssue='';
+        try{details=await googlePlaceDetails(prediction.placeId,ensureSession(),detailsSignal)}
+        catch(err){if(err?.name==='AbortError')return;detailIssue=err?.reason||'connection'}
+        // 응답을 반영하기 전에 지금 화면 상태가 선택했을 때와 같은지 확인한다.
+        if(run!==requestId)return;
+        if(dialog&&!dialog.open)return;
+        if(activeTrip.id!==tripAtSelect)return;
+        if(input.value.trim()!==queryAtSelect)return;
         resetSession();
         input.value=base.name;
         if(details&&Number.isFinite(details.lat)&&Number.isFinite(details.lng)){
           onSelect({...base,address:details.address||base.address,lat:details.lat,lng:details.lng,kind:placeKindFromTypes(details.types),placeCachedAt:new Date().toISOString()});
         }else{
           onSelect(base);
-          toast('위치 좌표를 불러오지 못했어요 · 저장하면 Google 지도 링크로 열 수 있어요');
+          toast(detailIssue==='quota'?'오늘의 장소 검색 한도에 도달해 좌표를 불러오지 못했어요 · 저장하면 Google 지도 링크로 열 수 있어요':'위치 좌표를 불러오지 못했어요 · 저장하면 Google 지도 링크로 열 수 있어요');
         }
         close();
       }
       input.addEventListener('input',()=>{
-        onSelect(null);clearTimeout(timer);controller?.abort();
+        onSelect(null);clearTimeout(timer);invalidate();
         const q=input.value.trim();
-        if(q.length<2){requestId++;closeSuggestions(input,list);return}
+        if(q.length<2){closeSuggestions(input,list);return}
         savedMatches=savedPlaceSuggestions(q);googleMatches=[];render();
         timer=setTimeout(()=>runSearch(q),320);
       });
-      input.addEventListener('focus',()=>{const q=input.value.trim();if(q.length>=2){googleMatches=[];savedMatches=savedPlaceSuggestions(q);render()}});
+      input.addEventListener('focus',()=>{invalidate();const q=input.value.trim();if(q.length>=2){googleMatches=[];savedMatches=savedPlaceSuggestions(q);render()}});
       input.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
       input.closest('dialog')?.addEventListener('close',close);
       document.addEventListener('pointerdown',e=>{if(!input.parentElement.contains(e.target))close()});
