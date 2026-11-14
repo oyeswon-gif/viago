@@ -217,7 +217,7 @@
     const $=s=>document.querySelector(s); const tabs=$('#dateTabs'),timeline=$('#timeline');
     const esc=s=>String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     const TILE_URL='https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-    function googlePoint(name){const p=[...days.flatMap(d=>d.places),...activeTrip.candidates].find(p=>p.name===name),c=p&&coordsFor(p)||KNOWN_COORDS[name];return c?c.join(','):name}
+    function googlePoint(name){const p=[...(days[dayIndex]?.places||[]),...days.flatMap(d=>d.places),...activeTrip.candidates].find(p=>p.name===name);return [name,p?.address].filter(Boolean).join(', ')}
     function gmapsRoute(from,to){return 'https://www.google.com/maps/dir/?api=1&hl=ko&travelmode='+tripInfo.mode+'&origin='+encodeURIComponent(googlePoint(from))+'&destination='+encodeURIComponent(googlePoint(to))}
     function gmapsPlace(place){
       const name=typeof place==='object'?place?.name:String(place||''),p=typeof place==='object'?place:days[dayIndex]?.places.find(x=>x.name===name)||activeTrip.candidates.find(x=>x.name===name)||days.flatMap(d=>d.places).find(x=>x.name===name)||(activeTrip.restaurants||[]).find(x=>x.name===name);
