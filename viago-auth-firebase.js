@@ -92,6 +92,16 @@
       },
       // 여행에서 내 역할('owner'|'editor') — 초대 발급·여행 삭제 같은 소유자 기능의 근거.
       myRole: async function () { await ensure(); try { return await auth.myRole(); } catch (e) { return null; } },
+      // 이 기기가 이미 여행 멤버인지(초대 게이트에서 '이미 참여한 기기'를 구분할 때 쓴다).
+      amIMember: async function () { try { return await auth.amIMember(); } catch (e) { return false; } },
+      // 초대 게이트에서 '탭 측시' 참여를 시도한다. 이미 멤버면 그대로 성공 처리하고,
+      // 아니면 1회용 초대를 소진해 참여한다. 성공하면 준비된 상태(ready)를 유지해 바로 읽을 수 있게 한다.
+      join: async function (token) {
+        var member = await auth.amIMember().catch(function () { return false; });
+        if (!member) await auth.joinWithInvite(token);
+        ready = Promise.resolve(true);
+        return true;
+      },
       // 1회용 초대 발급(규칙이 허용할 때만 성공). 실패는 {ok:false,status} 로 그대로 돌려준다.
       createInvite: async function (opts) { await ensure(); return auth.createInvite(opts); },
       pendingState: function () { return window.__VIAGO_PENDING__; },

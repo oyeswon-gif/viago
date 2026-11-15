@@ -10,7 +10,7 @@
 //    오프라인일 때만 마지막으로 받은 화면을 보여준다.
 // 4) 새 워커는 skipWaiting 하지 않는다. 사용 중인 화면을 갑자기 갈아치우지 않고,
 //    앱을 완전히 닫았다 열 때 적용된다.
-const VERSION = 'v4';   // 2026-11-15 참여 게이트: 미참여 기기가 이전 사본을 정상 일정처럼 보지 않도록 한 화면 반영
+const VERSION = 'v5';   // 2026-11-15 초대 게이트 버튼: <dialog> 대신 고정 오버레이 + 실제 클릭 핸들러(탭 즉시 참여)
 const SHELL = `viago-shell-${VERSION}`;
 // 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
 const OUR_PREFIX = 'viago-';

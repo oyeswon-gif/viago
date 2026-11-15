@@ -89,18 +89,19 @@
     body.access-blocked #staleBanner .stale-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
     body.access-blocked #staleBanner button{padding:8px 12px;border-radius:10px;border:1px solid #e6c274;background:#fff;color:#7a4d00;font-weight:800;font-size:12.5px}
     body.access-blocked #staleBanner .stale-note{display:block;margin-top:8px;color:#8a6520;font-size:12px}
-    #inviteGate{width:min(420px,calc(100% - 28px));border:0;border-radius:20px;padding:0;box-shadow:0 20px 60px rgba(16,32,52,.28)}
-    #inviteGate::backdrop{background:rgba(16,32,52,.42)}
-    #inviteGate[open]{position:fixed;inset:0;margin:auto;height:fit-content;max-height:90vh;overflow:auto;background:#fff;z-index:210}
-    #inviteGate .gate-inner{padding:22px 20px 18px}
+    /* iOS 사파리·홈 화면 앱: <dialog> 대신 일반 고정 오버레이. 백드롭·top layer·submit 동작에 기대지 않는다. */
+    #inviteGate{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-start;justify-content:center;padding:calc(10px + env(safe-area-inset-top)) 14px calc(10px + env(safe-area-inset-bottom));overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:rgba(16,32,52,.46)}
+    #inviteGate[hidden]{display:none}
+    #inviteGate .gate-card{width:min(420px,100%);margin:auto;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(16,32,52,.28);padding:20px 18px 16px;box-sizing:border-box}
     #inviteGate h3{margin:0 0 8px;font-size:17px;letter-spacing:-.3px}
-    #inviteGate p{margin:0 0 10px;color:var(--sub);font-size:13px;line-height:1.6}
-    #inviteGate .gate-hint{font-size:12px;color:#8494a6}
-    #inviteGate input{width:100%;margin:6px 0 10px;padding:14px;border:1px solid #dce2e8;border-radius:12px;font-size:14px;line-height:1.25;min-height:50px;box-sizing:border-box}
+    #inviteGate p{margin:0 0 8px;color:var(--sub);font-size:13px;line-height:1.6}
+    #inviteGate .gate-hint{font-size:12px;color:#8494a6;margin:10px 0 0}
+    #inviteGate input{width:100%;margin:6px 0 2px;padding:14px;border:1px solid #dce2e8;border-radius:12px;font-size:16px;line-height:1.25;min-height:50px;box-sizing:border-box;-webkit-appearance:none;appearance:none}
     #inviteGate .gate-actions{display:flex;flex-direction:column;gap:8px}
-    #inviteGate .gate-actions button{width:100%;padding:13px;border-radius:12px;font-weight:800;font-size:14px}
+    #inviteGate .gate-actions button{width:100%;min-height:50px;padding:13px;border-radius:12px;font-weight:800;font-size:14px;touch-action:manipulation;-webkit-tap-highlight-color:rgba(49,135,255,.18);cursor:pointer}
+    #inviteGate .gate-actions button[disabled]{opacity:.62;cursor:default}
     #inviteGate .gate-actions .cancel{background:#fff;border:1px solid #dce2e8;color:var(--sub);font-weight:700;font-size:13px}
-    #gateError{color:#d64545;font-size:12.5px;min-height:16px;margin:0}
+    #gateError{color:#d64545;font-size:12.5px;min-height:20px;margin:4px 0 6px;line-height:1.45}
   </style>
   <link rel="stylesheet" href="./journey-design.css" />
 </head>
@@ -167,7 +168,16 @@
   </nav>
 
   <dialog id="syncConflict"><div class="dialog-inner"><h3>같은 일정이 함께 수정됐어요</h3><p>서로 다른 변경은 합쳤어요. 겹친 변경에 사용할 내용을 선택해주세요. 저장 전 내용은 휴대폰에 보관됩니다.</p><pre id="syncConflictDetails" style="white-space:pre-wrap;max-height:30vh;overflow:auto"></pre><div class="dialog-actions"><button type="button" id="syncRemote" class="cancel">공유된 변경 사용</button><button type="button" id="syncLocal" class="confirm">내 변경 유지</button></div></div></dialog>
-  <dialog id="inviteGate"><form class="gate-inner" id="gateForm" method="dialog"><h3>이 여행에 연결되지 않았어요</h3><p>이 기기에서는 여행 참여가 확인되지 않아 서버의 최신 일정을 열지 못했어요. 받은 <b>초대 링크 전체</b> 또는 <b>초대 코드 64자리</b>를 붙여넣으면 이 기기에서 바로 열립니다.</p><p class="gate-hint">홈 화면에 추가한 앱과 사파리는 저장 공간이 따로예요. 사파리에서 열리더라도 이 앱에서는 한 번 더 참여해야 해요.</p><input id="gateInvite" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="초대 링크 또는 초대 코드 64자리"><p id="gateError" role="alert"></p><div class="gate-actions"><button type="submit" class="confirm">초대 코드로 연결</button><button type="button" class="cancel" id="gateLater">기기에 저장된 이전 사본 보기</button></div></form></dialog>
+  <div id="inviteGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
+    <div class="gate-card" id="gateForm">
+      <h3 id="gateTitle">이 여행에 연결되지 않았어요</h3>
+      <p>이 기기에서는 여행 참여가 확인되지 않아 서버의 최신 일정을 열지 못했어요. 받은 <b>초대 링크 전체</b> 또는 <b>초대 코드 64자리</b>를 붙여넣고 <b>초대 코드로 연결</b>을 눌러주세요.</p>
+      <input id="gateInvite" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="초대 링크 또는 초대 코드 64자리">
+      <p id="gateError" role="alert"></p>
+      <div class="gate-actions"><button type="button" class="confirm" id="gateConnect">초대 코드로 연결</button><button type="button" class="cancel" id="gateLater">기기에 저장된 이전 사본 보기</button></div>
+      <p class="gate-hint">홈 화면에 추가한 앱과 사파리는 저장 공간이 따로예요. 사파리에서 열리더라도 이 앱에서는 한 번 더 참여해야 해요.</p>
+    </div>
+  </div>
   <dialog id="addDialog"><form method="dialog" class="dialog-inner" id="addForm"><h3>장소 추가</h3><p>장소를 검색해 정확한 지점을 선택해주세요. 추가한 순서가 이동 순서가 됩니다.</p><label class="field"><span>장소명</span><div class="autocomplete"><input id="placeName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="placeSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="placeSuggestions" role="listbox"></div></div></label><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="addMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="placeNote" placeholder="예약 정보나 할 일" /></label><div class="dialog-actions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="addConfirm" value="default">일정에 추가</button></div></form></dialog>
   <dialog id="editDialog"><form method="dialog" class="dialog-inner" id="editForm"><h3>일정 수정</h3><p>장소명, 메모, 분류를 바로 고칠 수 있어요.</p><label class="field"><span>장소명</span><div class="autocomplete"><input id="editPlaceName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="editPlaceSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="editPlaceSuggestions" role="listbox"></div></div></label><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="editMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="editPlaceNote" placeholder="예약 정보나 할 일" /></label><label class="field"><span>영업시간 (직접 확인·선택)</span><input id="editHoursText" maxlength="100" placeholder="11:00-14:00 / 17:00-20:00" /><small>방문일 기준으로 확인한 시간을 입력해주세요. 휴무·24시간도 입력할 수 있어요.</small></label><label class="field"><span>지도 위치 (선택)</span><input id="editCoordinates" placeholder="35.1853, 136.8992 또는 지도 링크" /><small>지도에서 복사한 위도·경도 또는 좌표가 포함된 링크를 넣으면 무료 번호 지도에 바로 반영돼요.</small></label><div class="field-row"><label class="field"><span>분류</span><select id="editPlaceKind"><option>장소</option><option>관광</option><option>식당</option><option>카페</option><option>쇼핑</option><option>숙소</option><option>항공</option><option>공항</option><option>투어</option></select></label><label class="field"><span>날짜</span><select id="editPlaceDay"></select></label></div><div class="dialog-actions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="editConfirm" value="default">수정 저장</button></div></form></dialog>
   <dialog id="foodDialog"><form method="dialog" class="dialog-inner" id="foodForm"><h3>맛집 추가</h3><p>가보고 싶은 식당을 저장하면 지도에 함께 표시해드려요.</p><label class="field"><span>맛집 이름</span><input id="foodName" required placeholder="예: 야바톤 사카에점" /></label><label class="field"><span>메모</span><input id="foodNote" placeholder="대표 메뉴, 예약 정보 등" /></label><div class="dialog-actions"><button class="cancel" value="cancel">취소</button><button class="confirm" id="foodConfirm" value="default">맛집에 추가</button></div></form></dialog>
@@ -241,6 +251,33 @@
     // 입력은 '전체 초대 링크' 또는 '초대 코드 64자리' 둘 다 받는다(홈 화면 앱에는 링크를 눌러 열 수 없어 코드만 복사하는 경우가 있다).
     function parseInviteInput(raw){const v=String(raw||'').trim();if(/^[a-f0-9]{64}$/i.test(v))return{ok:true,token:v.toLowerCase(),target:appBasePath()+'#invite='+v.toLowerCase()};return inviteRecoveryTarget(v)}
     // 참여가 확인되지 않은 기기: 이전 사본을 정상 일정처럼 보이지 않게 배너를 켜고, 초대를 넣을 수 있는 게이트를 띄운다.
+    // ── 초대 게이트(iOS 사파리·홈 화면 앱 공통) ──────────────────────────────
+    // <dialog>/showModal·method=dialog 의 submit 에 기대지 않는다. 일반 고정 오버레이 + 실제 click 핸들러로
+    // '탭 → 참여 시도'가 한 번에 일어나게 하고, iOS 키보드가 올라와도 버튼이 가려지지 않게 visualViewport 에 맞춘다.
+    function gateEl(){return $('#inviteGate')}
+    function gateIsOpen(){const g=gateEl();return !!(g&&!g.hidden)}
+    function fitGateViewport(){
+      const g=gateEl();if(!g||g.hidden)return;
+      const vv=window.visualViewport;
+      if(vv&&vv.height){g.style.top=Math.round(vv.offsetTop)+'px';g.style.height=Math.round(vv.height)+'px';g.style.bottom='auto'}
+      else{g.style.top='';g.style.height='';g.style.bottom=''}
+    }
+    function setGateError(message){const el=$('#gateError');if(el)el.textContent=message||''}
+    function openInviteGate(focus){
+      const g=gateEl();if(!g)return;
+      const wasHidden=g.hidden;
+      // 네이티브 dialog(top layer)가 떠 있으면 게이트를 덮으므로 닫는다.
+      if(wasHidden)document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});
+      g.hidden=false;fitGateViewport();
+      if(focus&&(wasHidden||focus==='force')){const input=$('#gateInvite');if(input)setTimeout(()=>{try{input.focus({preventScroll:true})}catch(e){}},60)}
+    }
+    function closeInviteGate(){
+      const g=gateEl();if(!g)return;
+      g.hidden=true;g.style.top='';g.style.height='';g.style.bottom='';
+      setGateError('');
+      const btn=$('#gateConnect');if(btn){btn.disabled=false;btn.textContent='초대 코드로 연결'}
+    }
+    let gateAutoFocused=false;
     function markAccessBlocked(openGate){
       document.body.classList.add('access-blocked');
       const note=$('#staleNote');
@@ -250,14 +287,58 @@
     }
     function clearAccessBlocked(){
       document.body.classList.remove('access-blocked');
-      const dlg=$('#inviteGate');if(dlg&&dlg.open)dlg.close();
+      closeInviteGate();
     }
-    function showInviteGate(){
-      const dlg=$('#inviteGate');if(!dlg)return;
-      if(!dlg.open){try{if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','')}catch(e){try{dlg.setAttribute('open','')}catch(e2){}}}
-      const input=$('#gateInvite');if(input&&!input.value)setTimeout(()=>{try{input.focus()}catch(e){}},60);
+    // 자동으로 열릴 때는 첫 한 번만 입력칸에 포커스한다(폴링마다 키보드가 다시 올라오는 것을 막는다).
+    function showInviteGate(focus){
+      if(!gateEl())return;
+      const auto=focus===true||(focus!==false&&!gateAutoFocused);
+      if(auto)gateAutoFocused=true;
+      openInviteGate(auto);
     }
-    function showInviteRecovery(message){hideLaunchCover();document.body.classList.remove('booting');const form=$('#inviteRecovery');if(form)form.hidden=false;if(message)$('#recoveryError').textContent=message;markAccessBlocked()}
+    function gateJoinMessage(err){
+      const m=String(err&&err.message||err||'');
+      if(/offline|network|Failed to fetch|Load failed/i.test(m))return '네트워크에 연결되지 않았어요. 연결을 확인하고 다시 눌러주세요.';
+      if(/invite_taken/.test(m))return '이 초대는 방금 다른 기기에서 먼저 사용됐어요. 새 초대 코드를 받아 다시 넣어주세요.';
+      if(/invite_unusable/.test(m))return '이 초대는 이미 사용됐거나 만료됐어요. 새 초대 코드를 받아 다시 넣어주세요.';
+      if(/join_denied/.test(m))return '이 초대는 이 여행에 쓸 수 없어요. 새 초대 코드를 받아 다시 넣어주세요.';
+      if(/no_invite/.test(m))return '이 기기는 아직 이 여행에 참여하지 않았어요. 받은 초대 코드를 넣어주세요.';
+      return '연결하지 못했어요'+(m?' ('+m+')':'')+'. 잠시 후 다시 눌러주세요.';
+    }
+    let gateConnecting=false;
+    async function connectWithInvite(){
+      if(gateConnecting)return;
+      const btn=$('#gateConnect'),input=$('#gateInvite');
+      const out=parseInviteInput(input?input.value:'');
+      if(!out.ok){setGateError(out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.':'이 여행 앱에서 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.');return}
+      gateConnecting=true;setGateError('');
+      if(btn){btn.disabled=true;btn.textContent='연결 중…'}
+      try{localStorage.setItem('journey-note-invite',out.token)}catch(e){}
+      let joined=false,error=null;
+      try{
+        if(sharedSync&&sharedSync.join)await sharedSync.join(out.token);
+        joined=true;
+      }catch(e){error=e}
+      if(!joined){ // 이 기기가 이미 멤버라면(예전에 참여에 성공한 기기) 이미 소진된 초대라도 열어 준다.
+        try{const member=sharedSync&&sharedSync.amIMember?await sharedSync.amIMember():false;if(member){joined=true;error=null}}catch(e){}
+      }
+      if(!joined){
+        gateConnecting=false;
+        setGateError(gateJoinMessage(error));
+        if(btn){btn.disabled=false;btn.textContent='초대 코드로 연결'}
+        return;
+      }
+      // 참여 성공: 소진된 초대 토큰을 이 기기에 남겨 두지 않는다(다음 실행에서 재시도하며 막히는 것을 막는다).
+      try{localStorage.removeItem('journey-note-invite')}catch(e){}
+      try{const u=new URL(location.href);if(/invite=/.test(u.hash)){u.hash='';history.replaceState(null,'',u.pathname+u.search)}}catch(e){}
+      gateConnecting=false;
+      if(btn)btn.textContent='연결 중…';
+      try{await startSharedSync()}catch(e){}
+      if(!gateIsOpen())return;
+      setGateError('참여는 됐지만 서버 일정을 아직 읽지 못했어요. 잠시 후 다시 열어주세요.');
+      if(btn){btn.disabled=false;btn.textContent='초대 코드로 연결'}
+    }
+    function showInviteRecovery(message,gateMessage){hideLaunchCover();document.body.classList.remove('booting');const form=$('#inviteRecovery');if(form)form.hidden=false;if(message)$('#recoveryError').textContent=message;if(gateMessage)setGateError(gateMessage);markAccessBlocked()}
     let accessBlockedAt=0,gateDismissed=false;
     function isAccessError(err){const code=String(err&&err.message||'');return /_(401|403)$/.test(code)||/^(no_invite|invite_unusable|invite_taken|join_denied|join_failed)$/.test(code)}
     function normalizeShared(payload){payload?.trips?.forEach(t=>ensureTripFeatures(t));return payload}
@@ -463,7 +544,7 @@
         hideLaunchCover();
         document.body.classList.remove('booting');
         const accessDenied=isAccessError(err),offlineNow=navigator.onLine===false;
-        if(accessDenied)showInviteRecovery('이 여행에 참여할 수 없어요. 받은 초대 링크를 붙여넣어 주세요.');
+        if(accessDenied)showInviteRecovery('이 여행에 참여할 수 없어요. 받은 초대 링크를 붙여넣어 주세요.',gateJoinMessage(err));
         if(localStorage.getItem('journey-note-trips')){
           sharedReady = true;
           // 서버와 한 번도 동기화되지 않은 화면이다 — 초록색 '실시간 동기화 완료'로 보이면 안 된다.
@@ -1336,10 +1417,12 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     function hideLaunchCover(){const cover=$('#launchCover');if(cover)cover.remove()}
     // No fixed loading wait: paint first; decorative cover never blocks recovery.
     setTimeout(hideLaunchCover,1200);
-    $('#gateForm').onsubmit=e=>{e.preventDefault();const out=parseInviteInput($('#gateInvite').value);if(!out.ok){$('#gateError').textContent=out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.':'이 여행 앱에서 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.';return}$('#gateError').textContent='';localStorage.setItem('journey-note-invite',out.token);location.replace(out.target)};
-    $('#gateLater').onclick=()=>{gateDismissed=true;const dlg=$('#inviteGate');if(dlg&&dlg.open)dlg.close()};
-    $('#staleJoin').onclick=()=>{gateDismissed=false;showInviteGate();};
-    $('#inviteRecovery').onsubmit=e=>{e.preventDefault();const out=parseInviteInput($('#recoveryLink').value);if(!out.ok){$('#recoveryError').textContent=out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체를 붙여넣어주세요.':'이 여행 앱에서 받은 전체 초대 링크를 붙여넣어주세요.';return}$('#recoveryError').textContent='';localStorage.setItem('journey-note-invite',out.token);location.replace(out.target)};
+    $('#gateConnect').onclick=connectWithInvite;
+    $('#gateInvite').addEventListener('keydown',e=>{if(e.key==='Enter'||e.keyCode===13){e.preventDefault();connectWithInvite()}});
+    $('#gateLater').onclick=()=>{gateDismissed=true;closeInviteGate()};
+    $('#staleJoin').onclick=()=>{gateDismissed=false;showInviteGate('force')};
+    if(window.visualViewport){window.visualViewport.addEventListener('resize',fitGateViewport);window.visualViewport.addEventListener('scroll',fitGateViewport)}
+    $('#inviteRecovery').onsubmit=e=>{e.preventDefault();const raw=$('#recoveryLink').value,out=parseInviteInput(raw);if(!out.ok){$('#recoveryError').textContent=out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체를 붙여넣어주세요.':'이 여행 앱에서 받은 전체 초대 링크를 붙여넣어주세요.';return}$('#recoveryError').textContent='';const g=$('#gateInvite');if(g)g.value=raw;connectWithInvite()};
     window.addEventListener('online',()=>{googleMapsReady=null;paintProviderNotes();if(!sharedReady&&!accessDenied)startSharedSync();else{pollShared();if(sharedDirty)pushSharedState()}});
     window.addEventListener('offline',paintProviderNotes);
     paintProviderNotes();
@@ -1348,7 +1431,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
-    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=50',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=51',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
