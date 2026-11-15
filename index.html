@@ -67,6 +67,9 @@
     .suggestion-section{padding:9px 10px 3px;color:#8b95a1;font-size:11px;font-weight:800;letter-spacing:.02em}
     .suggestion-credit{padding:7px 10px 9px;text-align:right;color:#8b95a1;font-size:11px;font-weight:700}
     .suggestion-item{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+    .place-picked{display:none;margin:7px 2px 0;color:#0a7a4a;font-size:12px;font-weight:700;line-height:1.45}
+    .place-picked.show{display:block}
+    .place-picked.warn{color:#ad5a00}
     .suggestion-state .suggestion-spinner{display:inline-block;width:14px;height:14px;margin-right:7px;border:2px solid #d5dde6;border-top-color:var(--blue);border-radius:50%;vertical-align:-2px;animation:suggestionSpin .8s linear infinite}
     @keyframes suggestionSpin{to{transform:rotate(360deg)}}
     @media(prefers-reduced-motion:reduce){.suggestion-state .suggestion-spinner{animation-duration:2.4s}}
@@ -943,6 +946,14 @@
         });
       }
       input.selectionPending=()=>!!pending;
+      // 선택이 실제로 반영됐다는 것을 눈으로 확인할 수 있게 입력칸 아래에 한 줄을 붙인다(다이얼로그 안에서만).
+      let pickedNote=null;
+      if(input.closest('dialog')){
+        const holder=input.closest('.autocomplete');
+        if(holder){pickedNote=document.createElement('small');pickedNote.className='place-picked';pickedNote.setAttribute('role','status');holder.insertAdjacentElement('afterend',pickedNote)}
+      }
+      function showPicked(text,warn){if(!pickedNote)return;pickedNote.textContent=text||'';pickedNote.classList.toggle('show',!!text);pickedNote.classList.toggle('warn',!!warn)}
+      input.showPicked=showPicked;
       input.freeSearch=()=>{list.classList.add('open');input.setAttribute('aria-expanded','true');return runSearch(input.value.trim())};
       function openList(){list.classList.add('open');input.setAttribute('aria-expanded','true')}
       function itemHtml(p,source,key){
@@ -1012,7 +1023,7 @@
         const seq={query:input.value.trim()};pending=seq;
         detailsController?.abort();const controller=new AbortController();detailsController=controller;
         const queryAtSelect=seq.query,tripAtSelect=activeTrip.id,dialog=input.closest('dialog');
-        setBusy(true);
+        setBusy(true);showPicked('');
         // 목록 높이를 그대로 유지한다 — 내용이 줄어들면 탭의 click 이 뒤쪽 입력칸(메모 등)으로 새어 들어간다.
         const listHeight=list.offsetHeight;
         list.innerHTML='<div class="suggestion-state" role="status"><span class="suggestion-spinner" aria-hidden="true"></span>장소 정보를 확인하고 있어요</div>';openList();
@@ -1032,8 +1043,11 @@
         resetSession();
         if(details&&Number.isFinite(details.lat)&&Number.isFinite(details.lng)){
           onSelect({...base,address:details.address||base.address,lat:details.lat,lng:details.lng,kind:placeKindFromTypes(details.types),placeCachedAt:new Date().toISOString()});
+          const pickedAddress=details.address||base.address;
+          showPicked(pickedAddress?'✓ 선택됨 · '+pickedAddress:'✓ 선택됨 · 이 지점으로 저장돼요');
         }else{
           onSelect(base);
+          showPicked('선택됨 · 좌표를 불러오지 못해 지도에는 표시되지 않아요',true);
           toast(detailIssue==='quota'?'오늘의 장소 검색 한도에 도달해 좌표를 불러오지 못했어요 · 저장하면 Google 지도 링크로 열 수 있어요':'위치 좌표를 불러오지 못했어요 · 저장하면 Google 지도 링크로 열 수 있어요');
         }
         close();
@@ -1044,6 +1058,7 @@
         if(pending&&q===pending.query)return;
         cancelSelection();
         onSelect(null);
+        showPicked('');
         invalidateSearch();
         if(q.length<2){closeSuggestions(input,list);return}
         savedMatches=savedPlaceSuggestions(q);googleMatches=[];render();
@@ -1057,7 +1072,7 @@
         render();
       });
       input.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
-      input.closest('dialog')?.addEventListener('close',close);
+      input.closest('dialog')?.addEventListener('close',()=>{close();showPicked('')});
       document.addEventListener('pointerdown',e=>{if(!input.parentElement.contains(e.target))close()});
     }
 
