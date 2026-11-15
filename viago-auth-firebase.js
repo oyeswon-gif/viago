@@ -54,6 +54,11 @@
           var tok = '';
           try { tok = window.localStorage.getItem('journey-note-invite') || ''; } catch (e) {}
           if (!tok) throw new Error('no_invite');
+          // 인앱 브라우저(카카오톡 등)에서는 1회용 초대를 자동으로 소모하지 않는다.
+          // 사파리·홈 화면 앱과 저장 공간이 달라서, 여기서 쓰면 그 초대는 다른 곳에서 다시 쓸 수 없고
+          // 이 창을 다시 열면 새 익명 계정으로 보여 참여도 이어지지 않는다.
+          // 앱은 이 오류를 받아 '사파리에서 열기' 안내를 띄우고, 사용자가 직접 고르면 보류를 풀고 참여한다.
+          if (window.VIAGO_HOLD_INVITE) throw new Error('invite_held');
           await auth.joinWithInvite(tok);
         }
         try {

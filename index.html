@@ -66,6 +66,10 @@
 .viago-map-marker{background:transparent!important;border:0!important}
     .suggestion-section{padding:9px 10px 3px;color:#8b95a1;font-size:11px;font-weight:800;letter-spacing:.02em}
     .suggestion-credit{padding:7px 10px 9px;text-align:right;color:#8b95a1;font-size:11px;font-weight:700}
+    .suggestion-item{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+    .suggestion-state .suggestion-spinner{display:inline-block;width:14px;height:14px;margin-right:7px;border:2px solid #d5dde6;border-top-color:var(--blue);border-radius:50%;vertical-align:-2px;animation:suggestionSpin .8s linear infinite}
+    @keyframes suggestionSpin{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){.suggestion-state .suggestion-spinner{animation-duration:2.4s}}
 
     .number-marker.cluster{background:#fff;color:var(--marker,#3187ff);border:4px solid var(--marker,#3187ff);font-size:13px;font-weight:850;box-shadow:0 7px 18px rgba(20,32,48,.28)}
     .marker-sheet{position:fixed;inset:0;z-index:15;display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
@@ -90,17 +94,17 @@
     body.access-blocked #staleBanner button{padding:8px 12px;border-radius:10px;border:1px solid #e6c274;background:#fff;color:#7a4d00;font-weight:800;font-size:12.5px}
     body.access-blocked #staleBanner .stale-note{display:block;margin-top:8px;color:#8a6520;font-size:12px}
     /* iOS 사파리·홈 화면 앱: <dialog> 대신 일반 고정 오버레이. 백드롭·top layer·submit 동작에 기대지 않는다. */
-    #inviteGate{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-start;justify-content:center;padding:calc(10px + env(safe-area-inset-top)) 14px calc(10px + env(safe-area-inset-bottom));overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:rgba(16,32,52,.46)}
-    #inviteGate[hidden]{display:none}
-    #inviteGate .gate-card{width:min(420px,100%);margin:auto;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(16,32,52,.28);padding:20px 18px 16px;box-sizing:border-box}
-    #inviteGate h3{margin:0 0 8px;font-size:17px;letter-spacing:-.3px}
-    #inviteGate p{margin:0 0 8px;color:var(--sub);font-size:13px;line-height:1.6}
-    #inviteGate .gate-hint{font-size:12px;color:#8494a6;margin:10px 0 0}
-    #inviteGate input{width:100%;margin:6px 0 2px;padding:14px;border:1px solid #dce2e8;border-radius:12px;font-size:16px;line-height:1.25;min-height:50px;box-sizing:border-box;-webkit-appearance:none;appearance:none}
-    #inviteGate .gate-actions{display:flex;flex-direction:column;gap:8px}
-    #inviteGate .gate-actions button{width:100%;min-height:50px;padding:13px;border-radius:12px;font-weight:800;font-size:14px;touch-action:manipulation;-webkit-tap-highlight-color:rgba(49,135,255,.18);cursor:pointer}
-    #inviteGate .gate-actions button[disabled]{opacity:.62;cursor:default}
-    #inviteGate .gate-actions .cancel{background:#fff;border:1px solid #dce2e8;color:var(--sub);font-weight:700;font-size:13px}
+    #inviteGate,#inAppGate{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-start;justify-content:center;padding:calc(10px + env(safe-area-inset-top)) 14px calc(10px + env(safe-area-inset-bottom));overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:rgba(16,32,52,.46)}
+    #inviteGate[hidden],#inAppGate[hidden]{display:none}
+    #inviteGate .gate-card,#inAppGate .gate-card{width:min(420px,100%);margin:auto;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(16,32,52,.28);padding:20px 18px 16px;box-sizing:border-box}
+    #inviteGate h3,#inAppGate h3{margin:0 0 8px;font-size:17px;letter-spacing:-.3px}
+    #inviteGate p,#inAppGate p{margin:0 0 8px;color:var(--sub);font-size:13px;line-height:1.6}
+    #inviteGate .gate-hint,#inAppGate .gate-hint{font-size:12px;color:#8494a6;margin:10px 0 0}
+    #inviteGate input,#inAppGate input{width:100%;margin:6px 0 2px;padding:14px;border:1px solid #dce2e8;border-radius:12px;font-size:16px;line-height:1.25;min-height:50px;box-sizing:border-box;-webkit-appearance:none;appearance:none}
+    #inviteGate .gate-actions,#inAppGate .gate-actions{display:flex;flex-direction:column;gap:8px}
+    #inviteGate .gate-actions button,#inAppGate .gate-actions button{width:100%;min-height:50px;padding:13px;border-radius:12px;font-weight:800;font-size:14px;touch-action:manipulation;-webkit-tap-highlight-color:rgba(49,135,255,.18);cursor:pointer}
+    #inviteGate .gate-actions button[disabled],#inAppGate .gate-actions button[disabled]{opacity:.62;cursor:default}
+    #inviteGate .gate-actions .cancel,#inAppGate .gate-actions .cancel{background:#fff;border:1px solid #dce2e8;color:var(--sub);font-weight:700;font-size:13px}
     #gateError{color:#d64545;font-size:12.5px;min-height:20px;margin:4px 0 6px;line-height:1.45}
   </style>
   <link rel="stylesheet" href="./journey-design.css" />
@@ -175,13 +179,23 @@
       <input id="gateInvite" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="초대 링크 또는 초대 코드 64자리">
       <p id="gateError" role="alert"></p>
       <div class="gate-actions"><button type="button" class="confirm" id="gateConnect">초대 코드로 연결</button><button type="button" class="cancel" id="gateLater">기기에 저장된 이전 사본 보기</button></div>
-      <p class="gate-hint">홈 화면에 추가한 앱과 사파리는 저장 공간이 따로예요. 사파리에서 열리더라도 이 앱에서는 한 번 더 참여해야 해요.</p>
+      <p class="gate-hint">홈 화면에 추가한 앱과 사파리는 저장 공간이 따로예요. 사파리에서 열리더라도 이 앱에서는 한 번 더 참여해야 해요. 새 초대는 여행을 만든 사람(소유자)이 앱의 <b>+</b> 버튼으로 만들 수 있어요.</p>
     </div>
   </div>
-  <dialog id="addDialog"><form method="dialog" class="dialog-inner" id="addForm"><h3>장소 추가</h3><p>장소를 검색해 정확한 지점을 선택해주세요. 추가한 순서가 이동 순서가 됩니다.</p><label class="field"><span>장소명</span><div class="autocomplete"><input id="placeName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="placeSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="placeSuggestions" role="listbox"></div></div></label><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="addMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="placeNote" placeholder="예약 정보나 할 일" /></label><div class="dialog-actions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="addConfirm" value="default">일정에 추가</button></div></form></dialog>
-  <dialog id="editDialog"><form method="dialog" class="dialog-inner" id="editForm"><h3>일정 수정</h3><p>장소명, 메모, 분류를 바로 고칠 수 있어요.</p><label class="field"><span>장소명</span><div class="autocomplete"><input id="editPlaceName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="editPlaceSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="editPlaceSuggestions" role="listbox"></div></div></label><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="editMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="editPlaceNote" placeholder="예약 정보나 할 일" /></label><label class="field"><span>영업시간 (직접 확인·선택)</span><input id="editHoursText" maxlength="100" placeholder="11:00-14:00 / 17:00-20:00" /><small>방문일 기준으로 확인한 시간을 입력해주세요. 휴무·24시간도 입력할 수 있어요.</small></label><label class="field"><span>지도 위치 (선택)</span><input id="editCoordinates" placeholder="35.1853, 136.8992 또는 지도 링크" /><small>지도에서 복사한 위도·경도 또는 좌표가 포함된 링크를 넣으면 무료 번호 지도에 바로 반영돼요.</small></label><div class="field-row"><label class="field"><span>분류</span><select id="editPlaceKind"><option>장소</option><option>관광</option><option>식당</option><option>카페</option><option>쇼핑</option><option>숙소</option><option>항공</option><option>공항</option><option>투어</option></select></label><label class="field"><span>날짜</span><select id="editPlaceDay"></select></label></div><div class="dialog-actions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="editConfirm" value="default">수정 저장</button></div></form></dialog>
+  <div id="inAppGate" role="dialog" aria-modal="true" aria-labelledby="inAppTitle" hidden>
+    <div class="gate-card">
+      <h3 id="inAppTitle">이 창에서는 참여가 이어지지 않아요</h3>
+      <p id="inAppWhy"></p>
+      <input id="inAppLink" type="text" readonly aria-label="받은 초대 링크" />
+      <p id="inAppError" role="alert"></p>
+      <div class="gate-actions"><button type="button" class="confirm" id="inAppOpenSafari">사파리에서 열기</button><button type="button" class="cancel" id="inAppCopy">초대 링크 복사</button><button type="button" class="cancel" id="inAppContinue">이 창에서 그대로 참여</button><button type="button" class="cancel" id="inAppLater">기기에 저장된 이전 사본 보기</button></div>
+      <p class="gate-hint" id="inAppHint">사파리로 열면 이 기기에서 한 번만 참여하면 계속 이어져요. 초대는 한 사람만 쓸 수 있는 1회용이에요.</p>
+    </div>
+  </div>
+  <dialog id="addDialog"><form method="dialog" class="dialog-inner" id="addForm"><h3>장소 추가</h3><p>장소를 검색해 정확한 지점을 선택해주세요. 추가한 순서가 이동 순서가 됩니다.</p><div class="field"><label for="placeName"><span>장소명</span></label><div class="autocomplete"><input id="placeName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="placeSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="placeSuggestions" role="listbox"></div></div></div><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="addMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="placeNote" placeholder="예약 정보나 할 일" /></label><div class="dialog-actions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="addConfirm" value="default">일정에 추가</button></div></form></dialog>
+  <dialog id="editDialog"><form method="dialog" class="dialog-inner" id="editForm"><h3>일정 수정</h3><p>장소명, 메모, 분류를 바로 고칠 수 있어요.</p><div class="field"><label for="editPlaceName"><span>장소명</span></label><div class="autocomplete"><input id="editPlaceName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="editPlaceSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="editPlaceSuggestions" role="listbox"></div></div></div><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="editMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="editPlaceNote" placeholder="예약 정보나 할 일" /></label><label class="field"><span>영업시간 (직접 확인·선택)</span><input id="editHoursText" maxlength="100" placeholder="11:00-14:00 / 17:00-20:00" /><small>방문일 기준으로 확인한 시간을 입력해주세요. 휴무·24시간도 입력할 수 있어요.</small></label><label class="field"><span>지도 위치 (선택)</span><input id="editCoordinates" placeholder="35.1853, 136.8992 또는 지도 링크" /><small>지도에서 복사한 위도·경도 또는 좌표가 포함된 링크를 넣으면 무료 번호 지도에 바로 반영돼요.</small></label><div class="field-row"><label class="field"><span>분류</span><select id="editPlaceKind"><option>장소</option><option>관광</option><option>식당</option><option>카페</option><option>쇼핑</option><option>숙소</option><option>항공</option><option>공항</option><option>투어</option></select></label><label class="field"><span>날짜</span><select id="editPlaceDay"></select></label></div><div class="dialog-actions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="editConfirm" value="default">수정 저장</button></div></form></dialog>
   <dialog id="foodDialog"><form method="dialog" class="dialog-inner" id="foodForm"><h3>맛집 추가</h3><p>가보고 싶은 식당을 저장하면 지도에 함께 표시해드려요.</p><label class="field"><span>맛집 이름</span><input id="foodName" required placeholder="예: 야바톤 사카에점" /></label><label class="field"><span>메모</span><input id="foodNote" placeholder="대표 메뉴, 예약 정보 등" /></label><div class="dialog-actions"><button class="cancel" value="cancel">취소</button><button class="confirm" id="foodConfirm" value="default">맛집에 추가</button></div></form></dialog>
-  <dialog id="candidateDialog"><form method="dialog" class="dialog-inner" id="candidateForm"><h3>후보 장소 추가</h3><p>투표 후 확정할 맛집이나 관광지를 등록해주세요.</p><label class="field"><span>장소명</span><div class="autocomplete"><input id="candidateName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="candidateSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="candidateSuggestions" role="listbox"></div></div></label><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="candidateMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="candidateNote" placeholder="대표 메뉴나 추천 이유" /></label><div class="field-row"><label class="field"><span>종류</span><select id="candidateKind"><option>맛집</option><option>관광</option><option>쇼핑</option><option>카페</option></select></label><label class="field"><span>넣을 날짜</span><select id="candidateDay"></select></label></div><div class="dialog-actions"><button class="cancel" value="cancel">취소</button><button class="confirm" value="default">후보 등록</button></div></form></dialog>
+  <dialog id="candidateDialog"><form method="dialog" class="dialog-inner" id="candidateForm"><h3>후보 장소 추가</h3><p>투표 후 확정할 맛집이나 관광지를 등록해주세요.</p><div class="field"><label for="candidateName"><span>장소명</span></label><div class="autocomplete"><input id="candidateName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="candidateSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="candidateSuggestions" role="listbox"></div></div></div><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="candidateMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="candidateNote" placeholder="대표 메뉴나 추천 이유" /></label><div class="field-row"><label class="field"><span>종류</span><select id="candidateKind"><option>맛집</option><option>관광</option><option>쇼핑</option><option>카페</option></select></label><label class="field"><span>넣을 날짜</span><select id="candidateDay"></select></label></div><div class="dialog-actions"><button class="cancel" value="cancel">취소</button><button class="confirm" value="default">후보 등록</button></div></form></dialog>
   <dialog id="linkDialog"><form class="dialog-inner" id="linkForm"><h3>링크에서 장소 찾기</h3><p>Instagram, Naver, YouTube, Threads 공개 게시물의 <b>제목·설명 글</b>만 읽어 장소 후보를 찾아요. 영상·이미지 속 글자(OCR)나 화면 분석은 하지 않으며, 읽은 이름만으로 지점을 확정하지 않습니다.</p><label class="field"><span>게시물 링크</span><input id="travelLink" type="url" inputmode="url" autocomplete="url" required placeholder="https://..." /></label><label class="field"><span>저장할 곳</span><select id="linkDay"></select></label><label class="field"><span>게시물 설명·장소명 (선택)</span><textarea id="linkContext" rows="3" maxlength="3000" placeholder="원문이 비공개라면 게시물 설명을 복사해 붙여넣어주세요." style="width:100%;padding:12px;border:1px solid #e5e8eb;border-radius:12px;font:inherit"></textarea></label><div class="link-result" id="linkResult"></div><div class="dialog-actions" id="linkInitialActions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="linkAnalyze" value="default">내용 분석</button></div></form></dialog>
   <dialog id="alternativeDialog"><form method="dialog" class="dialog-inner" id="alternativeForm"><h3>날씨 대체 장소</h3><p>비가 올 때 바꿀 야외 일정과 실내 장소를 연결해주세요.</p><label class="field"><span>대상 날짜</span><select id="alternativeDay"></select></label><label class="field"><span>기존 야외 장소</span><select id="alternativeOriginal"></select></label><label class="field"><span>대체 장소</span><input id="alternativeReplacement" required placeholder="예: 도요타 산업기술기념관" /></label><label class="field"><span>메모</span><input id="alternativeNote" placeholder="실내 관람, 이동 정보 등" /></label><div class="dialog-actions"><button class="cancel" value="cancel">취소</button><button class="confirm" value="default">대체 장소 저장</button></div></form></dialog>
   <dialog id="routeDialog"><div class="dialog-inner"><h3>전체 경로</h3><p>휴대폰 Google 지도에 맞춰 경유지 3개씩 나눴어요.</p><div id="routeSegments"></div><button class="cancel" onclick="this.closest('dialog').close()">닫기</button></div></dialog>
@@ -236,6 +250,21 @@
     const inviteToken=localStorage.getItem('journey-note-invite')||'',participantId=localStorage.getItem('journey-note-participant')||crypto.randomUUID();localStorage.setItem('journey-note-participant',participantId);
     // Keep the invitation in the URL when handing off to Safari or installing the PWA.
     if(!inviteInUrl&&/^[a-f0-9]{64}$/.test(inviteToken)){const inviteUrl=new URL(location.href);inviteUrl.hash='invite='+inviteToken;history.replaceState(null,'',inviteUrl.pathname+inviteUrl.search+inviteUrl.hash)}
+    // ── 인앱 브라우저(카카오톡·인스타그램 등) ──────────────────────────────────
+    // 이 브라우저들은 사파리·홈 화면 앱과 저장 공간이 다르다. 그래서 여기서 1회용 초대를 소모하면
+    //  · 사파리·홈 화면 앱에서는 그 초대를 다시 쓸 수 없고,
+    //  · 다음에 같은 창을 다시 열면 새 익명 계정으로 보여 참여가 이어지지 않는다.
+    // → 인앱 브라우저에서는 초대를 '자동으로' 소모하지 않고, 사파리에서 열도록 먼저 안내한다.
+    function inAppBrowserInfo(){
+      const ua=navigator.userAgent||'',ios=/iPhone|iPad|iPod/.test(ua),android=/Android/.test(ua);
+      const known=[[/KAKAOTALK/i,'카카오톡'],[/NAVER\(inapp/i,'네이버 앱'],[/Instagram/i,'인스타그램'],[/FBAN|FBAV|FB_IAB|FB4A/i,'페이스북'],[/Line\//i,'라인'],[/DaumApps|Daum\//i,'다음 앱'],[/BAND\//i,'밴드'],[/Snapchat/i,'스냅챗'],[/Pinterest/i,'핀터레스트'],[/Twitter/i,'X 앱']];
+      for(const [pattern,name] of known)if(pattern.test(ua))return{name,ios,android};
+      if(ios&&!/Safari\//.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS/i.test(ua))return{name:'앱 안의 브라우저',ios:true,android};
+      return null;
+    }
+    const inAppBrowser=inAppBrowserInfo();
+    window.VIAGO_IN_APP=inAppBrowser?inAppBrowser.name:'';
+    if(inAppBrowser)window.VIAGO_HOLD_INVITE=true;
     function apiFetch(url,options={}){return fetch(url,{signal:AbortSignal.timeout(10000),...options,headers:{...(options.headers||{}),...(inviteToken?{Authorization:'Bearer '+inviteToken}:{})}})}
     // 초대 링크 복구: 배포 주소(/viago/)·옛 주소(/travel)·index.html 로 연 경우 모두 "지금 이 앱의 경로"만 받는다.
     function appBasePath(pathname){const p=String(pathname||location.pathname||'/').replace(/\/index\.html?$/i,'/').replace(/\/+$/,'/');return p||'/'}
@@ -269,6 +298,8 @@
       // 네이티브 dialog(top layer)가 떠 있으면 게이트를 덮으므로 닫는다.
       if(wasHidden)document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});
       g.hidden=false;fitGateViewport();
+      const inviteField=$('#gateInvite');
+      if(inviteField&&!inviteField.value){const link=knownInviteLink();if(link)inviteField.value=link}
       if(focus&&(wasHidden||focus==='force')){const input=$('#gateInvite');if(input)setTimeout(()=>{try{input.focus({preventScroll:true})}catch(e){}},60)}
     }
     function closeInviteGate(){
@@ -299,8 +330,8 @@
     function gateJoinMessage(err){
       const m=String(err&&err.message||err||'');
       if(/offline|network|Failed to fetch|Load failed/i.test(m))return '네트워크에 연결되지 않았어요. 연결을 확인하고 다시 눌러주세요.';
-      if(/invite_taken/.test(m))return '이 초대는 방금 다른 기기에서 먼저 사용됐어요. 새 초대 코드를 받아 다시 넣어주세요.';
-      if(/invite_unusable/.test(m))return '이 초대는 이미 사용됐거나 만료됐어요. 새 초대 코드를 받아 다시 넣어주세요.';
+      if(/invite_taken/.test(m))return '이 초대는 방금 다른 사람이 먼저 사용했어요. 이미 참여한 사파리·홈 화면 앱에서 열거나, 여행을 만든 사람에게 새 초대를 받아주세요.';
+      if(/invite_unusable/.test(m))return '이 초대는 이미 사용됐거나 만료됐어요. 이미 참여한 사파리·홈 화면 앱에서 열거나, 여행을 만든 사람에게 새 초대를 받아주세요.';
       if(/join_denied/.test(m))return '이 초대는 이 여행에 쓸 수 없어요. 새 초대 코드를 받아 다시 넣어주세요.';
       if(/no_invite/.test(m))return '이 기기는 아직 이 여행에 참여하지 않았어요. 받은 초대 코드를 넣어주세요.';
       return '연결하지 못했어요'+(m?' ('+m+')':'')+'. 잠시 후 다시 눌러주세요.';
@@ -308,6 +339,7 @@
     let gateConnecting=false;
     async function connectWithInvite(){
       if(gateConnecting)return;
+      window.VIAGO_HOLD_INVITE=false;   // 사용자가 직접 누른 참여 시도는 보류를 풀고 진행한다
       const btn=$('#gateConnect'),input=$('#gateInvite');
       const out=parseInviteInput(input?input.value:'');
       if(!out.ok){setGateError(out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.':'이 여행 앱에서 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.');return}
@@ -326,6 +358,8 @@
         gateConnecting=false;
         setGateError(gateJoinMessage(error));
         if(btn){btn.disabled=false;btn.textContent='초대 코드로 연결'}
+        // 인앱 브라우저에서 이미 소모된 초대면, 코드를 다시 넣어도 풀리지 않는다 → 사파리 안내로 바꾼다.
+        if(inAppBrowser&&/invite_unusable|invite_taken/.test(String(error&&error.message||'')))showInAppGuide('spent');
         return;
       }
       // 참여 성공: 소진된 초대 토큰을 이 기기에 남겨 두지 않는다(다음 실행에서 재시도하며 막히는 것을 막는다).
@@ -339,7 +373,53 @@
       if(btn){btn.disabled=false;btn.textContent='초대 코드로 연결'}
     }
     function showInviteRecovery(message,gateMessage){hideLaunchCover();document.body.classList.remove('booting');const form=$('#inviteRecovery');if(form)form.hidden=false;if(message)$('#recoveryError').textContent=message;if(gateMessage)setGateError(gateMessage);markAccessBlocked()}
+    // ── 인앱 브라우저 안내(사파리로 열기·링크 복사·이 창에서 참여) ──────────────
     let accessBlockedAt=0,gateDismissed=false;
+    function knownInviteToken(){const fromHash=new URLSearchParams(location.hash.slice(1)).get('invite');if(/^[a-f0-9]{64}$/i.test(fromHash||''))return fromHash.toLowerCase();return /^[a-f0-9]{64}$/.test(inviteToken)?inviteToken:''}
+    function knownInviteLink(){const token=knownInviteToken();return token?location.origin+appBasePath()+'#invite='+token:''}
+    async function copyText(text){
+      if(!text)return false;
+      try{await navigator.clipboard.writeText(text);return true}catch(e){}
+      try{const area=document.createElement('textarea');area.value=text;area.setAttribute('readonly','');area.style.cssText='position:fixed;top:-1000px;opacity:0';document.body.appendChild(area);area.select();area.setSelectionRange(0,text.length);const ok=document.execCommand('copy');area.remove();return ok}catch(e){return false}
+    }
+    // 카카오톡은 공식 외부 브라우저 열기 스킴을 쓴다. 그 밖의 iOS 웹뷰는 x-safari-https 로 사파리를 연다.
+    function openExternalBrowser(url){
+      if(!url)return false;
+      const go=href=>{const a=document.createElement('a');a.href=href;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();a.remove()};
+      if(/KAKAOTALK/i.test(navigator.userAgent)){go('kakaotalk://web/openExternal?url='+encodeURIComponent(url));return true}
+      if(/iPhone|iPad|iPod/.test(navigator.userAgent)){go(url.replace(/^https:\/\//i,'x-safari-https://'));return true}
+      return false;
+    }
+    function inAppGateEl(){return $('#inAppGate')}
+    function hideInAppGuide(){const g=inAppGateEl();if(g)g.hidden=true}
+    function setInAppError(message){const el=$('#inAppError');if(el)el.textContent=message||''}
+    function showInAppGuide(reason){
+      const g=inAppGateEl();if(!g)return;
+      const name=window.VIAGO_IN_APP||'앱 안의 브라우저',link=knownInviteLink(),spent=reason==='spent';
+      document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});
+      $('#inAppTitle').textContent=spent?'이 초대는 이미 사용됐어요':name+'에서는 참여가 이어지지 않아요';
+      $('#inAppWhy').innerHTML=spent
+        ? name+' 안의 브라우저는 사파리·홈 화면 앱과 <b>저장 공간이 달라서</b> 이미 참여한 기기라도 이 창에서는 새 손님으로 보여요. 게다가 <b>이미 사용된 초대는 다시 쓸 수 없어요.</b>'
+        : name+' 안의 브라우저는 사파리·홈 화면 앱과 <b>저장 공간이 따로</b>예요. 여기서 초대를 쓰면 그 초대는 이 창에서만 쓰이고, 사파리·홈 화면 앱에서는 다시 쓸 수 없어요.';
+      const field=$('#inAppLink');
+      if(field){field.value=link||'';field.hidden=!link}
+      $('#inAppOpenSafari').hidden=!link;
+      $('#inAppCopy').hidden=!link;
+      $('#inAppContinue').hidden=spent||!link;
+      $('#inAppHint').textContent=spent
+        ? '이미 참여한 기기라면 사파리나 홈 화면 앱에서 열어보세요. 새 초대는 여행을 만든 사람(소유자)이 앱의 + 버튼으로 만들 수 있어요.'
+        : '사파리에서 열어 한 번만 참여하면 이 기기에서는 계속 이어져요. 초대는 한 사람만 쓸 수 있는 1회용이에요.';
+      setInAppError('');
+      g.hidden=false;
+    }
+    // 인앱 브라우저에서 초대를 자동 소모하지 않았을 때(정상 흐름)의 화면 상태.
+    function handleInviteHeld(){
+      hideLaunchCover();document.body.classList.remove('booting');
+      if(localStorage.getItem('journey-note-trips'))sharedReady=true;
+      accessBlockedAt=Date.now();markAccessBlocked(false);
+      setSyncStatus('참여 확인 필요 · '+window.VIAGO_IN_APP,'offline');
+      showInAppGuide('held');
+    }
     function isAccessError(err){const code=String(err&&err.message||'');return /_(401|403)$/.test(code)||/^(no_invite|invite_unusable|invite_taken|join_denied|join_failed)$/.test(code)}
     function normalizeShared(payload){payload?.trips?.forEach(t=>ensureTripFeatures(t));return payload}
     const pendingDraft=readLocal('journey-note-pending');
@@ -489,8 +569,14 @@
         }
         if(!syncConflictState)setSyncStatus('실시간 동기화 완료','online');
         accessBlockedAt=0;clearAccessBlocked();
+        // 이미 멤버인 기기에서 초대 링크(이미 소진된 초대 포함)로 다시 들어온 경우: 오류 없이 열고 주소·보관 토큰을 정리한다.
+        if(inviteInUrl){
+          try{localStorage.removeItem('journey-note-invite')}catch(e){}
+          try{const u=new URL(location.href);if(/invite=/.test(u.hash)){u.hash='';history.replaceState(null,'',u.pathname+u.search)}}catch(e){}
+        }
       }catch(e){
         // 참여 권한이 없어서 실패한 경우에는 '연결 확인 중'으로 덮지 않는다(원인을 흐리지 않게).
+        if(String(e&&e.message)==='invite_held'){handleInviteHeld();return}
         if(isAccessError(e)){accessBlockedAt=Date.now();markAccessBlocked(false);setSyncStatus('참여 확인 필요 · 오프라인 보관 모드','offline');}
         else setSyncStatus(navigator.onLine===false?'오프라인 보관 모드 · 저장 대기':'연결 확인 중 · 휴대폰 보관본','offline');
       }finally{
@@ -539,7 +625,13 @@
             }
           }else setSyncStatus('실시간 동기화 완료','online');
         }
+        // 이미 멤버인 기기에서 초대 링크(이미 소진된 초대 포함)로 다시 들어온 경우: 오류 없이 열고 주소·보관 토큰을 정리한다.
+        if(inviteInUrl){
+          try{localStorage.removeItem('journey-note-invite')}catch(e){}
+          try{const u=new URL(location.href);if(/invite=/.test(u.hash)){u.hash='';history.replaceState(null,'',u.pathname+u.search)}}catch(e){}
+        }
       }catch(err){
+        if(String(err&&err.message)==='invite_held'){handleInviteHeld();return}
         console.warn('Sync fallback to local cache:', err);
         hideLaunchCover();
         document.body.classList.remove('booting');
@@ -822,81 +914,122 @@
       const data=await placesRequest('/places/'+encodeURIComponent(placeId)+'?'+params.toString(),{headers:{'X-Goog-Api-Key':MAPS_CONFIG.key,'X-Goog-FieldMask':'id,formattedAddress,location,types'},...(signal?{signal}:{})});
       return {placeId:data.id||placeId,address:data.formattedAddress||'',lat:data.location?.latitude,lng:data.location?.longitude,types:data.types||[]};
     }
+    // ── 장소 자동완성 ─────────────────────────────────────────────────────────
+    // 추천을 눌러도 아무 일이 없던 원인을 구조로 막는다.
+    //  ① 입력창이 <label> 안에 있어 추천 버튼 탭 → 라벨 활성화 → 입력창 focus → focus 핸들러의
+    //     invalidate() 가 진행 중인 Place Details 응답을 폐기했다(선택이 조용히 사라짐).
+    //     → 목록을 라벨 밖으로 옮기고(마크업), 항목은 pointerdown 에서 기본동작을 막아 포커스 이동 없이 고른다.
+    //  ② 검색 세대와 선택 세대를 나눈다. 포커스·블러·스크롤 같은 부수 이벤트는 선택을 취소하지 않고,
+    //     검색어를 실제로 고치거나 창을 닫았을 때만 취소한다. 늦게 온 응답도 새 검색어를 덮지 않는다.
     function setupPlaceAutocomplete(input,list,onSelect){
-      let requestId=0,timer=null,controller=null,detailsController=null,sessionToken=null,sessionAt=0,googleMatches=[],savedMatches=[];
+      let searchSeq=0,timer=null,searchController=null,detailsController=null,sessionToken=null,sessionAt=0;
+      let googleMatches=[],savedMatches=[],itemHits=new Map(),pending=null;
       const cache=new Map();
-      const noteQuota='오늘의 장소 검색 한도에 도달했어요. 저장된 장소에서 고르거나 이름을 직접 입력해 주세요.';
-      const noteAuth='Google 장소 검색을 사용할 수 없어요. 저장된 장소에서 고르거나 이름을 직접 입력해 주세요.';
-      const noteOffline='인터넷에 연결되어 있지 않아요. 저장된 장소에서 골라 주세요.';
-      const noteEmpty='검색 결과가 없어요. 주소나 다른 이름으로 다시 검색해 보세요.';
-      const noteError='장소 검색에 연결하지 못했어요. 저장된 장소에서 고르거나 이름을 직접 입력해 주세요.';
+      const notes={quota:'오늘의 장소 검색 한도에 도달했어요. 저장된 장소에서 고르거나 이름을 직접 입력해 주세요.',auth:'Google 장소 검색을 사용할 수 없어요. 저장된 장소에서 고르거나 이름을 직접 입력해 주세요.',offline:'인터넷에 연결되어 있지 않아요. 저장된 장소에서 골라 주세요.',empty:'검색 결과가 없어요. 주소나 다른 이름으로 다시 검색해 보세요.',error:'장소 검색에 연결하지 못했어요. 저장된 장소에서 고르거나 이름을 직접 입력해 주세요.'};
       function ensureSession(){const now=Date.now();if(!sessionToken||now-sessionAt>180000){sessionToken=placesSessionId()}sessionAt=now;return sessionToken}
       function resetSession(){sessionToken=null;sessionAt=0}
-      // 진행 중인 검색·상세 요청을 모두 무효화한다. 응답이 늦게 도착해도 requestId 가 달라 반영되지 않는다.
-      function invalidate(){requestId++;controller?.abort();detailsController?.abort();detailsController=null}
-      const close=()=>{invalidate();clearTimeout(timer);googleMatches=[];closeSuggestions(input,list)};
+      // 검색만 무효화한다(선택 중인 상세 조회는 건드리지 않는다).
+      function invalidateSearch(){searchSeq++;searchController?.abort();searchController=null;clearTimeout(timer)}
+      // 진행 중인 선택을 취소한다. 취소 뒤 도착한 응답은 pending 검사에서 버려진다.
+      function cancelSelection(){if(!pending)return;pending=null;detailsController?.abort();detailsController=null;setBusy(false)}
+      const close=()=>{invalidateSearch();cancelSelection();googleMatches=[];itemHits=new Map();list.style.height='';closeSuggestions(input,list)};
+      // 상세 정보를 확인하는 동안 저장 버튼을 잠근다 — 확인 전에 저장해 좌표가 빠지는 상황을 막는다.
+      function setBusy(busy){
+        input.setAttribute('aria-busy',busy?'true':'false');
+        const dialog=input.closest('dialog');if(!dialog)return;
+        dialog.querySelectorAll('.dialog-actions .confirm').forEach(button=>{
+          if(busy){if(button.dataset.busyLock===undefined){button.dataset.busyLock=button.disabled?'1':'0';button.disabled=true}}
+          else if(button.dataset.busyLock!==undefined){button.disabled=button.dataset.busyLock==='1';delete button.dataset.busyLock}
+        });
+      }
+      input.selectionPending=()=>!!pending;
       input.freeSearch=()=>{list.classList.add('open');input.setAttribute('aria-expanded','true');return runSearch(input.value.trim())};
       function openList(){list.classList.add('open');input.setAttribute('aria-expanded','true')}
-      function itemHtml(p,source){
-        const key=source==='google'?(p.placeId||p.name):p.name;
-        return `<button type="button" class="suggestion-item" role="option" data-source="${source}" data-suggestion="${esc(key)}"><span class="suggestion-pin">${source==='google'?'⌖':'★'}</span><span class="suggestion-copy"><strong>${esc(p.name)}</strong><small>${esc(p.address||(source==='google'?'Google Maps 장소':'저장한 장소'))}</small></span></button>`;
+      function itemHtml(p,source,key){
+        return `<button type="button" class="suggestion-item" role="option" data-source="${source}" data-suggestion="${esc(source==='google'?(p.placeId||p.name):p.name)}" data-item="${key}"><span class="suggestion-pin">${source==='google'?'⌖':'★'}</span><span class="suggestion-copy"><strong>${esc(p.name)}</strong><small>${esc(p.address||(source==='google'?'Google Maps 장소':'저장한 장소'))}</small></span></button>`;
       }
       function render(note){
-        const saved=savedMatches.length?'<div class="suggestion-section">저장한 장소</div>'+savedMatches.map(p=>itemHtml(p,'saved')).join(''):'';
-        const google=googleMatches.length?'<div class="suggestion-section">Google Maps 검색 결과</div>'+googleMatches.map(p=>itemHtml(p,'google')).join(''):'';
-        list.innerHTML=saved+google+(note?`<div class="suggestion-state">${esc(note)}</div>`:'')+
+        itemHits=new Map();list.style.height='';
+        const savedHtml=savedMatches.map((p,i)=>itemHtml(p,'saved','s'+i)).join('');
+        const googleHtml=googleMatches.map((p,i)=>itemHtml(p,'google','g'+i)).join('');
+        const saved=savedHtml?'<div class="suggestion-section">저장한 장소</div>'+savedHtml:'';
+        const google=googleHtml?'<div class="suggestion-section">Google Maps 검색 결과</div>'+googleHtml:'';
+        list.innerHTML=saved+google+(note?`<div class="suggestion-state" role="status">${esc(note)}</div>`:'')+
           '<button type="button" class="suggestion-item" data-google-search><span class="suggestion-pin">↗</span><span class="suggestion-copy"><strong>Google 지도에서 직접 검색</strong><small>새 창에서 열어 정확한 지점을 확인해요</small></span></button>'+
           '<div class="suggestion-credit">Google Maps</div>';
-        list.querySelectorAll('[data-suggestion]').forEach(button=>{
-          button.onclick=()=>{
-            const source=button.dataset.source,key=button.dataset.suggestion;
-            if(source==='google'){const hit=googleMatches.find(p=>(p.placeId||p.name)===key);if(hit)selectGooglePlace(hit)}
-            else{const hit=savedMatches.find(p=>p.name===key);if(hit){input.value=hit.name;onSelect(hit);close()}}
-          };
+        savedMatches.forEach((p,i)=>itemHits.set('s'+i,{kind:'saved',place:p}));
+        googleMatches.forEach((p,i)=>itemHits.set('g'+i,{kind:'google',place:p}));
+        list.querySelectorAll('[data-item]').forEach(button=>{
+          const hit=itemHits.get(button.dataset.item);if(!hit)return;
+          // 터치·마우스: 기본동작(포커스 이동·라벨 활성화)을 막고 바로 고른다. 그래야 상세 요청이 취소되지 않는다.
+          button.addEventListener('pointerdown',event=>{
+            if(event.pointerType==='mouse'&&event.button!==0)return;
+            if(event.isPrimary===false)return;
+            event.preventDefault();event.stopPropagation();
+            button.dataset.armed=String(Date.now());
+            choose(hit);
+          });
+          // 키보드·보조기기·스크립트 클릭: click 으로도 같은 선택이 된다(포인터로 이미 고른 항목은 한 번만).
+          button.addEventListener('click',event=>{
+            event.preventDefault();event.stopPropagation();
+            if(button.dataset.armed&&Date.now()-Number(button.dataset.armed)<900)return;
+            choose(hit);
+          });
         });
         const direct=list.querySelector('[data-google-search]');
-        if(direct)direct.onclick=()=>window.open('https://www.google.com/maps/search/?api=1&hl=ko&query='+encodeURIComponent([input.value.trim(),activeTrip.destination].filter(Boolean).join(' ')),'_blank','noopener');
+        if(direct)direct.addEventListener('click',event=>{
+          event.preventDefault();event.stopPropagation();
+          window.open('https://www.google.com/maps/search/?api=1&hl=ko&query='+encodeURIComponent([input.value.trim(),activeTrip.destination].filter(Boolean).join(' ')),'_blank','noopener');
+        });
         openList();
       }
+      function choose(hit){
+        if(hit.kind==='saved'){input.value=hit.place.name;onSelect(hit.place);close();return}
+        return selectGooglePlace(hit.place);
+      }
       async function runSearch(query){
-        const run=++requestId;
+        if(pending)return;                      // 선택 확인 중에는 목록을 검색 결과로 덮지 않는다
+        const run=++searchSeq;
         if(query.length<2){closeSuggestions(input,list);return}
         savedMatches=savedPlaceSuggestions(query);googleMatches=[];
         render('Google Maps에서 장소를 찾고 있어요…');
-        if(navigator.onLine===false){render(noteOffline);return}
+        if(navigator.onLine===false){render(notes.offline);return}
         const cacheKey=activeTrip.destination+'|'+query;
-        if(cache.has(cacheKey)){const hit=cache.get(cacheKey);if(run!==requestId)return;googleMatches=hit;render(hit.length?'':noteEmpty);return}
-        controller?.abort();controller=new AbortController();
+        if(cache.has(cacheKey)){const hit=cache.get(cacheKey);if(run!==searchSeq)return;googleMatches=hit;render(hit.length?'':notes.empty);return}
+        searchController?.abort();searchController=new AbortController();
         try{
-          const hits=await googlePlacePredictions(query,ensureSession(),controller.signal);
-          if(run!==requestId)return;
-          cache.set(cacheKey,hits);googleMatches=hits;render(hits.length?'':noteEmpty);
+          const hits=await googlePlacePredictions(query,ensureSession(),searchController.signal);
+          if(run!==searchSeq||pending)return;
+          cache.set(cacheKey,hits);googleMatches=hits;render(hits.length?'':notes.empty);
         }catch(err){
-          if(err.name==='AbortError'||run!==requestId)return;
+          if(err.name==='AbortError'||run!==searchSeq||pending)return;
           googleMatches=[];
-          render(err.reason==='quota'?noteQuota:err.reason==='auth'?noteAuth:err.reason==='connection'?noteError:noteError);
+          render(err.reason==='quota'?notes.quota:err.reason==='auth'?notes.auth:err.reason==='connection'?notes.error:notes.error);
         }
       }
       async function selectGooglePlace(prediction){
-        // 이 선택을 새로운 요청 세대로 등록한다. 이후 입력·닫기·여행 전환은 requestId 를 올려
-        // 늦게 도착한 상세 응답이 입력창/선택 상태를 덮어쓰지 못하게 한다.
-        const run=++requestId;
-        const queryAtSelect=input.value.trim(),tripAtSelect=activeTrip.id,dialog=input.closest('dialog');
-        clearTimeout(timer);controller?.abort();
-        detailsController?.abort();detailsController=new AbortController();
-        const detailsSignal=detailsController.signal;
-        list.innerHTML='<div class="suggestion-state">장소 정보를 확인하고 있어요</div>';openList();
+        cancelSelection();invalidateSearch();
+        const seq={query:input.value.trim()};pending=seq;
+        detailsController?.abort();const controller=new AbortController();detailsController=controller;
+        const queryAtSelect=seq.query,tripAtSelect=activeTrip.id,dialog=input.closest('dialog');
+        setBusy(true);
+        // 목록 높이를 그대로 유지한다 — 내용이 줄어들면 탭의 click 이 뒤쪽 입력칸(메모 등)으로 새어 들어간다.
+        const listHeight=list.offsetHeight;
+        list.innerHTML='<div class="suggestion-state" role="status"><span class="suggestion-spinner" aria-hidden="true"></span>장소 정보를 확인하고 있어요</div>';openList();
+        if(listHeight)list.style.height=listHeight+'px';
         const base={name:prediction.name||queryAtSelect,address:prediction.address||'',placeId:prediction.placeId,source:'google',mapsUrl:googlePlacesLink(prediction.name||queryAtSelect,prediction.address,prediction.placeId)};
+        const appliedName=base.name;
+        if(input.value.trim()===queryAtSelect)input.value=appliedName;
         let details=null,detailIssue='';
-        try{details=await googlePlaceDetails(prediction.placeId,ensureSession(),detailsSignal)}
-        catch(err){if(err?.name==='AbortError')return;detailIssue=err?.reason||'connection'}
-        // 응답을 반영하기 전에 지금 화면 상태가 선택했을 때와 같은지 확인한다.
-        if(run!==requestId)return;
-        if(dialog&&!dialog.open)return;
-        if(activeTrip.id!==tripAtSelect)return;
-        if(input.value.trim()!==queryAtSelect)return;
+        try{details=await googlePlaceDetails(prediction.placeId,ensureSession(),controller.signal)}
+        catch(err){if(err?.name==='AbortError'){if(pending===seq){pending=null;setBusy(false)}return}detailIssue=err?.reason||'connection'}
+        // 응답을 반영하기 전에 '아직 같은 선택인지'만 확인한다(포커스·블러는 취소 사유가 아니다).
+        if(pending!==seq)return;
+        if(dialog&&!dialog.open){pending=null;setBusy(false);return}
+        // 그 사이 사용자가 검색어를 고쳤으면 반영하지 않는다(우리가 넣은 지점 이름과 다르면 사용자가 고친 것).
+        if(activeTrip.id!==tripAtSelect||input.value.trim()!==appliedName){pending=null;setBusy(false);return}
+        pending=null;setBusy(false);
         resetSession();
-        input.value=base.name;
         if(details&&Number.isFinite(details.lat)&&Number.isFinite(details.lng)){
           onSelect({...base,address:details.address||base.address,lat:details.lat,lng:details.lng,kind:placeKindFromTypes(details.types),placeCachedAt:new Date().toISOString()});
         }else{
@@ -906,17 +1039,28 @@
         close();
       }
       input.addEventListener('input',()=>{
-        onSelect(null);clearTimeout(timer);invalidate();
         const q=input.value.trim();
+        // 한글 입력 확정 등으로 같은 값의 input 이벤트가 다시 와도 진행 중인 선택은 취소하지 않는다.
+        if(pending&&q===pending.query)return;
+        cancelSelection();
+        onSelect(null);
+        invalidateSearch();
         if(q.length<2){closeSuggestions(input,list);return}
         savedMatches=savedPlaceSuggestions(q);googleMatches=[];render();
         timer=setTimeout(()=>runSearch(q),320);
       });
-      input.addEventListener('focus',()=>{invalidate();const q=input.value.trim();if(q.length>=2){googleMatches=[];savedMatches=savedPlaceSuggestions(q);render()}});
+      input.addEventListener('focus',()=>{
+        const q=input.value.trim();
+        if(q.length<2||list.classList.contains('open'))return;   // 이미 떠 있는 목록은 포커스로 다시 그리지 않는다
+        savedMatches=savedPlaceSuggestions(q);
+        googleMatches=cache.get(activeTrip.destination+'|'+q)||[];
+        render();
+      });
       input.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
       input.closest('dialog')?.addEventListener('close',close);
       document.addEventListener('pointerdown',e=>{if(!input.parentElement.contains(e.target))close()});
     }
+
     function validGoogleMapsUrl(value){const match=String(value||'').match(/https:\/\/[^\s<>"']+/i);if(!match)return '';try{const url=new URL(match[0]);const host=url.hostname.toLowerCase();if(url.protocol!=='https:'||url.username||url.password)return '';if(host==='maps.app.goo.gl'||(host==='goo.gl'&&url.pathname.startsWith('/maps/'))||((host==='google.com'||host.endsWith('.google.com')||host==='google.co.jp'||host.endsWith('.google.co.jp'))&&url.pathname.startsWith('/maps')))return url.href}catch{}return ''}
     function parseUserCoordinates(value){let match=value.trim().match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/)||value.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/)||value.match(/[?&](?:q|query)=(-?\d+(?:\.\d+)?)(?:,|%2C)(-?\d+(?:\.\d+)?)/i)||value.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);if(!match)return null;const c=[Number(match[1]),Number(match[2])];return Number.isFinite(c[0])&&Number.isFinite(c[1])&&Math.abs(c[0])<=90&&Math.abs(c[1])<=180?c:null}
     function selectionFields(selection){if(!selection)return{};const fields={...(selection.placeId?{placeId:selection.placeId}:{}),...(selection.address?{address:selection.address}:{}),source:selection.source||'saved',...(selection.mapsUrl?{mapsUrl:selection.mapsUrl}:{})};if(Number.isFinite(selection.lat)&&Number.isFinite(selection.lng)){fields.lat=selection.lat;fields.lng=selection.lng;if(selection.placeId)fields.placeCachedAt=selection.placeCachedAt||new Date().toISOString()}return fields}
@@ -1266,10 +1410,10 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     setupPlaceAutocomplete($('#mapSearch'),$('#mapSuggestions'),value=>{mapSearchSelection=value;if(value)showSearchResult(value)});
     $('#linkForm').addEventListener('submit',e=>{e.preventDefault();analyzeTravelLink()});
     $('#linkDay').addEventListener('change',updateLinkSaveButton);
-    $('#addForm').addEventListener('submit',async e=>{e.preventDefault();const name=$('#placeName').value.trim(),rawMap=$('#addMapsUrl').value.trim(),mapsUrl=validGoogleMapsUrl(rawMap);if(!name)return;if(rawMap&&!mapsUrl)return toast('올바른 Google 지도 공유 링크를 입력해주세요');$('#addConfirm').disabled=true;let selection=addPlaceSelection,c=selection&&Number.isFinite(selection.lat)&&Number.isFinite(selection.lng)?[selection.lat,selection.lng]:null,item={name:selection?.name||name,note:$('#placeNote').value.trim(),kind:selection?.kind||'장소',...selectionFields(selection),...(mapsUrl?{mapsUrl}:{})};if(!c&&mapsUrl)c=parseUserCoordinates(mapsUrl);if(c&&!Number.isFinite(item.lat))[item.lat,item.lng]=c;days[dayIndex].places.push(item);save();$('#addConfirm').disabled=false;$('#addDialog').close();$('#addForm').reset();addPlaceSelection=null;render();toast(c?'정확한 위치와 함께 일정에 추가했어요':'일정에 추가했어요 · 검색 추천에서 지점을 고르면 지도에 표시돼요')});
-    $('#editForm').addEventListener('submit',async e=>{e.preventDefault();if(!editingPlace)return;const edit={...editingPlace},list=edit.day==='candidate'?activeTrip.candidates:days[edit.day]?.places,original=list?.find(p=>p.id===edit.id),name=$('#editPlaceName').value.trim(),target=$('#editPlaceDay').value;if(!original||!name)return;const rawMap=$('#editMapsUrl').value.trim(),mapsUrl=validGoogleMapsUrl(rawMap);if(rawMap&&!mapsUrl)return toast('올바른 Google 지도 공유 링크를 입력해주세요');$('#editConfirm').disabled=true;try{const selection=editPlaceSelection,updated={...original,name:selection?.name||name,note:$('#editPlaceNote').value.trim(),kind:$('#editPlaceKind').value,hoursText:$('#editHoursText').value.trim(),...selectionFields(selection)};if(updated.name!==original.name&&!selection){delete updated.placeId;delete updated.address;delete updated.lat;delete updated.lng;delete updated.mapsUrl}if(mapsUrl)updated.mapsUrl=mapsUrl;else delete updated.mapsUrl;const typedCoords=$('#editCoordinates').value.trim(),manual=parseUserCoordinates(typedCoords||mapsUrl);if(typedCoords&&!manual){toast('위도·경도 또는 좌표가 포함된 지도 링크를 확인해주세요');return}if(manual){[updated.lat,updated.lng]=manual;updated.source='user'}const pickedFromSearch=!!(selection&&Number.isFinite(selection.lat)&&Number.isFinite(selection.lng)),movedByHand=!!manual&&(!(Number.isFinite(original.lat)&&Number.isFinite(original.lng))||original.lat!==updated.lat||original.lng!==updated.lng);if((pickedFromSearch||movedByHand)&&Number.isFinite(updated.lat)&&Number.isFinite(updated.lng))delete updated.coordNeedsCheck;if(edit.day===Number(target)){const i=list.findIndex(p=>p.id===edit.id);list.splice(i,1,updated)}else if(!moveEditedPlace(edit,updated,target))return toast('일정이 변경되었어요. 다시 열어주세요');hoursCache.clear();save();$('#editDialog').close();editingPlace=null;editPlaceSelection=null;render();toast(target==='candidate'?'후보로 이동했어요':'일정 내용을 수정했어요')}finally{$('#editConfirm').disabled=false}});
+    $('#addForm').addEventListener('submit',async e=>{e.preventDefault();if($('#placeName').selectionPending?.())return toast('장소 정보를 확인하고 있어요. 잠시만 기다려 주세요');const name=$('#placeName').value.trim(),rawMap=$('#addMapsUrl').value.trim(),mapsUrl=validGoogleMapsUrl(rawMap);if(!name)return;if(rawMap&&!mapsUrl)return toast('올바른 Google 지도 공유 링크를 입력해주세요');$('#addConfirm').disabled=true;let selection=addPlaceSelection,c=selection&&Number.isFinite(selection.lat)&&Number.isFinite(selection.lng)?[selection.lat,selection.lng]:null,item={name:selection?.name||name,note:$('#placeNote').value.trim(),kind:selection?.kind||'장소',...selectionFields(selection),...(mapsUrl?{mapsUrl}:{})};if(!c&&mapsUrl)c=parseUserCoordinates(mapsUrl);if(c&&!Number.isFinite(item.lat))[item.lat,item.lng]=c;days[dayIndex].places.push(item);save();$('#addConfirm').disabled=false;$('#addDialog').close();$('#addForm').reset();addPlaceSelection=null;render();toast(c?'정확한 위치와 함께 일정에 추가했어요':'일정에 추가했어요 · 검색 추천에서 지점을 고르면 지도에 표시돼요')});
+    $('#editForm').addEventListener('submit',async e=>{e.preventDefault();if($('#editPlaceName').selectionPending?.())return toast('장소 정보를 확인하고 있어요. 잠시만 기다려 주세요');if(!editingPlace)return;const edit={...editingPlace},list=edit.day==='candidate'?activeTrip.candidates:days[edit.day]?.places,original=list?.find(p=>p.id===edit.id),name=$('#editPlaceName').value.trim(),target=$('#editPlaceDay').value;if(!original||!name)return;const rawMap=$('#editMapsUrl').value.trim(),mapsUrl=validGoogleMapsUrl(rawMap);if(rawMap&&!mapsUrl)return toast('올바른 Google 지도 공유 링크를 입력해주세요');$('#editConfirm').disabled=true;try{const selection=editPlaceSelection,updated={...original,name:selection?.name||name,note:$('#editPlaceNote').value.trim(),kind:$('#editPlaceKind').value,hoursText:$('#editHoursText').value.trim(),...selectionFields(selection)};if(updated.name!==original.name&&!selection){delete updated.placeId;delete updated.address;delete updated.lat;delete updated.lng;delete updated.mapsUrl}if(mapsUrl)updated.mapsUrl=mapsUrl;else delete updated.mapsUrl;const typedCoords=$('#editCoordinates').value.trim(),manual=parseUserCoordinates(typedCoords||mapsUrl);if(typedCoords&&!manual){toast('위도·경도 또는 좌표가 포함된 지도 링크를 확인해주세요');return}if(manual){[updated.lat,updated.lng]=manual;updated.source='user'}const pickedFromSearch=!!(selection&&Number.isFinite(selection.lat)&&Number.isFinite(selection.lng)),movedByHand=!!manual&&(!(Number.isFinite(original.lat)&&Number.isFinite(original.lng))||original.lat!==updated.lat||original.lng!==updated.lng);if((pickedFromSearch||movedByHand)&&Number.isFinite(updated.lat)&&Number.isFinite(updated.lng))delete updated.coordNeedsCheck;if(edit.day===Number(target)){const i=list.findIndex(p=>p.id===edit.id);list.splice(i,1,updated)}else if(!moveEditedPlace(edit,updated,target))return toast('일정이 변경되었어요. 다시 열어주세요');hoursCache.clear();save();$('#editDialog').close();editingPlace=null;editPlaceSelection=null;render();toast(target==='candidate'?'후보로 이동했어요':'일정 내용을 수정했어요')}finally{$('#editConfirm').disabled=false}});
     $('#foodForm').addEventListener('submit',async e=>{if(e.submitter?.value==='cancel')return;e.preventDefault();const name=$('#foodName').value.trim();if(!name)return;$('#foodConfirm').disabled=true;const item={name,note:$('#foodNote').value.trim(),kind:'맛집'};restaurants.push(item);save();$('#foodConfirm').disabled=false;$('#foodDialog').close();$('#foodForm').reset();render();toast('맛집을 저장했어요 · 위치는 장소를 눌러 검색해 확인해주세요')});
-    $('#candidateForm').addEventListener('submit',e=>{e.preventDefault();const typedName=$('#candidateName').value.trim(),rawMap=$('#candidateMapsUrl').value.trim(),mapsUrl=validGoogleMapsUrl(rawMap);if(!typedName)return;if(rawMap&&!mapsUrl)return toast('올바른 Google 지도 공유 링크를 입력해주세요');const selection=candidatePlaceSelection,candidate={id:'candidate-'+Date.now(),name:selection?.name||typedName,note:$('#candidateNote').value.trim(),kind:$('#candidateKind').value,day:Number($('#candidateDay').value||0),votes:[currentVoter],voteNames:{[participantId]:currentVoter},...selectionFields(selection),...(mapsUrl?{mapsUrl}:{})};const c=mapsUrl&&parseUserCoordinates(mapsUrl);if(c&&!Number.isFinite(candidate.lat))[candidate.lat,candidate.lng]=c;activeTrip.candidates.push(candidate);save();$('#candidateDialog').close();$('#candidateForm').reset();candidatePlaceSelection=null;closeSuggestions($('#candidateName'),$('#candidateSuggestions'));render();toast('후보 장소를 등록하고 투표했어요')});
+    $('#candidateForm').addEventListener('submit',e=>{e.preventDefault();if($('#candidateName').selectionPending?.())return toast('장소 정보를 확인하고 있어요. 잠시만 기다려 주세요');const typedName=$('#candidateName').value.trim(),rawMap=$('#candidateMapsUrl').value.trim(),mapsUrl=validGoogleMapsUrl(rawMap);if(!typedName)return;if(rawMap&&!mapsUrl)return toast('올바른 Google 지도 공유 링크를 입력해주세요');const selection=candidatePlaceSelection,candidate={id:'candidate-'+Date.now(),name:selection?.name||typedName,note:$('#candidateNote').value.trim(),kind:$('#candidateKind').value,day:Number($('#candidateDay').value||0),votes:[currentVoter],voteNames:{[participantId]:currentVoter},...selectionFields(selection),...(mapsUrl?{mapsUrl}:{})};const c=mapsUrl&&parseUserCoordinates(mapsUrl);if(c&&!Number.isFinite(candidate.lat))[candidate.lat,candidate.lng]=c;activeTrip.candidates.push(candidate);save();$('#candidateDialog').close();$('#candidateForm').reset();candidatePlaceSelection=null;closeSuggestions($('#candidateName'),$('#candidateSuggestions'));render();toast('후보 장소를 등록하고 투표했어요')});
     $('#alternativeDay').addEventListener('change',fillAlternativePlaces);
     $('#alternativeForm').addEventListener('submit',e=>{if(e.submitter?.value==='cancel')return;const day=Number($('#alternativeDay').value||0),original=$('#alternativeOriginal').value,replacement=$('#alternativeReplacement').value.trim();if(!original||!replacement){e.preventDefault();return}activeTrip.weatherAlternatives=activeTrip.weatherAlternatives.filter(x=>!(x.day===day&&x.original===original));activeTrip.weatherAlternatives.push({day,original,replacement,note:$('#alternativeNote').value.trim()});save();setTimeout(()=>{$('#alternativeForm').reset();if(currentView==='today')renderToday();toast('날씨 대체 장소를 저장했어요')},0)});
     $('#settingsBtn').onclick=()=>{$('#apiBudget').textContent='Google 지도 우선 · Google 무료 한도에 도달하면 OpenStreetMap으로 자동 전환합니다. 기존 지도는 재사용합니다. 장소 검색은 Google Places(신규)를 사용하며, 하루 한도에 도달하면 저장된 장소와 직접 입력으로 계속 쓸 수 있어요.';pendingMode=tripInfo.mode;pendingVoter=currentVoter;$('#tripNameInput').value=tripInfo.name;document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===pendingMode));document.querySelectorAll('[data-voter]').forEach(b=>b.classList.toggle('active',b.dataset.voter===pendingVoter));$('#settingsDialog').showModal()};
@@ -1426,6 +1570,21 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     $('#gateInvite').addEventListener('keydown',e=>{if(e.key==='Enter'||e.keyCode===13){e.preventDefault();connectWithInvite()}});
     $('#gateLater').onclick=()=>{gateDismissed=true;closeInviteGate()};
     $('#staleJoin').onclick=()=>{gateDismissed=false;showInviteGate('force')};
+    $('#inAppOpenSafari').onclick=()=>{
+      const link=knownInviteLink();
+      if(!link){setInAppError('받은 초대 링크가 없어요. 여행을 만든 사람에게 새 초대를 받아주세요.');return}
+      const tried=openExternalBrowser(link);
+      setTimeout(()=>{const hint=$('#inAppHint');if(hint)hint.textContent=tried?'자동으로 열리지 않으면 오른쪽 위 ··· 메뉴에서 ‘Safari로 열기’(또는 ‘다른 브라우저로 열기’)를 눌러주세요. 아래 링크를 복사해 사파리 주소창에 붙여넣어도 돼요.':'오른쪽 위 ··· 메뉴에서 ‘Safari로 열기’를 누르거나, 아래 링크를 복사해 사파리 주소창에 붙여넣어 주세요.'},700);
+    };
+    $('#inAppCopy').onclick=async()=>{const ok=await copyText(knownInviteLink());toast(ok?'초대 링크를 복사했어요. 사파리 주소창에 붙여넣어 열어주세요.':'링크를 길게 눌러 직접 복사해 주세요.');};
+    $('#inAppContinue').onclick=()=>{
+      window.VIAGO_HOLD_INVITE=false;
+      const link=knownInviteLink(),field=$('#gateInvite');
+      if(field&&link)field.value=link;
+      hideInAppGuide();
+      connectWithInvite();
+    };
+    $('#inAppLater').onclick=()=>{gateDismissed=true;hideInAppGuide()};
     if(window.visualViewport){window.visualViewport.addEventListener('resize',fitGateViewport);window.visualViewport.addEventListener('scroll',fitGateViewport)}
     $('#inviteRecovery').onsubmit=e=>{e.preventDefault();const raw=$('#recoveryLink').value,out=parseInviteInput(raw);if(!out.ok){$('#recoveryError').textContent=out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체를 붙여넣어주세요.':'이 여행 앱에서 받은 전체 초대 링크를 붙여넣어주세요.';return}$('#recoveryError').textContent='';const g=$('#gateInvite');if(g)g.value=raw;connectWithInvite()};
     window.addEventListener('online',()=>{googleMapsReady=null;paintProviderNotes();if(!sharedReady&&!accessDenied)startSharedSync();else{pollShared();if(sharedDirty)pushSharedState()}});
@@ -1436,7 +1595,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
-    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=52',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=53',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
