@@ -10,7 +10,7 @@
 //    오프라인일 때만 마지막으로 받은 화면을 보여준다.
 // 4) 새 워커는 skipWaiting 하지 않는다. 사용 중인 화면을 갑자기 갈아치우지 않고,
 //    앱을 완전히 닫았다 열 때 적용된다.
-const VERSION = 'v2';   // 2026-11-15 이전 빌드: 인증 클라이언트 2개를 껍데기에 추가
+const VERSION = 'v3';   // 2026-11-15 안정화: 인증 클라이언트의 역할·초대 발급 추가분까지 캐시 갱신
 const SHELL = `viago-shell-${VERSION}`;
 // 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
 const OUR_PREFIX = 'viago-';
