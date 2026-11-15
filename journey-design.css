@@ -308,27 +308,27 @@ button:active:not([disabled]),.date-tab:active,.nav-item:active,.trip-option:act
 .brief-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:16px 16px 10px}
 .brief-head strong{display:block;font-size:18px;font-weight:780;letter-spacing:-.4px;color:var(--ink)}
 .brief-head span{display:block;margin-top:4px;color:var(--sub);font-size:12.5px;line-height:1.4}
-.brief-head .brief-base{display:block;margin-top:2px;color:#8b95a3;font-size:11.5px;font-style:normal;line-height:1.4}
+.brief-head .brief-base{display:block;margin-top:2px;color:var(--sub);font-size:11.5px;font-style:normal;line-height:1.4}
 .brief-close{flex:0 0 auto;width:44px;height:44px;border-radius:14px;background:#f2f4f6;color:#4e5968;font-size:22px;font-weight:400;line-height:1}
 .brief-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:2px 16px 8px}
-.brief-sec{padding:12px 0;border-top:1px solid #eef1f4}
+.brief-sec{padding:12px 0;border-top:.5px solid var(--hair)}
 .brief-sec:first-child{border-top:0;padding-top:2px}
 .brief-sec h4{display:flex;align-items:center;gap:6px;margin:0 0 8px;font-size:12.5px;font-weight:780;color:#3d4757;letter-spacing:-.1px}
-.brief-sec h4 b{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#eaf2ff;color:#0647c6;font-size:11px;font-variant-numeric:tabular-nums}
+.brief-sec h4 b{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#f2f2f7;color:#3c3c43;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
 .brief-empty{margin:0;color:#8b95a3;font-size:12.5px;line-height:1.45;overflow-wrap:anywhere}
 .brief-row{display:flex;align-items:flex-start;gap:9px;padding:7px 0}
-.brief-row+.brief-row{border-top:1px dashed #eef1f4}
-.brief-time{flex:0 0 auto;min-width:50px;padding:4px 7px;border-radius:8px;background:#fff2e8;color:#c2410c;font-size:12px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.brief-row+.brief-row{border-top:.5px solid rgba(60,60,67,.14)}
+.brief-time{flex:0 0 auto;min-width:50px;padding:4px 7px;border-radius:7px;background:#f6efe6;color:#96622a;font-size:12px;font-weight:600;text-align:center;font-variant-numeric:tabular-nums}
 .brief-time.muted{background:#f2f4f6;color:#6b7684}
 .brief-copy{min-width:0;flex:1}
 .brief-copy strong{display:block;font-size:13.5px;font-weight:750;color:var(--ink);overflow-wrap:anywhere}
 .brief-copy span{display:block;margin-top:3px;color:#7b8494;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
-.brief-leg{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin:0 0 9px;padding:6px 10px;border-radius:99px;background:#f4f6fa;color:#5b6472;font-size:12px;font-weight:650}
+.brief-leg{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin:0 0 9px;padding:5px 9px;border-radius:8px;background:#f7f7f9;color:#6b6b70;font-size:12px;font-weight:500}
 .brief-leg .leg-icon{flex:0 0 13px;width:13px;height:13px;color:#8b95a3}
 .brief-order{list-style:none;margin:0;padding:0}
 .brief-order li{display:flex;align-items:flex-start;gap:9px;padding:6px 0}
-.brief-order li+li{border-top:1px dashed #eef1f4}
-.brief-num{flex:0 0 auto;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#0756e9;color:#fff;font-size:11px;font-weight:800;font-variant-numeric:tabular-nums}
+.brief-order li+li{border-top:.5px solid rgba(60,60,67,.14)}
+.brief-num{flex:0 0 auto;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1px solid #1d1d1f;background:#fff;color:#1d1d1f;font-size:10px;font-weight:600;font-variant-numeric:tabular-nums}
 .brief-mark{flex:0 0 auto;align-self:center;padding:3px 6px;border-radius:6px;background:#fff3df;color:#ad5a00;font-size:10.5px;font-weight:750;white-space:nowrap}
 .brief-plan{border:1px solid #f3e0c2;border-radius:12px;background:#fffaf0;padding:9px 11px}
 .brief-plan+.brief-plan{margin-top:7px}
@@ -337,11 +337,281 @@ button:active:not([disabled]),.date-tab:active,.nav-item:active,.trip-option:act
 .brief-chip{padding:5px 9px;border-radius:99px;background:#fff0f1;color:#c0232f;font-size:11.5px;font-weight:750;overflow-wrap:anywhere}
 .brief-hint{margin:9px 0 0;color:#8b95a3;font-size:11.5px;line-height:1.45}
 .brief-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #eef1f4;background:#fff}
-.brief-actions button{min-height:48px;border-radius:14px;font-size:14px;font-weight:780}
-.brief-open-day{background:#eaf2ff;color:#0647c6}
-.brief-done{background:#0756e9;color:#fff}
+.brief-actions button{min-height:48px;border-radius:12px;font-size:14px;font-weight:600}
+.brief-open-day{background:#f2f2f7;color:var(--ink-2)}
+.brief-done{background:var(--blue);color:#fff}
 @media(min-width:851px){
   #dayBrief{align-items:center}
   .brief-card{max-width:520px;max-height:80vh;border-bottom:1px solid #e5e8eb;border-radius:22px}
 }
 @media(prefers-reduced-motion:reduce){#dayBrief,.brief-card{transition:none}}
+
+/* ===== 2026-11-16 시안 1: 사람이 쓴 iOS 네이티브 화면 =====
+   원칙: ① 장식(카드 그림자·색 배경·pill·이모지)을 걷고 iOS 의 헤어라인·타이포로만 구분한다.
+        ② 지도 높이는 지금 그대로(clamp(300px,44dvh,370px)) — 줄이지 않는다.
+        ③ 일정 행 번호는 지도 핀과 1:1(.place-num) — 핀이 없는 행은 흐린 숫자.
+   보존(절대 훼손 금지): 실시간 동기화·오프라인 SW·초대 게이트·일정 추가/수정/삭제/드래그·
+   인라인 이동구간 미리보기·플랜 B·전날 브리핑·지도 카메라 가드·카테고리 색·이동 구간 줄·
+   환율/후보/오늘/지도 탭·Google API 자동 호출 0건. */
+:root{
+  --ink:#111114;--ink-2:#3c3c43;--sub:#8a8a8e;
+  --line:rgba(60,60,67,.18);--bg:#f2f2f7;--card:#fff;
+  --blue:#0a84ff;--blue-deep:#0066cc;
+  --hair:rgba(60,60,67,.29);
+  --shadow:none;
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",Pretendard,"Noto Sans KR","Noto Sans CJK KR","Liberation Sans","Segoe UI",sans-serif;
+}
+body{background:#fff;color:var(--ink);-webkit-font-smoothing:antialiased}
+button,input,select,textarea,optgroup{font-family:inherit;font-family:inherit;-webkit-appearance:none;appearance:none}
+select{background-image:none}
+::selection{background:rgba(10,132,255,.18)}
+
+/* ── 공통: 카드 장식 걷기 ───────────────────────────────────────── */
+.panel,.trip-head,.candidate-card,.today-card,.feature-block,.exchange-card,.alt-card,
+.quick-map,.brief-card{border-radius:0;box-shadow:none}
+.panel{background:#fff;border:0;border-radius:0}
+.trip-head{background:#fff;border:0;box-shadow:none;border-radius:0;position:relative;isolation:auto}
+.trip-head:before,.trip-head:after{display:none!important}
+.trip-change{background:none;color:var(--blue);font-weight:500;font-size:13px;padding:0;border-radius:0;letter-spacing:-.1px}
+.eyebrow{color:var(--sub);font-weight:600;font-size:12.5px;letter-spacing:.1px;font-variant-numeric:tabular-nums}
+.trip-title h1{font-weight:700;letter-spacing:-.6px;color:var(--ink)}
+.trip-meta{color:var(--sub);font-size:12.5px;font-variant-numeric:tabular-nums}
+.panel-head h2,.today-head h2,.exchange-head h2{font-weight:700;letter-spacing:-.6px;color:var(--ink)}
+.panel-head p{color:var(--sub);font-weight:400}
+.sync-state{background:none;color:var(--sub);font-weight:500;padding:0}
+.sync-state:before{width:6px;height:6px}
+.sync-state.online{color:#8a8a8e}
+.sync-state.online:before{background:#34c759;box-shadow:none}
+.sync-state.offline:before,.sync-state.saving:before{box-shadow:none}
+.brand{color:var(--ink);font-weight:700;letter-spacing:-.5px}
+.brief-btn{background:#eef0f4;color:var(--ink-2);font-weight:600}
+.brief-btn:active{background:#e3e6ec}
+.search-box{background:#f2f2f7;border-radius:10px}
+.search-go{background:var(--ink);border-radius:10px;font-weight:600}
+.overview-btn{background:#f2f2f7;color:var(--ink-2);font-weight:600;border-radius:9px}
+.route-btn,.today-route,.quick-route-btn{background:var(--blue);box-shadow:none;font-weight:600;border-radius:10px}
+.place-add,.schedule-link-add{background:#f2f2f7;color:var(--blue);font-weight:600;border-radius:10px}
+.today-complete,.alt-manage,.exchange-refresh,.currency-swap,.quick-amount{background:#f2f2f7;color:var(--ink-2)}
+.exchange-result{background:#f2f2f7;color:var(--ink)}
+.exchange-result-value{font-weight:700}
+.today-card,.feature-block,.exchange-card,.alt-card{background:#f7f7f9;border:0;border-radius:14px}
+.today-card.current{background:#f2f2f7}
+.dialog-inner h3{font-weight:700}
+.today-progress{background:#ececf0}
+.today-progress i{background:var(--blue)}
+.date-tab.food-tab,.date-tab.food-tab.active{background:#f2f2f7;color:#c2185b}
+
+/* ── 모바일(390px) : 시안 1 그대로 ─────────────────────────────── */
+@media(max-width:850px){
+  body{padding-bottom:calc(62px + env(safe-area-inset-bottom));background:#fff}
+  .shell{padding:0 16px 10px}
+
+  /* 상단 바 — 왼쪽 워드마크 · 오른쪽 내일/더보기 (44px 터치 유지) */
+  .topbar{height:46px;padding:0}
+  .brand{font-size:16px;letter-spacing:-.3px}
+  .top-actions{gap:2px}
+  .brief-btn{height:44px;padding:0 8px;border-radius:0;background:none;color:var(--blue);font-size:13.5px;font-weight:500;gap:5px}
+  .brief-btn .icon{width:17px;height:17px}
+  .brief-btn:active{background:none;opacity:.55}
+  .icon-btn{width:44px;height:44px;color:var(--ink-2)}
+  .net-chip{height:auto;padding:0 6px;background:none;color:#8a8a8e;font-size:11px;font-weight:500}
+  .net-chip:before{width:6px;height:6px}
+
+  /* 여행 머리 — 카드·표지 사진 없이 2줄 */
+  .trip-head{padding:0 0 2px;min-height:0}
+  .eyebrow-row{margin:0 0 4px;gap:8px;align-items:center}
+  .eyebrow{font-size:12.5px;color:var(--sub)}
+  .trip-change{font-size:12.5px;min-height:0;padding:0}
+  .trip-change::after{inset:-14px -8px}
+  .trip-title-row{align-items:center;gap:10px}
+  .trip-title h1{font-size:16px;line-height:1.3;margin:0 0 1px;font-weight:600;letter-spacing:-.3px}
+  .trip-meta{font-size:12.5px;gap:5px;flex-wrap:wrap;row-gap:2px}
+  .trip-meta .dot{width:2px;height:2px;background:#c7c7cc}
+  .people{margin:0;flex:0 0 auto;align-self:center}
+  .avatar{width:28px;height:28px;font-size:10px;font-weight:600;border-width:2px;margin-left:-5px;letter-spacing:-.4px}
+  .add-person{width:24px;height:24px;font-size:13px;font-weight:400;background:#f2f2f7}
+  .add-person::after{inset:-10px}
+
+  /* 일자 선택 — iOS 세그먼트 컨트롤 */
+  .date-tabs{margin:12px 0 0;padding:2px;gap:0;background:#efeff4;border-radius:9px;overflow-x:auto;overflow-y:hidden}
+  .date-tab{flex:1 1 0;min-width:64px;min-height:42px;padding:5px 6px;border-radius:7px;background:transparent;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;text-align:center;color:#6b6b70}
+  .date-tab strong{font-size:12.5px;font-weight:600;margin:0;letter-spacing:-.2px;color:inherit}
+  .date-tab span{font-size:10.5px;font-weight:500;color:#8a8a8e;letter-spacing:-.1px}
+  .date-tab.active,.date-tab.candidate-tab.active{background:#fff;color:var(--ink);box-shadow:0 3px 7px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04)}
+  .date-tab.active strong{font-weight:600}
+  .date-tab.active span{color:#6b6b70}
+  .date-tab.candidate-tab{background:transparent;color:#6b6b70}
+
+  /* 날짜 제목 — 화면의 큰 제목 */
+  .workspace{gap:0;margin-top:14px}
+  .itinerary-panel{padding:0}
+  .panel-head{padding:0 0 8px;align-items:flex-end;gap:8px}
+  .panel-head h2{font-size:26px;line-height:1.18;letter-spacing:-.8px}
+  .panel-head p{margin-top:3px;font-size:12.5px;line-height:1.3}
+  .sync-state{font-size:10.5px;padding-bottom:2px;white-space:nowrap;max-width:46%;overflow:hidden;text-overflow:ellipsis}
+
+  /* 지도 탭: 상태 칩·＋/－ 컨트롤을 작고 조용하게 */
+  .map-status{max-width:100%;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.88);backdrop-filter:blur(6px);box-shadow:none;font-size:10.5px;font-weight:500;color:#6b6b70}
+  .map-overlay{bottom:28px;left:8px;right:8px}
+  .map-frame .map-legend{bottom:56px;left:8px;font-size:9px;padding:4px 7px;border-radius:6px;box-shadow:none;background:rgba(255,255,255,.86);font-weight:500;color:#6b6b70}
+  .map-frame{border-radius:12px;margin:0}
+  .leaflet-touch .leaflet-control-zoom,.leaflet-control-zoom{border:0;box-shadow:0 1px 3px rgba(0,0,0,.18);border-radius:8px;overflow:hidden}
+  .leaflet-touch .leaflet-control-zoom a,.leaflet-control-zoom a{width:34px;height:34px;line-height:32px;font-size:18px;font-weight:400;color:var(--ink-2)}
+
+  /* 지도 — 크기 그대로(44%·clamp 300~370), 모서리만 시안 1 */
+  .journey-day-preview{margin:0;border-radius:12px;box-shadow:0 0 0 .5px rgba(0,0,0,.12)}
+  .journey-day-preview .map-legend{top:8px;left:8px;bottom:auto;padding:4px 7px;border-radius:6px;font-size:9px;gap:5px;background:rgba(255,255,255,.86);box-shadow:none;color:#6b6b70;font-weight:500}
+  .journey-day-preview .map-legend i{width:6px;height:6px}
+  .journey-preview-button{right:8px;bottom:8px;height:44px;padding:0 15px;border-radius:22px;background:rgba(255,255,255,.92);box-shadow:0 1px 4px rgba(0,0,0,.16);font-size:12px;font-weight:600;color:var(--ink)}
+  .journey-preview-note{bottom:24px;left:8px;padding:3px 7px;border-radius:5px;box-shadow:none;background:rgba(255,255,255,.82);font-size:10.5px;font-weight:500;color:#6b6b70}
+  .journey-day-preview .number-marker{box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .journey-day-preview .leaflet-control-attribution{background:rgba(255,255,255,.7)!important;border-radius:0 4px 0 0;font-size:8.5px!important;padding:0 4px!important}
+  .journey-day-preview .leaflet-bottom.leaflet-right{right:auto;left:0;bottom:0;margin:0}
+
+  /* 일정 목록 — 번호 · 시간 · 이름/메모 · 꺾쇠 */
+  .timeline{padding:2px 0 6px;counter-reset:none}
+  .swipe-row{display:block;margin:0;padding:0;border-radius:0;border-bottom:.5px solid var(--hair)}
+  .swipe-row::before,.swipe-row::after{display:none}
+  .swipe-row:last-of-type{border-bottom:0}
+  .place{display:grid;grid-template-columns:20px 46px minmax(0,1fr) 12px;column-gap:10px;align-items:start;
+    min-height:0;padding:11px 0;border:0;border-radius:0;background:#fff;color:var(--ink)}
+  .place:hover,.place.selected{background:#fff}
+  .place:active{background:#f7f7f9}
+  .place-num{grid-column:1;align-self:start;display:grid;place-items:center;width:20px;height:20px;margin-top:1px;
+    border:1px solid #1d1d1f;border-radius:50%;background:#fff;color:#1d1d1f;
+    font-size:10px;font-weight:600;line-height:1;letter-spacing:-.2px;font-variant-numeric:tabular-nums}
+  .place-num[data-pin="0"]{border-color:#d1d1d6;color:#a1a1a6}
+  .place-main{grid-column:3;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:6px;row-gap:1px;min-width:0;padding:0;border:0;margin:0}
+  .place-time{grid-column:2;align-self:start;margin:0;font-size:14.5px;font-weight:400;line-height:1.3;
+    color:var(--sub);letter-spacing:-.2px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .place-main:before,.place-main:after{display:none}
+  .place-type-icon{display:none}
+  .place-text{display:contents}
+  .place-sub>p{margin:0}
+  .place-name{order:1;flex:1 0 100%;margin:0 0 3px;font-size:16px;line-height:1.3;font-weight:600;letter-spacing:-.35px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .place-sub{order:2;flex:0 1 auto;min-width:0;margin:0;font-size:12.5px;line-height:1.25;color:var(--sub);font-weight:400;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .place-subline{display:inline-flex;align-items:center;gap:4px;margin:0;white-space:nowrap;min-width:0;vertical-align:top}
+  .place-note{font-size:12.5px;line-height:1.25;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .place-cat{order:3;flex:0 0 auto;display:inline-flex;align-items:center;height:auto;padding:0;margin:0;background:none;
+    color:#a1a1a6;font-size:12px;font-weight:400;line-height:1.25}
+  .place-cat::before{content:"·";margin-right:3px;color:#c7c7cc;font-weight:400}
+  .place-cat+.place-cat{margin-left:0}
+  .place-text{column-gap:3px}
+  .place-cat .place-type-icon{display:none}
+  .place-kind{font-size:12px;font-weight:400;color:#a1a1a6}
+  .place-kind::after{content:none}
+  .place-resv{color:#a8663a;font-size:12.5px;font-weight:600;gap:0;white-space:nowrap}
+  .place-resv-icon{display:none}
+  .place-rest{font-size:12.5px;font-weight:400;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .place-rest::before{content:"·";margin-right:4px;color:#c7c7cc;font-weight:400}
+  .place-subline{gap:5px}
+  .place-badges{order:4;flex:1 0 100%;gap:5px;margin-top:4px}
+  .place-status{font-size:10.5px;font-weight:500;padding:1px 6px;border-radius:5px;background:#f2f2f7;color:#6b6b70}
+  .place-status.warn,.place-status.danger{background:#fff2e8;color:#a8663a}
+  .place-planb-btn{background:none;border:.5px solid #dcc39a;border-radius:6px;padding:1px 6px;font-size:10.5px;font-weight:600;color:#96622a}
+  .place-planb-btn::after{inset:-15px -10px}
+  .place-planb-btn[aria-expanded="true"]{background:#fbf3e6;border-color:#cfae7c;color:#8c4400}
+  .place-planb{order:5;flex:1 0 100%;margin:5px 0 0;padding:6px 8px;border-radius:8px;background:#fbf8f2;color:#6b4a19;font-size:12px;line-height:1.4}
+  .more{grid-column:4;align-self:center;justify-self:end;padding:0;color:#c4c4c6;background:none}
+  .more .icon{width:13px;height:13px;stroke-width:2.2}
+  .place.open .more,.place.selected .more{color:var(--ink-2);transform:none}
+  .more::after{inset:-16px}
+
+  /* 이동 구간 — 시안 1 의 얇은 헤어라인 한 줄 */
+  .trip-leg{display:flex;align-items:center;height:20px;min-height:0;margin:0;padding:0 0 0 86px;position:relative}
+  .trip-leg::before{content:"";position:absolute;left:86px;right:0;top:0;height:.5px;background:var(--hair)}
+  .trip-leg::after{display:none}
+  .trip-leg-pill{height:auto;padding:0;border-radius:0;background:none;color:var(--sub);font-size:12px;font-weight:400;line-height:1;gap:4px}
+  .trip-leg[data-leg="unknown"] .trip-leg-pill{background:none;border:0;color:#a1a1a6}
+  .leg-icon{display:none}
+  .trip-leg-text b{font-weight:600;color:#6b6b70}
+  .trip-leg-text i{font-style:normal;color:#a1a1a6;font-weight:400}
+
+  /* 인라인 미리보기 — 카드 아래 슬롯 유지, 테두리만 정리 */
+  .quick-map-slot{padding-left:0;border-bottom:.5px solid var(--hair)}
+  .quick-map-slot::before,.quick-map-slot::after{display:none}
+  .quick-map-slot .quick-map{border:.5px solid rgba(0,0,0,.12);border-radius:12px;background:#fff}
+  .quick-map-slot .quick-map.open{margin:2px 0 10px;box-shadow:none}
+  .quick-map-slot .quick-map-head{padding:9px 10px 3px}
+  .quick-map-slot .quick-map-head strong{font-size:13px;font-weight:600;color:var(--ink)}
+  .quick-map-slot .quick-map-close{background:#f2f2f7;border-radius:8px;color:#6b6b70}
+  .quick-map-slot .free-map-note{padding:0 10px 5px;color:var(--sub);font-size:10.5px}
+  .quick-map-slot .quick-map-frame{height:172px;margin:0 8px;border-radius:9px}
+  .quick-map-slot .quick-map-foot{padding:7px 10px 9px}
+  .quick-map-slot .quick-map-foot span{font-size:11px;color:var(--sub)}
+  .quick-map-slot .quick-route-btn{height:34px;padding:0 12px;border-radius:9px;font-size:12px;font-weight:600;background:var(--blue);box-shadow:none}
+  .quick-map-slot .quick-map-close{width:30px;height:30px;font-size:17px}
+  .quick-map-slot .quick-map-close::after{inset:-7px}
+
+  /* 일정 추가 버튼 */
+  .place-add,.schedule-link-add{height:52px;margin:0;border:0;border-bottom:.5px solid var(--hair);border-radius:0;
+    background:#fff;color:var(--blue);font-size:15px;font-weight:500;text-align:left;padding-left:86px}
+  .place-add:before,.schedule-link-add:before{content:"+";margin-right:7px;font-weight:400}
+  .place-add.schedule-link-add{background:#fff}
+  .place-add:active,.place-add.schedule-link-add:active{background:#f7f7f9}
+  .empty{padding:36px 16px;color:var(--sub);font-size:13px;line-height:1.6;border-bottom:.5px solid var(--hair)}
+
+  /* 하단 탭바 — iOS 탭 바 */
+  .mobile-nav{left:0;right:0;bottom:0;height:calc(52px + env(safe-area-inset-bottom));padding:6px 0 env(safe-area-inset-bottom);
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:0;border-top:.5px solid var(--hair);border-radius:0;
+    background:rgba(249,249,249,.98);box-shadow:none;backdrop-filter:saturate(180%) blur(20px)}
+  .nav-item{min-height:44px;gap:2px;font-size:10px;font-weight:500;letter-spacing:0;color:#8a8a8e;background:none}
+  .nav-item .icon{width:24px;height:24px;stroke-width:1.7}
+  .nav-item.active,.nav-item.active:active{color:var(--blue)}
+  .nav-item:active{color:var(--blue);opacity:.6}
+
+  /* 오늘·환율 화면도 같은 리듬으로 */
+  .today-panel,.exchange-panel{padding:2px 0 10px;border-radius:0}
+  .today-head h2,.exchange-head h2{font-size:24px}
+  .today-label,.exchange-head p{color:var(--sub);font-weight:500}
+  .today-place{font-weight:700;letter-spacing:-.4px}
+  .feature-block{border-radius:12px}
+  .exchange-card{border-radius:12px}
+}
+
+/* ── 넓은 화면: 두 단 구성은 그대로, 장식만 걷고 번호를 실제 핀 번호로 ── */
+@media(min-width:851px){
+  body{background:#f7f7f9}
+  .topbar{height:64px}
+  .trip-head{padding:0 0 14px;background:#fff;border-bottom:.5px solid var(--hair);max-width:none}
+  .trip-title h1{font-size:30px}
+  .trip-change{background:#f2f2f7;color:var(--ink-2);padding:6px 10px;border-radius:8px;font-weight:500}
+  .date-tabs{padding:14px 0 12px}
+  .date-tab{background:#efeff4;border-radius:9px;padding:9px 14px;color:#6b6b70}
+  .date-tab.active{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.1),0 0 0 .5px rgba(0,0,0,.05)}
+  .date-tab.active strong{color:var(--ink)}
+  .date-tab.candidate-tab{background:#efeff4;color:#6b6b70}
+  .panel{border:.5px solid rgba(0,0,0,.09);border-radius:14px;background:#fff}
+  .panel-head{padding:18px 20px 12px}
+  .panel-head h2{font-size:21px}
+  .timeline{padding:0 20px 18px}
+  .swipe-row{margin-bottom:2px;border-radius:0;border-bottom:.5px solid var(--hair)}
+  .place{grid-template-columns:22px 46px minmax(0,1fr) 30px;column-gap:10px;min-height:0;padding:12px 0;border:0;border-radius:0;background:transparent}
+  .place-time{grid-column:2;align-self:start;margin-top:3px;font-size:13.5px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .place-main{grid-column:3}
+  .place-main{padding:0;border:0}
+  .place-main:before{display:none}
+  .place-type-icon{position:static;width:34px;height:34px;flex:0 0 34px;border-radius:9px}
+  .place-num{display:grid;place-items:center;width:22px;height:22px;margin-top:2px;border:1px solid #1d1d1f;border-radius:50%;color:#1d1d1f;background:#fff;font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+  .place-num[data-pin="0"]{border-color:#d1d1d6;color:#a1a1a6}
+  .place-main>.place-type-icon{display:none}
+  .place-name{font-size:16px;font-weight:600}
+  .place-cat{background:none;color:#8a8a8e;font-weight:400}
+  .place-cat .place-type-icon{display:none}
+  .place-status.info,.place-status.safe{display:none}
+  .place-badges{margin-top:4px;gap:5px}
+  .place-status{font-size:10.5px;padding:1px 6px;border-radius:5px;background:#f2f2f7;color:#6b6b70}
+  .place-status.warn,.place-status.danger{background:#fff2e8;color:#a8663a}
+  .place-kind{color:#8a8a8e;font-weight:400}
+  .trip-leg{display:flex;padding:0 0 0 32px;height:22px;align-items:center;border:0}
+  .trip-leg::before,.trip-leg::after{display:none}
+  .trip-leg-pill{background:none;padding:0;color:var(--sub);font-size:12px;font-weight:400}
+  .leg-icon{display:none}
+  .trip-leg-text b{color:#6b6b70;font-weight:600}
+  .journey-day-preview{border-radius:12px;height:320px;margin:0 20px 12px}
+  .map-frame{border-radius:12px}
+  .sync-state{background:none}
+}

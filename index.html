@@ -247,9 +247,9 @@
     </section>
   </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js?v=68"></script>
-  <script src="./viago-auth-client.js?v=68"></script>
-  <script src="./viago-auth-firebase.js?v=68"></script>
+  <script src="./journey-sync.js?v=69"></script>
+  <script src="./viago-auth-client.js?v=69"></script>
+  <script src="./viago-auth-firebase.js?v=69"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -918,9 +918,13 @@
       const rest=text.replace(m[0],'').replace(/예약\s*완료?|예약/,'').replace(/\s{2,}/g,' ').replace(/^[\s·,\/-]+|[\s·,\/-]+$/g,'').trim();
       return {time:hours+':'+String(minutes).padStart(2,'0'),rest:/^\d{1,2}월\s*\d{1,2}일$/.test(rest)?'':rest};}
     const PLACE_RESV_ICON='<svg class="place-resv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>';
+    // 시안 1: 지도 핀 번호와 1:1로 맞는 일정 번호 — 핀이 없는 장소(항공·좌표 미확인)는 흐린 숫자로 구분한다.
+    function placeNumberTag(p,i){const pinned=p.kind!=='항공'&&!!coordsFor(p);return '<span class="place-num"'+(pinned?'':' data-pin="0"')+' aria-hidden="true">'+(i+1)+'</span>'}
     function placeSubline(p){const note=String(p?.note||'').trim(),res=note?placeReservation(note):null;
       if(!res)return '<p class="place-note">'+esc(note||'메모 없음')+'</p>';
-      return '<p class="place-subline"><span class="place-resv">'+PLACE_RESV_ICON+esc(res.time)+' 예약</span>'+(res.rest?'<span class="place-rest">'+esc(res.rest)+'</span>':'')+'</p>';}
+      // 예약 시각을 떼고 남은 메모 앞의 기호(예: 📅)는 UI에서 지운다 — 시안 1은 글자만 남긴다.
+      const rest=String(res.rest||'').replace(/^[^\p{L}\p{N}]+/u,'').trim();
+      return '<p class="place-subline"><span class="place-resv">'+PLACE_RESV_ICON+esc(res.time)+' 예약</span>'+(rest?'<span class="place-rest">'+esc(rest)+'</span>':'')+'</p>';}
     function legMeters(a,b){const ca=coordsFor(a),cb=coordsFor(b);if(!ca||!cb)return null;
       const rad=x=>x*Math.PI/180,R=6371000,dLat=rad(cb[0]-ca[0]),dLng=rad(cb[1]-ca[1]);
       const h=Math.sin(dLat/2)**2+Math.cos(rad(ca[0]))*Math.cos(rad(cb[0]))*Math.sin(dLng/2)**2;
@@ -971,7 +975,7 @@
       const d=days[dayIndex];$('#dayTitle').textContent=d.title;$('#daySummary').textContent=d.summary;
       const addActions='<div class="schedule-add-actions" aria-label="일정 장소 추가"><button class="place-add" id="placeAdd">직접 장소 추가</button><button class="place-add schedule-link-add" id="scheduleLinkAdd">링크에서 장소 찾기</button></div>';
       if(!d.places.length){timeline.innerHTML='<div class="empty">아직 등록한 장소가 없어요.</div>'+addActions;bindScheduleAddActions();if(sharedReady&&(innerWidth>850||currentView==='map'))showOverview();return}
-      timeline.innerHTML=d.places.map((p,i)=>`<div class="swipe-row${i<d.places.length-1?' has-next':''}" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}"><div class="row-actions"><button class="edit-action" aria-label="${esc(p.name)} 편집">편집</button><button class="delete-action" aria-label="${esc(p.name)} 삭제">삭제</button></div><div class="place" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}" tabindex="0"><div class="place-main"><span class="place-cat">${placeIcon(p)}<span class="place-kind">${esc(viagoCategoryLabel(p.kind,p.name))}</span></span><div class="place-text"><h3 class="place-name">${esc(p.name)}</h3><div class="place-sub">${placeSubline(p)}</div><span class="place-badges">${coordBadge(p)}<span class="place-status info" data-hours="${i}">영업시간 확인</span>${planBBadge(p,i)}</span>${planBBlock(p,i)}</div></div><button class="more" aria-label="${esc(p.name)} 지도에서 보기"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>`+tripLegHtml(d.places[i],d.places[i+1],i)).join('')+addActions;
+      timeline.innerHTML=d.places.map((p,i)=>`<div class="swipe-row${i<d.places.length-1?' has-next':''}" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}"><div class="row-actions"><button class="edit-action" aria-label="${esc(p.name)} 편집">편집</button><button class="delete-action" aria-label="${esc(p.name)} 삭제">삭제</button></div><div class="place" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}" tabindex="0">${placeNumberTag(p,i)}<span class="place-time">${esc(p.time||'')}</span><div class="place-main"><span class="place-cat">${placeIcon(p)}<span class="place-kind">${esc(viagoCategoryLabel(p.kind,p.name))}</span></span><div class="place-text"><h3 class="place-name">${esc(p.name)}</h3><div class="place-sub">${placeSubline(p)}</div><span class="place-badges">${coordBadge(p)}<span class="place-status info" data-hours="${i}">영업시간 확인</span>${planBBadge(p,i)}</span>${planBBlock(p,i)}</div></div><button class="more" aria-label="${esc(p.name)} 지도에서 보기"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>`+tripLegHtml(d.places[i],d.places[i+1],i)).join('')+addActions;
       timeline.querySelectorAll('.swipe-row').forEach(row=>{bindSwipe(row);row.querySelector('.edit-action').onclick=e=>{e.stopPropagation();closeSwipeRows();openEditDialog(+row.dataset.i)};row.querySelector('.delete-action').onclick=e=>{e.stopPropagation();deletePlace(+row.dataset.i)}});
       timeline.querySelectorAll('.place').forEach(el=>{const open=()=>{if(Date.now()<suppressPlaceClickUntil)return;if(el.dataset.swiped==='1'){el.dataset.swiped='0';return}const index=+el.dataset.i;if(innerWidth<=850&&inlineRoute&&inlineRoute.day===dayIndex&&inlineRoute.index===index){closeInlineRoute();return}selectPlace(index,el)};el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter')open()}});
       timeline.querySelectorAll('.place-planb-btn').forEach(btn=>{btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const card=btn.closest('.place'),on=!card.classList.contains('planb-open');card.classList.toggle('planb-open',on);btn.setAttribute('aria-expanded',on?'true':'false')})});
@@ -1962,7 +1966,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
     // 서비스 워커: 새 버전을 조용히 갈아 끼우되, 화면에 짧게 알리고 필요하면 눈에 보이게 물어본다.
-    //   · 스크립트 주소에 ?v=68 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 스크립트 주소에 ?v=69 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
     //   · 새 워커가 활성화되면(controllerchange) 옛 코드가 남은 화면은 한 번 새로고침한다(코드 섞임 방지).
     //     입력 중이면 새로고침하지 않고 아래 안내 막대의 「새로고침」을 기다린다.
     if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
@@ -1994,12 +1998,12 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
         setTimeout(check,8000);
       };
-      navigator.serviceWorker.register('./service-worker.js?v=68',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=69',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
       markUpdated();
     }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js?v=68"></script>
+  <script src="./journey-preview.js?v=69"></script>
 </body>
 </html>
