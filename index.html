@@ -247,9 +247,9 @@
     </section>
   </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js?v=67"></script>
-  <script src="./viago-auth-client.js?v=67"></script>
-  <script src="./viago-auth-firebase.js?v=67"></script>
+  <script src="./journey-sync.js?v=68"></script>
+  <script src="./viago-auth-client.js?v=68"></script>
+  <script src="./viago-auth-firebase.js?v=68"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -1666,6 +1666,8 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       [/체크아웃|check-?out/i,'체크아웃']
     ];
     function planBText(p){return String((p&&p.planB)||'').trim()}
+    // 브리핑 문구는 앞쪽 이모지·기호를 떼고 보여준다("📅 13:30 예약 · 현금" → "현금").
+    function briefPlain(text){return String(text||'').replace(/^[^\p{L}\p{N}]+/u,'').replace(/\s{2,}/g,' ').trim()}
     function planBBadge(p,i){const t=planBText(p);if(!t)return '';
       return '<button type="button" class="place-planb-btn" data-planb="'+i+'" aria-expanded="false" aria-controls="planb-'+i+'" aria-label="'+esc(p.name)+' 플랜 B 보기">플랜 B</button>'}
     function planBBlock(p,i){const t=planBText(p);if(!t)return '';
@@ -1677,8 +1679,8 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       const places=day.places||[],reservations=[],planB=[],warnings=[];
       places.forEach(p=>{
         const note=String(p.note||'').trim(),res=note?placeReservation(note):null;
-        if(res)reservations.push({name:p.name,time:res.time,detail:res.rest||'',soft:false});
-        else if(/(예약|확정|티켓|입장권|예매)/.test(note))reservations.push({name:p.name,time:'확인',detail:note,soft:true});
+        if(res)reservations.push({name:p.name,time:res.time,detail:briefPlain(res.rest),soft:false});
+        else if(/(예약|확정|티켓|입장권|예매)/.test(note))reservations.push({name:p.name,time:'확인',detail:briefPlain(note),soft:true});
         const pb=planBText(p);if(pb)planB.push({name:p.name,text:pb});
         const hay=note+' '+String(p.planB||''),labels=BRIEF_WARNING_RULES.filter(([re])=>re.test(hay)).map(([,label])=>label);
         if(labels.length)warnings.push({name:p.name,labels});
@@ -1700,7 +1702,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       $('#briefOpenDay').textContent=(m.index+1)+'일차 일정 열기';
       const resHtml=m.reservations.length?m.reservations.map(r=>'<div class="brief-row"><span class="brief-time'+(r.soft?' muted':'')+'">'+esc(r.time)+'</span><div class="brief-copy"><strong>'+esc(r.name)+'</strong>'+(r.detail?'<span>'+esc(r.detail)+'</span>':'')+'</div></div>').join(''):'<p class="brief-empty">'+(m.isReturn?'확정된 예약·탑승 정보가 없어요.':'예약 확정 일정이 없어요.')+'</p>';
       const legHtml=m.firstLeg?'<p class="brief-leg">'+legIconSvg(m.firstLeg.kind)+'<span>첫 이동 · '+esc(m.firstLeg.text)+'</span></p>':'';
-      const orderHtml=m.count?('<ol class="brief-order">'+m.day.places.map((p,i)=>{const note=String(p.note||'').trim(),res=note?placeReservation(note):null,when=res?res.time:String(p.time||''),tail=res?(res.rest||''):note,planOn=!!planBText(p);
+      const orderHtml=m.count?('<ol class="brief-order">'+m.day.places.map((p,i)=>{const note=String(p.note||'').trim(),res=note?placeReservation(note):null,when=res?res.time:String(p.time||''),tail=briefPlain(res?(res.rest||''):note),planOn=!!planBText(p);
         return '<li><span class="brief-num">'+(i+1)+'</span><div class="brief-copy"><strong>'+esc(p.name)+'</strong>'+((when||tail)?'<span>'+esc([when,tail].filter(Boolean).join(' · '))+'</span>':'')+'</div>'+(planOn?'<span class="brief-mark">플랜 B</span>':'')+'</li>'}).join('')+'</ol>'):'<p class="brief-empty">아직 등록된 장소가 없어요.</p>';
       const planHtml=m.planB.map(x=>'<div class="brief-plan"><div class="brief-copy"><strong>'+esc(x.name)+'</strong><span>'+esc(x.text)+'</span></div></div>').join('');
       const warnHtml=m.warnings.length?'<div class="brief-warn">'+m.warnings.map(w=>'<span class="brief-chip">'+esc(w.labels.join('·')+' · '+w.name)+'</span>').join('')+'</div>':'';
@@ -1960,7 +1962,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
     // 서비스 워커: 새 버전을 조용히 갈아 끼우되, 화면에 짧게 알리고 필요하면 눈에 보이게 물어본다.
-    //   · 스크립트 주소에 ?v=67 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 스크립트 주소에 ?v=68 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
     //   · 새 워커가 활성화되면(controllerchange) 옛 코드가 남은 화면은 한 번 새로고침한다(코드 섞임 방지).
     //     입력 중이면 새로고침하지 않고 아래 안내 막대의 「새로고침」을 기다린다.
     if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
@@ -1992,12 +1994,12 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
         setTimeout(check,8000);
       };
-      navigator.serviceWorker.register('./service-worker.js?v=67',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=68',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
       markUpdated();
     }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js?v=67"></script>
+  <script src="./journey-preview.js?v=68"></script>
 </body>
 </html>
