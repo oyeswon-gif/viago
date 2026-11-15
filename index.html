@@ -120,7 +120,7 @@
           <div class="exchange-result"><div class="exchange-result-label" id="exchangeResultLabel">대한민국 원으로</div><div class="exchange-result-value" id="exchangeResult">환율을 불러오는 중</div><div class="exchange-unit" id="exchangeUnit">최신 환율을 확인하고 있어요</div></div>
           <div class="exchange-meta"><span class="exchange-state stale" id="exchangeState">환율 확인 중</span><span id="exchangeUpdated">마지막 갱신 정보 없음</span><a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">Rates By ExchangeRate-API</a></div>
         </div>
-        <p class="exchange-note">무료 일일 기준 환율을 1시간 간격으로 확인해요. 실제 카드 결제 및 현금 환전 금액과 차이가 날 수 있어요.<br><a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By Exchange Rate API</a></p>
+        <p class="exchange-note">ExchangeRate-API 무료 공개 환율(1일 1회 갱신)을 <b>기기에서 직접</b> 받아요. 서버 공통 캐시가 없어 기기마다 따로 요청하며, 받은 시각과 제공사 기준 시각을 위에 함께 표시합니다. 실제 카드 결제·현금 환전 금액과는 차이가 날 수 있어요.<br><a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By ExchangeRate-API</a></p>
       </article>
       <article class="panel itinerary-panel" id="itineraryPanel">
         <div class="panel-head"><div><h2 id="dayTitle">12월 10일 목요일</h2><p id="daySummary">도착 후 사카에와 오스 산책</p></div><span class="sync-state" id="syncStatus">공유 연결 중</span></div>
@@ -150,7 +150,7 @@
   <dialog id="editDialog"><form method="dialog" class="dialog-inner" id="editForm"><h3>일정 수정</h3><p>장소명, 메모, 분류를 바로 고칠 수 있어요.</p><label class="field"><span>장소명</span><div class="autocomplete"><input id="editPlaceName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="editPlaceSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="editPlaceSuggestions" role="listbox"></div></div></label><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="editMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="editPlaceNote" placeholder="예약 정보나 할 일" /></label><label class="field"><span>영업시간 (직접 확인·선택)</span><input id="editHoursText" maxlength="100" placeholder="11:00-14:00 / 17:00-20:00" /><small>방문일 기준으로 확인한 시간을 입력해주세요. 휴무·24시간도 입력할 수 있어요.</small></label><label class="field"><span>지도 위치 (선택)</span><input id="editCoordinates" placeholder="35.1853, 136.8992 또는 지도 링크" /><small>지도에서 복사한 위도·경도 또는 좌표가 포함된 링크를 넣으면 무료 번호 지도에 바로 반영돼요.</small></label><div class="field-row"><label class="field"><span>분류</span><select id="editPlaceKind"><option>장소</option><option>관광</option><option>식당</option><option>카페</option><option>쇼핑</option><option>숙소</option><option>항공</option><option>공항</option><option>투어</option></select></label><label class="field"><span>날짜</span><select id="editPlaceDay"></select></label></div><div class="dialog-actions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="editConfirm" value="default">수정 저장</button></div></form></dialog>
   <dialog id="foodDialog"><form method="dialog" class="dialog-inner" id="foodForm"><h3>맛집 추가</h3><p>가보고 싶은 식당을 저장하면 지도에 함께 표시해드려요.</p><label class="field"><span>맛집 이름</span><input id="foodName" required placeholder="예: 야바톤 사카에점" /></label><label class="field"><span>메모</span><input id="foodNote" placeholder="대표 메뉴, 예약 정보 등" /></label><div class="dialog-actions"><button class="cancel" value="cancel">취소</button><button class="confirm" id="foodConfirm" value="default">맛집에 추가</button></div></form></dialog>
   <dialog id="candidateDialog"><form method="dialog" class="dialog-inner" id="candidateForm"><h3>후보 장소 추가</h3><p>투표 후 확정할 맛집이나 관광지를 등록해주세요.</p><label class="field"><span>장소명</span><div class="autocomplete"><input id="candidateName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="candidateSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="candidateSuggestions" role="listbox"></div></div></label><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="candidateMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="candidateNote" placeholder="대표 메뉴나 추천 이유" /></label><div class="field-row"><label class="field"><span>종류</span><select id="candidateKind"><option>맛집</option><option>관광</option><option>쇼핑</option><option>카페</option></select></label><label class="field"><span>넣을 날짜</span><select id="candidateDay"></select></label></div><div class="dialog-actions"><button class="cancel" value="cancel">취소</button><button class="confirm" value="default">후보 등록</button></div></form></dialog>
-  <dialog id="linkDialog"><form class="dialog-inner" id="linkForm"><h3>링크에서 장소 찾기</h3><p>Instagram, Naver, YouTube 등의 공개 게시물 링크를 넣으면 게시물 설명과 위치 정보를 읽어 실제 장소를 찾아드려요.</p><label class="field"><span>게시물 링크</span><input id="travelLink" type="url" inputmode="url" autocomplete="url" required placeholder="https://..." /></label><label class="field"><span>저장할 곳</span><select id="linkDay"></select></label><label class="field"><span>게시물 설명·장소명 (선택)</span><textarea id="linkContext" rows="3" maxlength="3000" placeholder="원문이 비공개라면 게시물 설명을 복사해 붙여넣어주세요." style="width:100%;padding:12px;border:1px solid #e5e8eb;border-radius:12px;font:inherit"></textarea></label><div class="link-result" id="linkResult"></div><div class="dialog-actions" id="linkInitialActions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="linkAnalyze" value="default">내용 분석</button></div></form></dialog>
+  <dialog id="linkDialog"><form class="dialog-inner" id="linkForm"><h3>링크에서 장소 찾기</h3><p>Instagram, Naver, YouTube, Threads 공개 게시물의 <b>제목·설명 글</b>만 읽어 장소 후보를 찾아요. 영상·이미지 속 글자(OCR)나 화면 분석은 하지 않으며, 읽은 이름만으로 지점을 확정하지 않습니다.</p><label class="field"><span>게시물 링크</span><input id="travelLink" type="url" inputmode="url" autocomplete="url" required placeholder="https://..." /></label><label class="field"><span>저장할 곳</span><select id="linkDay"></select></label><label class="field"><span>게시물 설명·장소명 (선택)</span><textarea id="linkContext" rows="3" maxlength="3000" placeholder="원문이 비공개라면 게시물 설명을 복사해 붙여넣어주세요." style="width:100%;padding:12px;border:1px solid #e5e8eb;border-radius:12px;font:inherit"></textarea></label><div class="link-result" id="linkResult"></div><div class="dialog-actions" id="linkInitialActions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="linkAnalyze" value="default">내용 분석</button></div></form></dialog>
   <dialog id="alternativeDialog"><form method="dialog" class="dialog-inner" id="alternativeForm"><h3>날씨 대체 장소</h3><p>비가 올 때 바꿀 야외 일정과 실내 장소를 연결해주세요.</p><label class="field"><span>대상 날짜</span><select id="alternativeDay"></select></label><label class="field"><span>기존 야외 장소</span><select id="alternativeOriginal"></select></label><label class="field"><span>대체 장소</span><input id="alternativeReplacement" required placeholder="예: 도요타 산업기술기념관" /></label><label class="field"><span>메모</span><input id="alternativeNote" placeholder="실내 관람, 이동 정보 등" /></label><div class="dialog-actions"><button class="cancel" value="cancel">취소</button><button class="confirm" value="default">대체 장소 저장</button></div></form></dialog>
   <dialog id="routeDialog"><div class="dialog-inner"><h3>전체 경로</h3><p>휴대폰 Google 지도에 맞춰 경유지 3개씩 나눴어요.</p><div id="routeSegments"></div><button class="cancel" onclick="this.closest('dialog').close()">닫기</button></div></dialog>
   <dialog id="embedDialog"><div class="dialog-inner"><h3>Google 지도 미리보기</h3><div id="embedContent"></div><div class="dialog-actions"><button type="button" class="cancel">닫기</button></div></div></dialog><dialog id="settingsDialog"><form method="dialog" class="dialog-inner" id="settingsForm"><h3>여행 설정</h3><p>여행 이름, 이동 수단과 투표에 사용할 내 이름을 정할 수 있어요.</p><label class="field"><span>여행 이름</span><input id="tripNameInput" maxlength="30" required /></label><span class="setting-label">기본 이동 수단</span><div class="mode-buttons" id="modeButtons"><button type="button" class="mode-btn" data-mode="transit">대중교통</button><button type="button" class="mode-btn" data-mode="walking">도보</button><button type="button" class="mode-btn" data-mode="driving">자동차</button></div><span class="setting-label">투표에 사용할 내 이름</span><div class="mode-buttons voter-buttons" id="voterButtons"><button type="button" class="mode-btn" data-voter="재원">재원</button><button type="button" class="mode-btn" data-voter="주희">주희</button></div><p id="apiBudget" class="setting-note">무료 API 사용량을 확인하고 있어요.</p><div class="setting-note">일정·투표·대체 장소는 함께 사용하는 사람에게 자동으로 공유됩니다.</div><div class="dialog-actions"><button class="cancel" value="cancel">취소</button><button class="confirm" value="default">저장</button></div></form></dialog>
@@ -241,29 +241,53 @@
     function saveSettings(){persistTrips()}
     function setSyncStatus(text,state=''){$('#syncStatus').textContent=text;$('#syncStatus').className='sync-state '+state}
     function queueSharedSave(){if(!sharedReady)return;clearTimeout(sharedTimer);setSyncStatus('공유 저장 중','saving');sharedTimer=setTimeout(pushSharedState,180)}
+    // 저장 응답을 기다리는 사이 같은 기기에서 수정이 생겼다면, 늦게 도착한 병합 결과로 화면을 덮지 않는다.
+    //   ① 응답의 서버본을 기준(base)으로 지금 화면(local)을 다시 병합 → 대기 중 수정과 서버 병합분을 모두 남긴다
+    //   ② 같은 항목을 서로 다르게 고쳐 자동 병합이 안 되면 충돌 선택창으로 넘긴다
     async function pushSharedState(){
       if(!sharedReady||sharedSaving||!sharedDirty||syncConflictState)return;
-      const snapshot=structuredClone({trips}),sentChange=sharedChange;sharedSaving=true;setSyncStatus('공유 저장 중','saving');
+      const snapshot=structuredClone({trips}),sentChange=sharedChange,sentBase=structuredClone(sharedBase);
+      const editedDuringSend=()=>sharedChange!==sentChange;
+      sharedSaving=true;setSyncStatus('공유 저장 중','saving');
       try{
-        const out=await sharedSync.saveWithMerge({base:sharedBase,payload:snapshot,revision:sharedRevision+1,updatedBy:localStorage.getItem('journey-note-participant')||'재원',expectedUpdateTime:sharedUpdateTime});
+        const out=await sharedSync.saveWithMerge({base:sentBase,payload:snapshot,revision:sharedRevision+1,updatedBy:localStorage.getItem('journey-note-participant')||'재원',expectedUpdateTime:sharedUpdateTime});
         if(out.status==='saved'||out.status==='merged'){
-          const applied=out.payload||out.merged||snapshot;
-          sharedRevision=out.revision;sharedUpdateTime=out.updateTime;sharedBase=structuredClone(applied);
-          if(out.status==='merged'&&JSON.stringify(applied)!==JSON.stringify(snapshot))applySharedPayload(applied);
-          sharedDirty=sharedChange!==sentChange;saveRetry=1000;
-          if(sharedDirty)storePending();else localStorage.removeItem('journey-note-pending');
-          setSyncStatus(sharedDirty?'추가 변경 저장 중':'실시간 동기화 완료',sharedDirty?'saving':'online');
+          const server=out.payload||out.merged||snapshot;
+          sharedRevision=out.revision;sharedUpdateTime=out.updateTime;saveRetry=1000;
+          if(editedDuringSend()){
+            const now=structuredClone({trips}),again=mergeJourney(sentBase,now,server,false);
+            sharedBase=structuredClone(server);
+            if((again.conflicts||[]).length){
+              openSyncConflict({base:sentBase,local:now,remote:server,paths:again.conflicts,remoteRevision:out.revision,remoteUpdateTime:out.updateTime});
+              return;
+            }
+            applySharedPayload(again.payload);
+            sharedDirty=true;storePending();
+            setSyncStatus('추가 변경 저장 중','saving');
+          }else{
+            sharedBase=structuredClone(server);
+            if(out.status==='merged'&&JSON.stringify(server)!==JSON.stringify(snapshot))applySharedPayload(server);
+            sharedDirty=false;
+            localStorage.removeItem('journey-note-pending');
+            setSyncStatus('실시간 동기화 완료','online');
+          }
         }else if(out.status==='conflict'){
-          openSyncConflict(out);
+          if(editedDuringSend()){
+            const now=structuredClone({trips}),again=mergeJourney(sentBase,now,out.remote,false);
+            openSyncConflict({...out,local:now,paths:(again.conflicts&&again.conflicts.length)?again.conflicts:out.paths});
+          }else openSyncConflict(out);
         }else{
           throw Error('save_failed');
         }
       }catch(err){
         saveRetry=Math.min(30000,saveRetry*2);
-        setSyncStatus('저장 대기 · 휴대폰에 보관됨','offline');
+        setSyncStatus(navigator.onLine===false?'오프라인 보관 모드 · 저장 대기':'저장 대기 · 휴대폰에 보관됨','offline');
       }finally{
         sharedSaving=false;
-        if(sharedDirty&&!syncConflictState)sharedTimer=setTimeout(pushSharedState,saveRetry);
+        if(sharedDirty&&!syncConflictState){
+          clearTimeout(sharedTimer);
+          sharedTimer=setTimeout(pushSharedState,editedDuringSend()?200:saveRetry);
+        }
       }
     }
     // 충돌: 겹친 항목만 사용자가 고르게 하고, 나머지는 병합본으로 이미 합쳐져 있다.
@@ -276,14 +300,29 @@
       setSyncStatus('충돌 · 선택 대기','offline');
     }
     async function resolveSyncConflict(preferRemote){
-      if(!syncConflictState)return;const state=syncConflictState;
-      syncConflictState=null;applySharedPayload(mergeJourney(state.base,state.local,state.remote,preferRemote).payload);
+      if(!syncConflictState)return;
+      // 대화상자를 연 뒤에 고친 내용까지 반영한다(선택 시점의 화면이 곧 내 편).
+      const state=syncConflictState,localNow=structuredClone({trips});
+      syncConflictState=null;
+      const resolved=mergeJourney(state.base,localNow,state.remote,preferRemote);
+      applySharedPayload(resolved.payload);
       sharedDirty=true;sharedChange++;storePending();$('#syncConflict').close();setSyncStatus('공유 저장 중','saving');
-      const saved=await sharedSync.saveResolved(state,preferRemote);
-      if(saved.ok){
-        sharedRevision=(state.remoteRevision||sharedRevision)+1;sharedUpdateTime=saved.updateTime;sharedBase=structuredClone(saved.payload||{trips});
-        localStorage.removeItem('journey-note-pending');setSyncStatus('실시간 동기화 완료','online');
-      }else{
+      const sentChange=sharedChange;
+      try{
+        const saved=await sharedSync.saveResolved({...state,local:localNow},preferRemote);
+        if(saved.ok){
+          sharedRevision=(state.remoteRevision||sharedRevision)+1;sharedUpdateTime=saved.updateTime;
+          sharedBase=structuredClone(saved.payload||resolved.payload||{trips});
+          if(sharedChange!==sentChange){
+            // 저장 응답 대기 중 또 고쳤다 → 저장 대기를 지우지 않고 이어서 저장한다.
+            sharedDirty=true;storePending();setSyncStatus('추가 변경 저장 중','saving');queueSharedSave();
+          }else{
+            sharedDirty=false;localStorage.removeItem('journey-note-pending');setSyncStatus('실시간 동기화 완료','online');
+          }
+        }else{
+          setSyncStatus('저장 대기 · 휴대폰에 보관됨','offline');storePending();queueSharedSave();
+        }
+      }catch(err){
         setSyncStatus('저장 대기 · 휴대폰에 보관됨','offline');storePending();queueSharedSave();
       }
     }
@@ -293,6 +332,7 @@
       if(document.hidden||navigator.onLine===false||sharedPolling||!sharedReady||draggingSchedule||sharedSaving||syncConflictState)return;
       if(sharedDirty){pushSharedState();return;}
       sharedPolling=true;
+      const startedChange=sharedChange,localBefore=structuredClone({trips}),baseBefore=structuredClone(sharedBase);
       try{
         const res = await sharedSync.fetchDoc();
         if(!res.ok) throw Error('poll_failed');
@@ -300,22 +340,44 @@
         const fields = doc.fields || {};
         const rev = parseInt(fields.revision?.integerValue || '1', 10);
         const remoteUpdateTime = doc.updateTime || null;
-        if(rev > sharedRevision || (remoteUpdateTime && sharedUpdateTime && remoteUpdateTime !== sharedUpdateTime)){
+        const newer = rev > sharedRevision || (rev === sharedRevision && remoteUpdateTime && sharedUpdateTime && remoteUpdateTime !== sharedUpdateTime);
+        const editedDuringPoll = sharedChange !== startedChange || sharedDirty;
+        if(newer){
           const rawPayload = JSON.parse(fields.payload?.stringValue || '{}');
           if(rawPayload && rawPayload.trips){
-            sharedRevision = rev; sharedUpdateTime = remoteUpdateTime;
             const remote = normalizeShared(rawPayload);
+            sharedRevision = rev; sharedUpdateTime = remoteUpdateTime;
             sharedBase = structuredClone(remote);
+            if(editedDuringPoll){
+              // 조회를 시작한 뒤에 고친 내용이 있으면 원격본으로 덮지 않고 다시 병합한다.
+              const now=structuredClone({trips}),again=mergeJourney(baseBefore,now,remote,false);
+              if((again.conflicts||[]).length){
+                openSyncConflict({base:baseBefore,local:now,remote,paths:again.conflicts,remoteRevision:rev,remoteUpdateTime});
+                return;
+              }
+              applySharedPayload(again.payload);
+              sharedDirty=true;storePending();
+              setSyncStatus('추가 변경 저장 중','saving');
+              clearTimeout(sharedTimer);sharedTimer=setTimeout(pushSharedState,200);
+              return;
+            }
             applySharedPayload(remote);
           }
         }
-        setSyncStatus('실시간 동기화 완료','online');
-      }catch{
-        setSyncStatus('연결 확인 중','offline');
+        if(!syncConflictState)setSyncStatus('실시간 동기화 완료','online');
+      }catch(e){
+        setSyncStatus(navigator.onLine===false?'오프라인 보관 모드 · 저장 대기':'연결 확인 중 · 휴대폰 보관본','offline');
       }finally{
         sharedPolling=false;
       }
     }
+    // 연결이 끊기거나 돌아왔을 때 상태 문구를 실제 상태에 맞춘다(캐시 화면을 '동기화 완료'로 보이지 않게).
+    window.addEventListener('offline',()=>{if(sharedReady)setSyncStatus('오프라인 보관 모드 · 저장 대기','offline')});
+    window.addEventListener('online',()=>{
+      if(!sharedReady)return;
+      if(sharedDirty){setSyncStatus('연결 복구 · 저장 중','saving');clearTimeout(sharedTimer);sharedTimer=setTimeout(pushSharedState,300)}
+      else{setSyncStatus('연결 확인 중','saving');setTimeout(()=>pollShared(),150)}
+    });
     async function startSharedSync(){
       setSyncStatus('공유 연결 중','saving');
       try{
@@ -328,7 +390,9 @@
         hideLaunchCover();
         $('#inviteRecovery').hidden = true;
         document.body.classList.remove('booting');
-        accessOwner = true;
+        // 소유자 여부는 멤버 문서의 role 로 판단한다(편집자는 초대 발급·여행 삭제 불가).
+        accessOwner = false;
+        sharedSync.myRole?.().then(role=>{accessOwner=role==='owner';$('#memberShare')?.setAttribute('data-role',role||'unknown')}).catch(()=>{});
         setupFreeEmbed();
         sharedRevision = rev;
         sharedUpdateTime = doc.updateTime || null;
@@ -338,17 +402,27 @@
           const remote = normalizeShared(rawPayload);
           sharedBase = structuredClone(remote);
           applySharedPayload(remote);
-          setSyncStatus('실시간 동기화 완료','online');
+          // 오프라인에서 고친 저장 대기가 남아 있으면 서버본으로 덮지 않고 병합해 올린다.
+          if(pendingDraft&&pendingDraft.payload&&Array.isArray(pendingDraft.payload.trips)){
+            const draft=normalizeShared(structuredClone(pendingDraft.payload)),mergedDraft=mergeJourney(pendingDraft.base||remote,draft,remote,false);
+            if((mergedDraft.conflicts||[]).length){
+              openSyncConflict({base:pendingDraft.base||remote,local:draft,remote,paths:mergedDraft.conflicts,remoteRevision:rev,remoteUpdateTime:doc.updateTime||null});
+            }else{
+              applySharedPayload(mergedDraft.payload);sharedDirty=true;storePending();queueSharedSave();
+            }
+          }else setSyncStatus('실시간 동기화 완료','online');
         }
       }catch(err){
         console.warn('Sync fallback to local cache:', err);
         hideLaunchCover();
         document.body.classList.remove('booting');
-        const accessDenied=isAccessError(err);
+        const accessDenied=isAccessError(err),offlineNow=navigator.onLine===false;
         if(accessDenied)showInviteRecovery('이 여행에 참여할 수 없어요. 받은 초대 링크를 붙여넣어 주세요.');
         if(localStorage.getItem('journey-note-trips')){
           sharedReady = true;
-          setSyncStatus(accessDenied?'참여 확인 필요 · 오프라인 보관 모드':'오프라인 보관 모드','online');
+          // 서버와 한 번도 동기화되지 않은 화면이다 — 초록색 '실시간 동기화 완료'로 보이면 안 된다.
+          setSyncStatus(accessDenied?'참여 확인 필요 · 오프라인 보관 모드':offlineNow?'오프라인 보관 모드 · 저장 대기':'연결 재시도 중 · 휴대폰 보관본','offline');
+          if(!accessDenied&&!offlineNow)setTimeout(startSharedSync,10000);
         }else if(accessDenied){
           setSyncStatus('참여 확인 필요','offline');
           setTimeout(startSharedSync, 15000);
@@ -372,22 +446,115 @@
     function bindCandidateActions(){$('#candidateMapOpen').onclick=()=>setView('map');$('#candidateAdd').onclick=openCandidateDialog;$('#candidateLinkAdd').onclick=()=>openLinkDialog('candidate');$('#alternativeManage').onclick=openAlternativeDialog}
     function openCandidateDialog(){candidatePlaceSelection=null;const select=$('#candidateDay');select.innerHTML=days.map((d,i)=>`<option value="${i}" ${i===dayIndex?'selected':''}>${i+1}일차 · ${esc(d.date)}</option>`).join('');closeSuggestions($('#candidateName'),$('#candidateSuggestions'));$('#candidateDialog').showModal();setTimeout(()=>$('#candidateName').focus(),80)}
     function openLinkDialog(target='candidate'){linkAnalysis=null;linkPlaceSelection=null;$('#linkForm').reset();$('#linkDay').innerHTML=`<option value="candidate" ${target==='candidate'?'selected':''}>후보 · 투표 후 일정 확정</option>`+days.map((d,i)=>`<option value="${i}" ${target==='schedule'&&i===dayIndex?'selected':''}>${i+1}일차 · ${esc(d.date)} ${esc(d.dow)}</option>`).join('');$('#linkResult').className='link-result';$('#linkResult').replaceChildren();$('#linkAnalyze').disabled=false;$('#linkAnalyze').textContent='내용 분석';$('#linkDialog').showModal();setTimeout(()=>$('#travelLink').focus(),80)}
+    // ── 링크에서 장소 찾기 ──────────────────────────────────────────────
+    // 정적 호스팅(GitHub Pages)에는 /api/link-analyze 가 없다(404). 그래서 앱이 직접
+    //  · Microlink 공개 메타데이터 API(키 불필요·CORS 허용)로 게시물의 제목·설명·대표 이미지를 읽고
+    //  · 영상/이미지를 OCR·비전 분석하지는 않는다(그런 기능은 이 앱에 없다).
+    //  · 읽은 글에서 장소 후보 이름만 뽑아 칩으로 보여주고, 지점 확정은 사용자가 검색으로 고른다.
+    const LINK_META_ENDPOINT='https://api.microlink.io/';
+    function linkPlatformOf(url){
+      const host=(()=>{try{return new URL(url).hostname.replace(/^www\./,'')}catch{return ''}})();
+      if(/instagram/.test(host))return{key:'instagram',name:'Instagram'};
+      if(/naver/.test(host))return{key:'naver',name:'NAVER'};
+      if(/youtube|youtu\.be/.test(host))return{key:'youtube',name:'YouTube'};
+      if(/threads\.net/.test(host))return{key:'threads',name:'Threads'};
+      if(/tiktok/.test(host))return{key:'tiktok',name:'TikTok'};
+      return{key:'web',name:host||'웹 게시물'};
+    }
+    function linkReasonMessage(reason,platform){
+      const p=platform?.name||'이 사이트';
+      return {
+        blocked:p+'가 외부에서 게시물 내용을 읽는 것을 막고 있어요. 게시물 설명을 붙여넣거나 링크만 저장할 수 있어요.',
+        private:'비공개·삭제된 게시물이거나 로그인한 사람만 볼 수 있어요. 공개 게시물인지 확인해주세요.',
+        no_description:'제목만 읽었고 설명이 없어요. 영상·이미지 속 글자는 읽지 못하니, 캡션을 붙여넣어 주세요.',
+        no_place:'게시물에서 장소 이름을 찾지 못했어요. 설명을 붙여넣거나 장소를 직접 검색해주세요.',
+        network:'인터넷 연결 또는 게시물 응답이 없어 읽지 못했어요. 잠시 후 다시 시도해주세요.',
+        quota:'무료 링크 조회 횟수를 모두 썼어요. 잠시 후 다시 시도하거나 설명을 붙여넣어 주세요.',
+        invalid:'주소 형식을 확인해주세요. https:// 로 시작하는 전체 링크를 붙여넣어 주세요.'
+      }[reason]||'게시물 내용을 읽지 못했어요. 설명을 붙여넣거나 링크만 저장할 수 있어요.';
+    }
+    async function fetchLinkMeta(url){
+      const platform=linkPlatformOf(url);
+      let status=0,body=null;
+      try{
+        const response=await fetch(LINK_META_ENDPOINT+'?url='+encodeURIComponent(url),{signal:AbortSignal.timeout(20000),cache:'no-store'});
+        status=response.status;
+        try{body=await response.json()}catch(e){body=null}
+      }catch(e){return{ok:false,reason:'network',platform}}
+      if(status===429)return{ok:false,reason:'quota',platform};
+      const data=body&&body.status==='success'?body.data:null;
+      if(data){
+        return{ok:true,platform,source:{url,finalUrl:data.url||url,platform:platform.name,title:data.title||'',description:data.description||'',image:typeof data.image==='string'?data.image:data.image?.url||'',author:data.author||data.publisher||''}};
+      }
+      const code=String(body?.code||''),msg=String(body?.message||'');
+      if(code==='EPROXYNEEDED'||/antibot|robot|blocked|forbidden/i.test(msg+' '+JSON.stringify(body?.data||'')))return{ok:false,reason:'blocked',platform};
+      if(status===401||status===403)return{ok:false,reason:'blocked',platform};
+      if(status===404||/not found|private|login/i.test(msg))return{ok:false,reason:'private',platform};
+      if(!status)return{ok:false,reason:'network',platform};
+      return{ok:false,reason:'network',platform};
+    }
+    function placeNameCandidates(text){
+      const out=[],push=value=>{
+        let v=String(value||'').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,'').replace(/\s+/g,' ').trim();
+        v=v.replace(/^[-–—·|:]+|[-–—·|:]+$/g,'').trim();
+        if(v.length<2||v.length>40)return;
+        if(/^(오늘|내일|여기|저기|맛집|카페|추천|정보|위치|주소|여행|일본|나고야)$/.test(v))return;
+        if(!out.some(x=>x.toLowerCase()===v.toLowerCase()))out.push(v);
+      };
+      String(text||'').split(/\n+/).forEach(line=>{
+        const marked=line.match(/[📍📌🗺️]\s*([^\n]{2,40})/);
+        if(marked)push(marked[1].split(/[,\/·]/)[0]);
+      });
+      for(const m of String(text||'').matchAll(/[「『"“']([^」』"”']{2,32})[」』"”']/g))push(m[1]);
+      for(const m of String(text||'').matchAll(/#([^\s#,]{2,24})/g))push(m[1]);
+      return out.slice(0,6);
+    }
     function renderLinkAnalysis(){
-      const result=$('#linkResult'),data=linkAnalysis,source=data?.source,places=data?.places||[];
-      if(!data||!source)return;linkPlaceSelection=null;
+      const result=$('#linkResult'),data=linkAnalysis;
+      if(!data)return;
+      const source=data.source||{},platform=data.platform||linkPlatformOf($('#travelLink').value.trim()||'');
       const image=source.image?`<img src="${esc(source.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" />`:'';
-      const preview=`<div class="link-source ${image?'':'no-image'}">${image}<div class="link-source-copy"><span class="link-platform">${esc(source.platform||'웹 게시물')}</span><strong>${esc(source.title||'제목 없는 게시물')}</strong><p>${esc(source.description||'공개된 설명을 찾지 못했어요.')}</p></div></div>`;
-      const notice=data.reason==='search_busy'?'다른 검색을 처리 중이에요. 잠시 후 다시 분석해주세요.':data.reason==='quota'?'무료 장소 조회 한도에 도달했어요. 다음 갱신까지 장소를 직접 입력할 수 있어요.':data.reason==='blocked'?'원문 공개가 제한되어 있어요. 게시물 설명을 붙여넣고 다시 분석해주세요.':data.reason==='lookup_error'?'무료 장소 검색에서 찾지 못했어요. 게시물의 정확한 장소명을 직접 확인해주세요.':'장소 후보를 찾지 못했어요. 게시물 설명 또는 정확한 장소명을 추가해주세요.';const choices=places.length?`<h4 class="link-result-title">장소와 지점을 확인해 선택해주세요</h4><p class="link-help">게시물에 지점명이 없으면 여러 지점이 나올 수 있어요. 주소를 확인한 뒤 저장해주세요.</p><div class="link-places">${places.map((p,i)=>`<button type="button" class="link-place ${linkPlaceSelection?.placeId===p.placeId?'selected':''}" data-link-place="${i}"><span class="link-radio"></span><span><strong>${esc(p.name)}</strong><small>${esc(p.address||p.kind||'장소')}</small></span></button>`).join('')}</div><div class="link-save-actions"><button type="button" class="link-save-schedule" id="linkSaveSelected">선택한 곳에 저장</button></div>`:`<div class="link-help">${esc(notice)}</div><button type="button" class="link-direct-search" id="linkDirectSearch">장소 직접 확인</button>`;
-      result.innerHTML=preview+choices;result.className='link-result open';linkPlaceSelection=null;
-      result.querySelectorAll('[data-link-place]').forEach(button=>button.onclick=()=>{result.querySelectorAll('[data-link-place]').forEach(x=>x.classList.remove('selected'));button.classList.add('selected');linkPlaceSelection=places[Number(button.dataset.linkPlace)];updateLinkSaveButton()});
-      $('#linkSaveSelected')?.addEventListener('click',saveLinkedPlace);updateLinkSaveButton();$('#linkDirectSearch')?.addEventListener('click',openManualSearchFromLink)
+      const preview=source.title||source.description?`<div class="link-source ${image?'':'no-image'}">${image}<div class="link-source-copy"><span class="link-platform">${esc(source.platform||platform.name)}</span><strong>${esc(source.title||'제목 없는 게시물')}</strong><p>${esc(source.description||'공개된 설명을 찾지 못했어요.')}</p></div></div>`:'';
+      const notice=data.reason?`<div class="link-help">${esc(linkReasonMessage(data.reason,platform))}</div>`:'';
+      const candidates=(data.candidates||[]);
+      const chips=candidates.length?`<h4 class="link-result-title">게시물에서 찾은 장소 후보</h4><p class="link-help">이름만으로는 지점이 다를 수 있어요. 하나를 눌러 정확한 지점을 검색해 고르세요.</p><div class="link-places">${candidates.map((name,i)=>`<button type="button" class="link-place" data-link-name="${i}"><span class="link-radio"></span><span><strong>${esc(name)}</strong><small>눌러서 정확한 지점 검색</small></span></button>`).join('')}</div>`:'';
+      const saveName=(source.title||'').trim().slice(0,40)||'링크로 저장한 장소';
+      const metaSave=`<div class="link-meta-save"><label class="field"><span>링크와 함께 저장할 이름</span><input id="linkSaveName" maxlength="40" value="${esc(saveName)}" /></label><p class="link-help">장소를 못 찾아도 일정·후보에 링크와 메모를 남길 수 있어요. 위치는 '확인 필요'로 표시됩니다.</p><div class="link-save-actions"><button type="button" class="link-save-schedule" id="linkSaveMeta">링크·메모만 저장</button><button type="button" class="link-direct-search" id="linkDirectSearch">장소 직접 검색</button></div></div>`;
+      result.innerHTML=preview+notice+chips+metaSave;
+      result.className='link-result open';linkPlaceSelection=null;data.places=[];
+      result.querySelectorAll('[data-link-name]').forEach(button=>button.onclick=()=>openManualSearchFromLink(candidates[Number(button.dataset.linkName)]));
+      $('#linkSaveMeta').onclick=saveLinkedMetaOnly;
+      $('#linkDirectSearch').onclick=()=>openManualSearchFromLink(data.candidates?.[0]||'');
+    }
+    function saveLinkedMetaOnly(){
+      const target=$('#linkDay').value,mode=target==='candidate'?'candidate':'schedule',index=mode==='candidate'?dayIndex:Number(target);
+      if(!days[index])return toast('저장할 날짜를 선택해주세요');
+      const name=($('#linkSaveName')?.value||'').trim()||'링크로 저장한 장소',source=linkAnalysis?.source||{},note=($('#linkContext')?.value||'').trim()||source.description||'링크에서 저장';
+      const item={name,note:note.slice(0,300),kind:'장소',coordNeedsCheck:true,...linkedSourceFields()};
+      if(mode==='candidate'){activeTrip.candidates.push({id:'candidate-'+Date.now(),day:index,votes:[currentVoter],voteNames:{[participantId]:currentVoter},...item});candidateMode=true;foodMode=false}
+      else{days[index].places.push(item);dayIndex=index;candidateMode=false;foodMode=false}
+      save();$('#linkDialog').close();render();toast(mode==='candidate'?'링크를 후보로 저장했어요 · 위치는 확인이 필요해요':'링크를 일정에 저장했어요 · 위치는 확인이 필요해요')
     }
     async function analyzeTravelLink(){
-      const url=$('#travelLink').value.trim();if(!url)return toast('게시물 링크를 입력해주세요');
-      $('#linkAnalyze').disabled=true;$('#linkAnalyze').textContent='분석 중';$('#linkResult').innerHTML='<div class="link-loading">게시물 내용에서 장소를 찾고 있어요…</div>';$('#linkResult').className='link-result open';
-      try{const response=await apiFetch('/api/link-analyze',{signal:AbortSignal.timeout(30000),method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url,destination:activeTrip.destination,contextText:$("#linkContext").value.trim()})}),data=await response.json();if(!response.ok||!data.ok)throw new Error(data.message||'link_failed');linkAnalysis=data;renderLinkAnalysis()}
-      catch(error){$('#linkResult').innerHTML=`<div class="link-help">${esc(error.message||'링크 내용을 읽지 못했어요. 공개 게시물인지 확인해주세요.')}</div><button type="button" class="link-direct-search" id="linkDirectSearch">장소 직접 검색</button>`;$('#linkDirectSearch').onclick=openManualSearchFromLink}
-      finally{$('#linkAnalyze').disabled=false;$('#linkAnalyze').textContent='다시 분석'}
+      const raw=$('#travelLink').value.trim();if(!raw)return toast('게시물 링크를 입력해주세요');
+      let url;try{url=new URL(raw);if(!/^https?:$/.test(url.protocol))throw Error('bad')}catch{linkAnalysis={ok:false,reason:'invalid',platform:linkPlatformOf(raw)};return renderLinkAnalysis()}
+      $('#linkAnalyze').disabled=true;$('#linkAnalyze').textContent='분석 중';$('#linkResult').innerHTML='<div class="link-loading">게시물의 공개 제목·설명을 읽고 있어요…</div>';$('#linkResult').className='link-result open';
+      try{
+        const meta=await fetchLinkMeta(url.href);
+        const context=$('#linkContext').value.trim();
+        if(!meta.ok){
+          linkAnalysis={ok:false,reason:meta.reason,platform:meta.platform,candidates:placeNameCandidates(context)};
+          if(context&&linkAnalysis.candidates.length)linkAnalysis.reason=null;
+          return renderLinkAnalysis();
+        }
+        const source=meta.source,text=[context,source.title,source.description].filter(Boolean).join('\n');
+        const candidates=placeNameCandidates(text);
+        linkAnalysis={ok:true,source,platform:meta.platform,candidates,reason:candidates.length?null:(source.description||context?'no_place':'no_description')};
+        renderLinkAnalysis();
+      }catch(e){
+        linkAnalysis={ok:false,reason:'network',platform:linkPlatformOf(url.href),candidates:placeNameCandidates($('#linkContext').value)};
+        renderLinkAnalysis();
+      }finally{$('#linkAnalyze').disabled=false;$('#linkAnalyze').textContent='다시 분석'}
     }
     function linkedSourceFields(){const source=linkAnalysis?.source;return source?{sourceUrl:source.finalUrl||source.url,sourcePlatform:source.platform||'웹 게시물',sourceTitle:source.title||'',sourceImage:source.image||'',sourceSummary:source.description||''}:{}}
     function updateLinkSaveButton(){const button=$('#linkSaveSelected');if(!button)return;button.disabled=!linkPlaceSelection;const target=$('#linkDay').value;button.textContent=target==='candidate'?'후보에 저장':`${Number(target)+1}일차 일정에 추가`}
@@ -397,7 +564,7 @@
       if(mode==='candidate'){activeTrip.candidates.push({id:'candidate-'+Date.now(),day:index,votes:[currentVoter],voteNames:{[participantId]:currentVoter},...base});candidateMode=true;foodMode=false}else{days[index].places.push(base);dayIndex=index;candidateMode=false;foodMode=false}
       save();$('#linkDialog').close();render();toast(mode==='candidate'?'게시물의 장소를 후보로 저장했어요':'게시물의 장소를 일정에 추가했어요')
     }
-    function openManualSearchFromLink(){const query=linkAnalysis?.query||linkAnalysis?.source?.title||'',target=$('#linkDay').value;$('#linkDialog').close();if(target==='candidate'){openCandidateDialog();if(query){$('#candidateName').value=query;$('#candidateName').dispatchEvent(new Event('input',{bubbles:true}))}}else{dayIndex=Number(target);render();openAddDialog();if(query){$('#placeName').value=query;$('#placeName').dispatchEvent(new Event('input',{bubbles:true}))}}}
+    function openManualSearchFromLink(name){const query=name||linkAnalysis?.candidates?.[0]||linkAnalysis?.source?.title||'',target=$('#linkDay').value;$('#linkDialog').close();if(target==='candidate'){openCandidateDialog();if(query){$('#candidateName').value=query;$('#candidateName').dispatchEvent(new Event('input',{bubbles:true}))}}else{dayIndex=Number(target);render();openAddDialog();if(query){$('#placeName').value=query;$('#placeName').dispatchEvent(new Event('input',{bubbles:true}))}}}
     function toggleCandidateVote(index){const c=activeTrip.candidates[index];if(!c)return;const map=c.voteNames||(c.voteNames=Object.fromEntries((c.votes||[]).map((name,i)=>['legacy-'+i,name]))),mine=!!map[participantId];if(mine)delete map[participantId];else map[participantId]=currentVoter;c.votes=Object.values(map);save();render();toast(mine?'투표를 취소했어요':'후보 장소에 투표했어요')}
     function deleteCandidate(index){const c=activeTrip.candidates[index];if(!c)return;if(!confirm(`“${c.name}” 후보를 삭제할까요?`))return;activeTrip.candidates.splice(index,1);save();render();toast('후보 장소를 삭제했어요')}
     function confirmCandidate(index){const c=activeTrip.candidates[index];if(!c||!days[c.day])return;days[c.day].places.push({name:c.name,note:c.note||'후보 투표로 확정',kind:c.kind||'장소',...selectionFields(c)});activeTrip.candidates.splice(index,1);dayIndex=c.day;candidateMode=false;foodMode=false;save();render();toast(`${c.name}을(를) ${c.day+1}일차 일정에 확정했어요`)}
@@ -913,7 +1080,8 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       viagoDrawLocated(which,map,provider,points,color,{connect,labels,holder,compact:which==='quick',pad});
       setTimeout(()=>{if(viagoMarkerLayers.has(which))viagoFrameMap(map,provider,points,frame)},70);
     }
-    async function locatePlace(p){let c=coordsFor(p);if(c)return c;c=await findCoords(p.name);if(c){p.lat=c[0];p.lng=c[1]}return c}
+    // 좌표는 그 장소에 저장된 값만 쓴다. 이름이 같다는 이유로 다른 지점 좌표를 가져오지 않는다.
+    async function locatePlace(p){return coordsFor(p)}
     let placePreviewRequest=0;
     async function selectPlace(i,el,focus=true){
       const ps=days[dayIndex]?.places||[],p=ps[i];if(!p)return;
@@ -938,18 +1106,20 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     }
     async function selectFood(i,el){const p=restaurants[i];if(!p)return;closeSwipeRows();timeline.querySelectorAll('.place').forEach(x=>x.classList.remove('selected'));el?.classList.add('selected');const c=await locatePlace(p);if(!c)return toast('지도에서 맛집 위치를 찾지 못했어요');$('#mapHeading').textContent='맛집 위치 미리보기';$('#mapDescription').textContent='한국어 장소명으로 위치를 확인할 수 있어요';$('#mapStatus').textContent=p.name;$('#overviewBtn').classList.remove('hidden');$('#routeTitle').textContent=p.name;$('#routeSummary').textContent='선택한 맛집 위치';$('#routeBtn').textContent='Google 지도에서 열기';$('#routeBtn').disabled=false;$('#routeBtn').dataset.single=gmapsPlace(p);drawLocated(ensureMainMap(),'main',[{p,i,c,label:i+1}],'#ff4f7b',{connect:false,labels:true});if(innerWidth<=850)setView('map')}
     function overviewEntries(){const list=candidateMode?activeTrip.candidates:foodMode?restaurants:days[dayIndex]?.places||[];let entries=list.map((p,i)=>({p,i,c:coordsFor(p)}));if(candidateMode)entries.sort((a,b)=>(b.p.votes?.length||0)-(a.p.votes?.length||0));return entries.map((x,rank)=>({...x,label:candidateMode?rank+1:x.i+1})).filter(x=>candidateMode||foodMode||x.p.kind!=='항공')}
-    async function showOverview(){if(!sharedReady)return;const request=++overviewRequest,index=dayIndex,trip=activeTrip.id,isCandidate=candidateMode,isFood=foodMode,entries=overviewEntries(),color=isCandidate?'#8764df':isFood?'#ff4f7b':['#5b66df','#3187ff','#20a66a','#f59f2f'][index%4],title=isCandidate?'후보 장소 전체 지도':isFood?'맛집 한눈에 보기':(index+1)+'일차 전체 지도';$('#overviewBtn').classList.add('hidden');$('#mapHeading').textContent=title;$('#mapDescription').textContent=isCandidate?'후보 목록과 같은 번호로 표시해요 · 핀을 눌러 장소를 확인해주세요':'번호는 일정 순서예요 · 연결선은 실제 이동 경로가 아니에요';$('#routeTitle').textContent=title;$('#routeSummary').textContent=entries.length+'개 장소';$('#routeBtn').textContent=isCandidate?'첫 후보 Google 지도에서 열기':isFood?'첫 맛집 열기':'Google 지도 전체 경로';$('#routeBtn').disabled=!entries.length;$('#routeBtn').dataset.single=(isCandidate||isFood)&&entries[0]?gmapsPlace(entries[0].p):'';try{const target=ensureMainMap();await target;if(request!==overviewRequest)return;await drawLocated(target,'main',entries.filter(x=>x.c),color,{connect:!isFood&&!isCandidate,labels:false});$('#mapStatus').textContent='장소 위치를 확인하고 있어요';let changed=false;for(const x of entries.filter(x=>!x.c).slice(0,isCandidate?entries.length:3)){x.c=await findCoords(x.p.name);if(request!==overviewRequest||trip!==activeTrip.id)return;if(x.c){x.p.lat=x.c[0];x.p.lng=x.c[1];changed=true}}if(request!==overviewRequest||trip!==activeTrip.id)return;if(changed)save();const located=entries.filter(x=>x.c),missing=entries.filter(x=>!x.c);$('#mapStatus').textContent=located.length+'곳 표시'+(missing.length?' · 위치 확인이 필요합니다 '+missing.length+'곳'+(missing.length<=2?': '+missing.map(x=>x.p.name).join(', '):''):'');await drawLocated(target,'main',located,color,{connect:!isFood&&!isCandidate,labels:false})}catch{if(request===overviewRequest)$('#mapStatus').textContent=mapFailureMessage()}}
+    async function showOverview(){if(!sharedReady)return;const request=++overviewRequest,index=dayIndex,trip=activeTrip.id,isCandidate=candidateMode,isFood=foodMode,entries=overviewEntries(),color=isCandidate?'#8764df':isFood?'#ff4f7b':['#5b66df','#3187ff','#20a66a','#f59f2f'][index%4],title=isCandidate?'후보 장소 전체 지도':isFood?'맛집 한눈에 보기':(index+1)+'일차 전체 지도';$('#overviewBtn').classList.add('hidden');$('#mapHeading').textContent=title;$('#mapDescription').textContent=isCandidate?'후보 목록과 같은 번호로 표시해요 · 핀을 눌러 장소를 확인해주세요':'번호는 일정 순서예요 · 연결선은 실제 이동 경로가 아니에요';$('#routeTitle').textContent=title;$('#routeSummary').textContent=entries.length+'개 장소';$('#routeBtn').textContent=isCandidate?'첫 후보 Google 지도에서 열기':isFood?'첫 맛집 열기':'Google 지도 전체 경로';$('#routeBtn').disabled=!entries.length;$('#routeBtn').dataset.single=(isCandidate||isFood)&&entries[0]?gmapsPlace(entries[0].p):'';try{const target=ensureMainMap();await target;if(request!==overviewRequest)return;await drawLocated(target,'main',entries.filter(x=>x.c),color,{connect:!isFood&&!isCandidate,labels:false});$('#mapStatus').textContent='장소 위치를 확인하고 있어요';if(request!==overviewRequest||trip!==activeTrip.id)return;const located=entries.filter(x=>x.c),missing=entries.filter(x=>!x.c);$('#mapStatus').textContent=located.length+'곳 표시'+(missing.length?' · 위치 확인이 필요합니다 '+missing.length+'곳'+(missing.length<=2?': '+missing.map(x=>x.p.name).join(', '):''):'');await drawLocated(target,'main',located,color,{connect:!isFood&&!isCandidate,labels:false})}catch{if(request===overviewRequest)$('#mapStatus').textContent=mapFailureMessage()}}
     function routeChunks(){const ps=days[dayIndex].places.filter(p=>p.kind!=='항공'),routes=[];if(ps.length<2)return ps.length?[{title:ps[0].name,url:gmapsPlace(ps[0].name)}]:[];for(let i=0;i<ps.length-1;i+=4){const group=ps.slice(i,i+5),ways=group.slice(1,-1).map(x=>googlePoint(x.name)).join('|');routes.push({title:group[0].name+' → '+group.at(-1).name,url:gmapsRoute(group[0].name,group.at(-1).name)+(ways?'&waypoints='+encodeURIComponent(ways):'')})}return routes}
     function fullRoute(){return routeChunks()[0]?.url||'#'}
     $('#routeBtn').onclick=e=>{const single=e.currentTarget.dataset.single;if(single)return window.open(single,'_blank','noopener');const routes=routeChunks();if(routes.length<=1)return window.open(routes[0]?.url||'#','_blank','noopener');$('#routeSegments').innerHTML=routes.map((r,i)=>'<a class="route-btn" style="display:block;margin:12px 0" target="_blank" rel="noopener" href="'+esc(r.url)+'">구간 '+(i+1)+' · '+esc(r.title)+'</a>').join('');$('#routeDialog').showModal()};
     $('#overviewBtn').onclick=showOverview;
-    $('#mapSearchBtn').onclick=searchMap;$('#mapSearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchMap()}};async function showSearchResult(selection){const q=selection?.name||$('#mapSearch').value.trim();if(!q)return toast('검색할 장소를 입력해주세요');const c=Number.isFinite(selection?.lat)&&Number.isFinite(selection?.lng)?[selection.lat,selection.lng]:await findCoords(q);if(!c){$('#routeBtn').dataset.single=gmapsPlace(q);$('#routeBtn').disabled=false;$('#routeBtn').textContent='Google 지도에서 열기';return toast('위치 미확인 · Google 지도에서 확인할 수 있어요')}const p={name:q,note:selection?.address||'검색한 장소',kind:'검색',...selectionFields(selection)};$('#mapHeading').textContent='검색한 장소';$('#mapDescription').textContent='연관검색에서 선택한 정확한 위치예요';$('#mapStatus').textContent=q;$('#overviewBtn').classList.remove('hidden');$('#routeTitle').textContent=q;$('#routeSummary').textContent=selection?.address||'검색한 장소 위치';$('#routeBtn').textContent='Google 지도에서 열기';$('#routeBtn').disabled=false;$('#routeBtn').dataset.single=gmapsPlace(p);await drawLocated(ensureMainMap(),'main',[{p,i:0,c,label:1}],'#3187ff',{connect:false,labels:true})}
+    $('#mapSearchBtn').onclick=searchMap;$('#mapSearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();searchMap()}};async function showSearchResult(selection){const q=selection?.name||$('#mapSearch').value.trim();if(!q)return toast('검색할 장소를 입력해주세요');const c=Number.isFinite(selection?.lat)&&Number.isFinite(selection?.lng)?[selection.lat,selection.lng]:null;if(!c){$('#routeBtn').dataset.single=gmapsPlace(q);$('#routeBtn').disabled=false;$('#routeBtn').textContent='Google 지도에서 열기';return toast('위치 미확인 · Google 지도에서 확인할 수 있어요')}const p={name:q,note:selection?.address||'검색한 장소',kind:'검색',...selectionFields(selection)};$('#mapHeading').textContent='검색한 장소';$('#mapDescription').textContent='연관검색에서 선택한 정확한 위치예요';$('#mapStatus').textContent=q;$('#overviewBtn').classList.remove('hidden');$('#routeTitle').textContent=q;$('#routeSummary').textContent=selection?.address||'검색한 장소 위치';$('#routeBtn').textContent='Google 지도에서 열기';$('#routeBtn').disabled=false;$('#routeBtn').dataset.single=gmapsPlace(p);await drawLocated(ensureMainMap(),'main',[{p,i:0,c,label:1}],'#3187ff',{connect:false,labels:true})}
     async function searchMap(){if(mapSearchSelection)return showSearchResult(mapSearchSelection);const q=$('#mapSearch').value.trim();if(q.length<2)return toast('장소명을 두 글자 이상 입력해주세요');return $('#mapSearch').freeSearch()}
     const coordinateLookups=new Map(),coordinateAttempts=new Map();
-    async function findCoords(name){if(KNOWN_COORDS[name])return KNOWN_COORDS[name];const saved=trips.flatMap(t=>[...(t.days||[]).flatMap(d=>d.places||[]),...(t.candidates||[])]).find(p=>p.name===name&&coordsFor(p));return saved?coordsFor(saved):null}
+    // (삭제) 이름만 같은 다른 장소의 좌표를 찾아 주던 findCoords — 여행·지점이 다르면 좌표도 다른데
+    //        이름만 보고 복사해 지도에 엉뚱한 위치를 저장하던 경로였다. 좌표는 검색 추천 선택이나
+    //        직접 입력으로만 정해진다.
     function automaticTodayDayIndex(){const now=zonedToday();if(now<activeTrip.start||now>activeTrip.end)return null;return Math.max(0,Math.min(days.length-1,Math.floor((new Date(now+'T00:00:00')-new Date(activeTrip.start+'T00:00:00'))/86400000)))}
     function todayDayIndex(){return todayDayOverride??automaticTodayDayIndex()??dayIndex}
-    function renderToday(){const index=todayDayIndex(),d=days[index],ps=d?.places||[],completed=new Set(activeTrip.completedPlaceIds[d?.id]||[]),progress=ps.filter(p=>completed.has(p.id)).length,pending=ps.filter(p=>!completed.has(p.id)),current=pending[0],next=pending[1],percent=ps.length?Math.round(Math.min(progress,ps.length)/ps.length*100):0,alt=activeTrip.weatherAlternatives.find(x=>x.day===index),backup=activeTrip.weatherBackups.find(x=>x.day===index);if(!d){$('#todayPanel').innerHTML='<div class="empty">오늘 확인할 일정이 없어요.</div>';return}let weatherHtml='<div class="weather-card"><div class="weather-row"><strong>날씨 확인 중</strong><span class="weather-temp">--°</span></div><p>여행지 날씨를 확인하고 있어요.</p></div>';if(weatherState?.trip===activeTrip.id&&weatherState?.day===index){if(weatherState.status==='error')weatherHtml='<div class="weather-card"><div class="weather-row"><strong>날씨 확인 필요</strong><span class="weather-temp">--°</span></div><p>현재 날씨를 불러오지 못했어요. 잠시 후 다시 확인해주세요.</p></div>';else if(weatherState.status==='current')weatherHtml=`<div class="weather-card"><div class="weather-row"><strong>${esc(activeTrip.destination)} 현재 날씨</strong><span class="weather-temp">${Math.round(weatherState.current)}°</span></div><p>오늘 강수 확률 ${weatherState.probability}% · 최고 ${Math.round(weatherState.max)}° / 최저 ${Math.round(weatherState.min)}° · ${esc(weatherState.message)}</p></div>`;else weatherHtml=`<div class="weather-card"><div class="weather-row"><strong>${weatherState.rain?'비 예보가 있어요':'야외 활동 가능'}</strong><span class="weather-temp">${Math.round(weatherState.max)}°</span></div><p>강수 확률 ${weatherState.probability}% · 예상 강수량 ${weatherState.sum}mm · 최저 ${Math.round(weatherState.min)}°</p></div>`}let altHtml='';if(backup)altHtml=`<div class="alt-card"><strong>${esc(backup.original.name)} 일정으로 되돌릴 수 있어요</strong><span>현재 ${esc(backup.replacement)} 일정이 적용되어 있습니다.</span><div class="alt-actions"><button class="alt-manage" id="undoAlternative">원래 일정 복구</button><button class="alt-manage" id="manageAlternative">대체 장소 관리</button></div></div>`;else if(alt)altHtml=`<div class="alt-card"><strong>${esc(alt.original)} → ${esc(alt.replacement)}</strong><span>${esc(alt.note||'비 오는 날 사용할 대체 장소')}</span><div class="alt-actions"><button class="alt-apply" id="applyAlternative">대체 일정 적용</button><button class="alt-manage" id="manageAlternative">변경</button></div></div>`;else altHtml='<div class="alt-card"><strong>등록된 대체 장소가 없어요</strong><span>비가 올 때 바꿀 실내 장소를 미리 연결해두세요.</span><div class="alt-actions"><button class="alt-manage" id="manageAlternative">대체 장소 등록</button></div></div>';$('#todayPanel').innerHTML=`<div class="today-head"><div><h2>오늘 일정</h2><p>${index+1}일차 · ${esc(d.title)} · ${progress>=ps.length?'오늘 일정 완료':progress+1+'번째 일정'}</p></div><span class="sync-state online">${esc($("#syncStatus").textContent)}</span></div><div class="today-progress"><i style="width:${percent}%"></i></div><div class="today-progress-copy"><span>${Math.min(progress+1,ps.length)} / ${ps.length}</span><span>${percent}% 완료</span></div>${current?`<div class="today-grid"><section class="today-card current"><span class="today-label">현재 장소</span><div class="today-place-row">${placeIcon(current)}<div class="today-place">${esc(current.name)}</div></div><p class="today-note">${esc(current.note||'')}</p></section><section class="today-card"><span class="today-label">다음 장소</span><div class="today-place-row">${next?placeIcon(next):''}<div class="today-place">${next?esc(next.name):'오늘의 마지막 일정'}</div></div><p class="today-note">${next?esc(next.note||''):'방문 완료 후 하루 일정을 마칠 수 있어요.'}</p></section></div><button class="today-route" id="todayRoute">${next?'다음 장소로 이동':'현재 장소 지도에서 열기'}</button><button class="today-complete" id="todayComplete">${next?'현재 장소 방문 완료':'오늘 일정 완료'}</button>`:'<div class="empty">오늘 일정을 모두 완료했어요.</div>'}<section class="feature-block"><h3>날씨와 대체 일정</h3><a href="https://open-meteo.com/" target="_blank" rel="noopener" style="font-size:12px;color:#6b7684">날씨 제공: Open-Meteo</a><p>여행 전에는 ${esc(activeTrip.destination)} 현재 날씨를, 예보가 열리면 방문일 날씨를 자동으로 보여줘요.</p>${weatherHtml}${altHtml}</section>`;$('#todayRoute')?.addEventListener('click',()=>window.open(next?gmapsRoute(current.name,next.name):gmapsPlace(current),'_blank','noopener'));$('#todayComplete')?.addEventListener('click',()=>completeCurrentStop(index));$('#applyAlternative')?.addEventListener('click',()=>applyWeatherAlternative(index));$('#undoAlternative')?.addEventListener('click',()=>undoWeatherAlternative(index));$('#manageAlternative')?.addEventListener('click',openAlternativeDialog);loadWeather(index)}
+    function renderToday(){const index=todayDayIndex(),d=days[index],ps=d?.places||[],completed=new Set(activeTrip.completedPlaceIds[d?.id]||[]),progress=ps.filter(p=>completed.has(p.id)).length,pending=ps.filter(p=>!completed.has(p.id)),current=pending[0],next=pending[1],percent=ps.length?Math.round(Math.min(progress,ps.length)/ps.length*100):0,alt=activeTrip.weatherAlternatives.find(x=>x.day===index),backup=activeTrip.weatherBackups.find(x=>x.day===index);if(!d){$('#todayPanel').innerHTML='<div class="empty">오늘 확인할 일정이 없어요.</div>';return}let weatherHtml='<div class="weather-card"><div class="weather-row"><strong>날씨 확인 중</strong><span class="weather-temp">--°</span></div><p>여행지 날씨를 확인하고 있어요.</p></div>';if(weatherState?.trip===activeTrip.id&&weatherState?.day===index){if(weatherState.status==='error')weatherHtml='<div class="weather-card"><div class="weather-row"><strong>날씨 확인 필요</strong><span class="weather-temp">--°</span></div><p>현재 날씨를 불러오지 못했어요. 잠시 후 다시 확인해주세요.</p></div>';else if(weatherState.status==='current')weatherHtml=`<div class="weather-card"><div class="weather-row"><strong>${esc(activeTrip.destination)} 현재 날씨</strong><span class="weather-temp">${Math.round(weatherState.current)}°</span></div><p>오늘 강수 확률 ${weatherState.probability}% · 최고 ${Math.round(weatherState.max)}° / 최저 ${Math.round(weatherState.min)}° · ${esc(weatherState.message)}</p></div>`;else weatherHtml=`<div class="weather-card"><div class="weather-row"><strong>${weatherState.rain?'비 예보가 있어요':'야외 활동 가능'}</strong><span class="weather-temp">${Math.round(weatherState.max)}°</span></div><p>강수 확률 ${weatherState.probability}% · 예상 강수량 ${weatherState.sum}mm · 최저 ${Math.round(weatherState.min)}°</p></div>`}let altHtml='';if(backup)altHtml=`<div class="alt-card"><strong>${esc(backup.original.name)} 일정으로 되돌릴 수 있어요</strong><span>현재 ${esc(backup.replacement)} 일정이 적용되어 있습니다.</span><div class="alt-actions"><button class="alt-manage" id="undoAlternative">원래 일정 복구</button><button class="alt-manage" id="manageAlternative">대체 장소 관리</button></div></div>`;else if(alt)altHtml=`<div class="alt-card"><strong>${esc(alt.original)} → ${esc(alt.replacement)}</strong><span>${esc(alt.note||'비 오는 날 사용할 대체 장소')}</span><div class="alt-actions"><button class="alt-apply" id="applyAlternative">대체 일정 적용</button><button class="alt-manage" id="manageAlternative">변경</button></div></div>`;else altHtml='<div class="alt-card"><strong>등록된 대체 장소가 없어요</strong><span>비가 올 때 바꿀 실내 장소를 미리 연결해두세요.</span><div class="alt-actions"><button class="alt-manage" id="manageAlternative">대체 장소 등록</button></div></div>';$('#todayPanel').innerHTML=`<div class="today-head"><div><h2>오늘 일정</h2><p>${index+1}일차 · ${esc(d.title)} · ${progress>=ps.length?'오늘 일정 완료':progress+1+'번째 일정'}</p></div><span class="${esc($('#syncStatus').className||'sync-state')}">${esc($('#syncStatus').textContent)}</span></div><div class="today-progress"><i style="width:${percent}%"></i></div><div class="today-progress-copy"><span>${Math.min(progress+1,ps.length)} / ${ps.length}</span><span>${percent}% 완료</span></div>${current?`<div class="today-grid"><section class="today-card current"><span class="today-label">현재 장소</span><div class="today-place-row">${placeIcon(current)}<div class="today-place">${esc(current.name)}</div></div><p class="today-note">${esc(current.note||'')}</p></section><section class="today-card"><span class="today-label">다음 장소</span><div class="today-place-row">${next?placeIcon(next):''}<div class="today-place">${next?esc(next.name):'오늘의 마지막 일정'}</div></div><p class="today-note">${next?esc(next.note||''):'방문 완료 후 하루 일정을 마칠 수 있어요.'}</p></section></div><button class="today-route" id="todayRoute">${next?'다음 장소로 이동':'현재 장소 지도에서 열기'}</button><button class="today-complete" id="todayComplete">${next?'현재 장소 방문 완료':'오늘 일정 완료'}</button>`:'<div class="empty">오늘 일정을 모두 완료했어요.</div>'}<section class="feature-block"><h3>날씨와 대체 일정</h3><a href="https://open-meteo.com/" target="_blank" rel="noopener" style="font-size:12px;color:#6b7684">날씨 제공: Open-Meteo</a><p>여행 전에는 ${esc(activeTrip.destination)} 현재 날씨를, 예보가 열리면 방문일 날씨를 자동으로 보여줘요.</p>${weatherHtml}${altHtml}</section>`;$('#todayRoute')?.addEventListener('click',()=>window.open(next?gmapsRoute(current.name,next.name):gmapsPlace(current),'_blank','noopener'));$('#todayComplete')?.addEventListener('click',()=>completeCurrentStop(index));$('#applyAlternative')?.addEventListener('click',()=>applyWeatherAlternative(index));$('#undoAlternative')?.addEventListener('click',()=>undoWeatherAlternative(index));$('#manageAlternative')?.addEventListener('click',openAlternativeDialog);loadWeather(index)}
     function completeCurrentStop(index){const d=days[index],completed=activeTrip.completedPlaceIds[d.id]||[],next=d.places.find(p=>!completed.includes(p.id));if(next)completed.push(next.id);activeTrip.completedPlaceIds[d.id]=completed;save();renderToday();toast(completed.length>=d.places.length?'오늘 일정을 완료했어요':'다음 장소로 이동했어요')}
     let weatherRequest=0;const weatherResults=new Map();
     async function loadWeather(index){const trip=activeTrip.id,key=trip+'|'+index,cached=weatherResults.get(key);if(cached&&Date.now()-cached.at<1800000){weatherState=cached;return}if(weatherState?.trip===trip&&weatherState.day===index&&weatherState.loading)return;const run=++weatherRequest;weatherState={trip,day:index,loading:true};const destination=activeTrip.destination,zone=tripZone(),center=coordsFor(days[index]?.places.find(p=>p.kind!=='항공'&&coordsFor(p)))||({나고야:[35.1709,136.9065],도쿄:[35.6762,139.6503],오사카:[34.6937,135.5023],발리:[-8.65,115.22],서울:[37.5665,126.978]}[destination]),date=localIso(tripDateAt(index)),diff=Math.round((Date.parse(date)-Date.parse(zonedToday()))/86400000),future=diff>=0&&diff<=14;try{if(!center)throw Error('location');const params=new URLSearchParams({latitude:center[0],longitude:center[1],timezone:zone,current:'temperature_2m',daily:'temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum',...(future?{start_date:date,end_date:date}:{forecast_days:'1'})}),res=await fetch('https://api.open-meteo.com/v1/forecast?'+params,{signal:AbortSignal.timeout(8000)}),data=await res.json();if(!res.ok||!data.daily?.time?.length)throw Error('weather');if(run!==weatherRequest||trip!==activeTrip.id)return;const p=Number(data.daily.precipitation_probability_max[0]||0),sum=Number(data.daily.precipitation_sum[0]||0);weatherState={trip,day:index,at:Date.now(),status:future?'ready':'current',current:Number(data.current?.temperature_2m),probability:p,sum,max:Number(data.daily.temperature_2m_max[0]),min:Number(data.daily.temperature_2m_min[0]),rain:p>=50||sum>=2,message:'방문일 예보가 아닌 오늘 날씨입니다'};weatherResults.set(key,weatherState)}catch{if(run===weatherRequest){weatherState={trip,day:index,at:Date.now(),status:'error'};weatherResults.set(key,weatherState)}}finally{if(run===weatherRequest&&currentView==='today')renderToday()}}
@@ -964,9 +1134,9 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     setupPlaceAutocomplete($('#mapSearch'),$('#mapSuggestions'),value=>{mapSearchSelection=value;if(value)showSearchResult(value)});
     $('#linkForm').addEventListener('submit',e=>{e.preventDefault();analyzeTravelLink()});
     $('#linkDay').addEventListener('change',updateLinkSaveButton);
-    $('#addForm').addEventListener('submit',async e=>{e.preventDefault();const name=$('#placeName').value.trim(),rawMap=$('#addMapsUrl').value.trim(),mapsUrl=validGoogleMapsUrl(rawMap);if(!name)return;if(rawMap&&!mapsUrl)return toast('올바른 Google 지도 공유 링크를 입력해주세요');$('#addConfirm').disabled=true;let selection=addPlaceSelection,c=selection&&Number.isFinite(selection.lat)&&Number.isFinite(selection.lng)?[selection.lat,selection.lng]:await findCoords(name),item={name:selection?.name||name,note:$('#placeNote').value.trim(),kind:selection?.kind||'장소',...selectionFields(selection),...(mapsUrl?{mapsUrl}:{})};if(!c&&mapsUrl)c=parseUserCoordinates(mapsUrl);if(c&&!Number.isFinite(item.lat))[item.lat,item.lng]=c;days[dayIndex].places.push(item);save();$('#addConfirm').disabled=false;$('#addDialog').close();$('#addForm').reset();addPlaceSelection=null;render();toast(c?'정확한 위치와 함께 일정에 추가했어요':'일정에 추가했어요 · 지도 위치는 장소를 눌러 확인해주세요')});
+    $('#addForm').addEventListener('submit',async e=>{e.preventDefault();const name=$('#placeName').value.trim(),rawMap=$('#addMapsUrl').value.trim(),mapsUrl=validGoogleMapsUrl(rawMap);if(!name)return;if(rawMap&&!mapsUrl)return toast('올바른 Google 지도 공유 링크를 입력해주세요');$('#addConfirm').disabled=true;let selection=addPlaceSelection,c=selection&&Number.isFinite(selection.lat)&&Number.isFinite(selection.lng)?[selection.lat,selection.lng]:null,item={name:selection?.name||name,note:$('#placeNote').value.trim(),kind:selection?.kind||'장소',...selectionFields(selection),...(mapsUrl?{mapsUrl}:{})};if(!c&&mapsUrl)c=parseUserCoordinates(mapsUrl);if(c&&!Number.isFinite(item.lat))[item.lat,item.lng]=c;days[dayIndex].places.push(item);save();$('#addConfirm').disabled=false;$('#addDialog').close();$('#addForm').reset();addPlaceSelection=null;render();toast(c?'정확한 위치와 함께 일정에 추가했어요':'일정에 추가했어요 · 검색 추천에서 지점을 고르면 지도에 표시돼요')});
     $('#editForm').addEventListener('submit',async e=>{e.preventDefault();if(!editingPlace)return;const edit={...editingPlace},list=edit.day==='candidate'?activeTrip.candidates:days[edit.day]?.places,original=list?.find(p=>p.id===edit.id),name=$('#editPlaceName').value.trim(),target=$('#editPlaceDay').value;if(!original||!name)return;const rawMap=$('#editMapsUrl').value.trim(),mapsUrl=validGoogleMapsUrl(rawMap);if(rawMap&&!mapsUrl)return toast('올바른 Google 지도 공유 링크를 입력해주세요');$('#editConfirm').disabled=true;try{const selection=editPlaceSelection,updated={...original,name:selection?.name||name,note:$('#editPlaceNote').value.trim(),kind:$('#editPlaceKind').value,hoursText:$('#editHoursText').value.trim(),...selectionFields(selection)};if(updated.name!==original.name&&!selection){delete updated.placeId;delete updated.address;delete updated.lat;delete updated.lng;delete updated.mapsUrl}if(mapsUrl)updated.mapsUrl=mapsUrl;else delete updated.mapsUrl;const typedCoords=$('#editCoordinates').value.trim(),manual=parseUserCoordinates(typedCoords||mapsUrl);if(typedCoords&&!manual){toast('위도·경도 또는 좌표가 포함된 지도 링크를 확인해주세요');return}if(manual){[updated.lat,updated.lng]=manual;updated.source='user'}const pickedFromSearch=!!(selection&&Number.isFinite(selection.lat)&&Number.isFinite(selection.lng)),movedByHand=!!manual&&(!(Number.isFinite(original.lat)&&Number.isFinite(original.lng))||original.lat!==updated.lat||original.lng!==updated.lng);if((pickedFromSearch||movedByHand)&&Number.isFinite(updated.lat)&&Number.isFinite(updated.lng))delete updated.coordNeedsCheck;if(edit.day===Number(target)){const i=list.findIndex(p=>p.id===edit.id);list.splice(i,1,updated)}else if(!moveEditedPlace(edit,updated,target))return toast('일정이 변경되었어요. 다시 열어주세요');hoursCache.clear();save();$('#editDialog').close();editingPlace=null;editPlaceSelection=null;render();toast(target==='candidate'?'후보로 이동했어요':'일정 내용을 수정했어요')}finally{$('#editConfirm').disabled=false}});
-    $('#foodForm').addEventListener('submit',async e=>{if(e.submitter?.value==='cancel')return;e.preventDefault();const name=$('#foodName').value.trim();if(!name)return;$('#foodConfirm').disabled=true;const c=await findCoords(name),item={name,note:$('#foodNote').value.trim(),kind:'맛집'};if(c)[item.lat,item.lng]=c;restaurants.push(item);save();$('#foodConfirm').disabled=false;$('#foodDialog').close();$('#foodForm').reset();render();toast(c?'맛집과 지도 핀을 추가했어요':'맛집을 저장했어요 · 위치 검색 결과는 장소를 눌러 확인해주세요')});
+    $('#foodForm').addEventListener('submit',async e=>{if(e.submitter?.value==='cancel')return;e.preventDefault();const name=$('#foodName').value.trim();if(!name)return;$('#foodConfirm').disabled=true;const item={name,note:$('#foodNote').value.trim(),kind:'맛집'};restaurants.push(item);save();$('#foodConfirm').disabled=false;$('#foodDialog').close();$('#foodForm').reset();render();toast('맛집을 저장했어요 · 위치는 장소를 눌러 검색해 확인해주세요')});
     $('#candidateForm').addEventListener('submit',e=>{e.preventDefault();const typedName=$('#candidateName').value.trim(),rawMap=$('#candidateMapsUrl').value.trim(),mapsUrl=validGoogleMapsUrl(rawMap);if(!typedName)return;if(rawMap&&!mapsUrl)return toast('올바른 Google 지도 공유 링크를 입력해주세요');const selection=candidatePlaceSelection,candidate={id:'candidate-'+Date.now(),name:selection?.name||typedName,note:$('#candidateNote').value.trim(),kind:$('#candidateKind').value,day:Number($('#candidateDay').value||0),votes:[currentVoter],voteNames:{[participantId]:currentVoter},...selectionFields(selection),...(mapsUrl?{mapsUrl}:{})};const c=mapsUrl&&parseUserCoordinates(mapsUrl);if(c&&!Number.isFinite(candidate.lat))[candidate.lat,candidate.lng]=c;activeTrip.candidates.push(candidate);save();$('#candidateDialog').close();$('#candidateForm').reset();candidatePlaceSelection=null;closeSuggestions($('#candidateName'),$('#candidateSuggestions'));render();toast('후보 장소를 등록하고 투표했어요')});
     $('#alternativeDay').addEventListener('change',fillAlternativePlaces);
     $('#alternativeForm').addEventListener('submit',e=>{if(e.submitter?.value==='cancel')return;const day=Number($('#alternativeDay').value||0),original=$('#alternativeOriginal').value,replacement=$('#alternativeReplacement').value.trim();if(!original||!replacement){e.preventDefault();return}activeTrip.weatherAlternatives=activeTrip.weatherAlternatives.filter(x=>!(x.day===day&&x.original===original));activeTrip.weatherAlternatives.push({day,original,replacement,note:$('#alternativeNote').value.trim()});save();setTimeout(()=>{$('#alternativeForm').reset();if(currentView==='today')renderToday();toast('날씨 대체 장소를 저장했어요')},0)});
@@ -998,7 +1168,26 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     $('#tripPickerBtn').onclick=()=>{renderTripList();const now=new Date(),later=new Date(Date.now()+3*86400000);$('#tripStartInput').value=localIso(now);$('#tripEndInput').value=localIso(later);$('#tripDialog').showModal()};
     document.querySelectorAll('.destination-chip').forEach(b=>b.onclick=()=>{$('#destinationInput').value=b.dataset.destination;document.querySelectorAll('.destination-chip').forEach(x=>x.classList.toggle('active',x===b))});
     $('#newTripForm').addEventListener('submit',e=>{e.preventDefault();const destination=$('#destinationInput').value.trim(),start=$('#tripStartInput').value,end=$('#tripEndInput').value;if(!destination||!start||!end||end<start)return toast('여행지와 날짜를 다시 확인해주세요');const newDays=makeEmptyDays(start,end);if(!newDays.length)return toast('여행 날짜를 다시 확인해주세요');persistTrips();const trip={id:'trip-'+Date.now(),destination,name:destination+' 여행',start,end,mode:'transit',days:newDays,restaurants:[],candidates:[],todayProgress:{},weatherAlternatives:[],weatherBackups:[]};trips.push(trip);activeTrip=trip;currentTripId=trip.id;days=trip.days;restaurants=trip.restaurants;tripInfo={name:trip.name,mode:trip.mode};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();persistTrips();$('#tripDialog').close();$('#newTripForm').reset();document.querySelectorAll('.destination-chip').forEach(x=>x.classList.remove('active'));$('#quickMap').classList.remove('open');render();if(currentView==='today')renderToday();toast(destination+' 여행을 만들었어요')});
-    async function share(){if(!accessOwner)return toast('여행 소유자가 새 초대 링크를 만들 수 있어요');try{if(sharedDirty){await pushSharedState();if(sharedDirty)return toast('일정 저장 후 다시 공유해주세요')}const url='https://oyeswon-gif.github.io/viago/',title=activeTrip.name+' 일정',text=title+'\n'+url;if(navigator.share)await navigator.share({title,text,url});else{await navigator.clipboard.writeText(text);toast('이 여행만 공유하는 초대 링크를 복사했어요')}}catch(e){if(e.name!=='AbortError')toast('초대 링크를 만들지 못했어요')}}
+    // + 버튼: 1회용 초대 링크를 실제로 발급해 공유한다.
+    //   규칙이 초대 발급을 허용하지 않는 구성에서는 주소를 '초대 링크'라고 부르지 않고,
+    //   함께 편집 권한이 없는 앱 주소임을 분명히 알린다.
+    async function share(){
+      if(!accessOwner){try{const role=await sharedSync.myRole?.();if(role)accessOwner=role==='owner'}catch(e){}}
+      if(!accessOwner)return toast('새 초대 링크는 여행 소유자만 만들 수 있어요');
+      const appUrl=location.origin+appBasePath();
+      try{
+        if(sharedDirty){await pushSharedState();if(sharedDirty)return toast('일정 저장 후 다시 초대 링크를 만들어 주세요')}
+        const made=sharedSync.createInvite?await sharedSync.createInvite({expiresInDays:7,role:'editor'}):null;
+        if(made&&made.ok){
+          const link=appUrl+'#invite='+made.token,title=activeTrip.name+'에 함께하기',text=title+'\n'+link+'\n(7일 안에 한 사람만 쓸 수 있는 초대 링크예요)';
+          if(navigator.share)await navigator.share({title,text,url:link});else{await navigator.clipboard.writeText(link);toast('1회용 초대 링크를 복사했어요 · 7일 안에 한 사람만 쓸 수 있어요')}
+          return;
+        }
+        const denied=made&&made.status===403,hint=denied?'이 앱에서는 새 초대 링크를 아직 만들 수 없어요(초대 발급 권한이 꺼져 있음).':'초대 링크를 만들지 못했어요.';
+        if(navigator.share)await navigator.share({title:activeTrip.name,text:hint+'\n앱 주소(보기 전용): '+appUrl,url:appUrl});
+        else{await navigator.clipboard.writeText(appUrl);toast(hint+' 앱 주소만 복사했어요')}
+      }catch(e){if(e.name!=='AbortError')toast('공유를 마치지 못했어요')}
+    }
     $('#memberShare').onclick=share;
     $('#quickMapClose').onclick=()=>$('#quickMap').classList.remove('open');
     $('#quickRouteBtn').onclick=e=>window.open(e.currentTarget.dataset.url,'_blank','noopener');
@@ -1006,8 +1195,67 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     function exchangeValue(amount,from,to){const rates=exchangeData?.rates;if(!rates||!rates[from]||!rates[to]||!Number.isFinite(amount))return null;return amount/rates[from]*rates[to]}
     function formatMoney(value,code){const decimals=currencyMeta[code]?.decimals??2;return new Intl.NumberFormat('ko-KR',{minimumFractionDigits:code==='KRW'?2:0,maximumFractionDigits:decimals}).format(value)}
     function renderQuickAmounts(){const from=$('#exchangeFrom').value,meta=currencyMeta[from];$('#quickAmounts').innerHTML=meta.quick.map(amount=>`<button type="button" class="quick-amount" data-exchange-amount="${amount}">+ ${meta.symbol}${formatMoney(amount,from)}</button>`).join('');$('#quickAmounts').querySelectorAll('button').forEach(button=>button.onclick=()=>{$('#exchangeAmount').value=String((exchangeAmount()||0)+Number(button.dataset.exchangeAmount));renderExchange()})}
-    function renderExchange(){const from=$('#exchangeFrom').value,to=$('#exchangeTo').value,fromMeta=currencyMeta[from],toMeta=currencyMeta[to],amount=exchangeAmount();$('#exchangeSymbol').textContent=fromMeta.symbol;$('#exchangeResultLabel').textContent=toMeta.name+'으로';renderQuickAmounts();const converted=exchangeValue(amount,from,to);if(converted==null){$('#exchangeResult').textContent=exchangeLoading?'환율을 불러오는 중':'환율 정보를 확인할 수 없어요';$('#exchangeUnit').textContent='네트워크 연결 후 다시 시도해주세요';return}$('#exchangeResult').textContent=toMeta.symbol+formatMoney(converted,to);const unit=from==='JPY'?100:from==='KRW'?1000:from==='IDR'?10000:1,unitValue=exchangeValue(unit,from,to);$('#exchangeUnit').textContent=`${formatMoney(unit,from)} ${from} = ${formatMoney(unitValue,to)} ${to}`;const fetchedAt=Number(exchangeData.fetchedAt)||Date.parse(exchangeData.updatedAt)||0,age=Date.now()-fetchedAt,isStale=!!exchangeData.stale||age>3600000||Date.now()-Date.parse(exchangeData.updatedAt)>36*3600000||(exchangeData.staleCurrencies||[]).some(c=>c===from||c===to);$('#exchangeState').textContent=isStale?'저장된 환율 · 갱신 필요':'제공사 기준 환율';$('#exchangeState').className='exchange-state '+(isStale?'stale':'live');const updated=new Date(exchangeData.updatedAt||fetchedAt);$('#exchangeUpdated').textContent=Number.isNaN(updated.getTime())?'갱신 시간 확인 불가':`${updated.toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})} 기준 · ${exchangeData.source||'환율 제공사'}`}
-    async function loadExchange(force=false){if(exchangeLoading)return;const fresh=exchangeData?.fetchedAt&&Date.now()-exchangeData.fetchedAt<3600000,hasAll=exchangeData?.rates?.JPY&&exchangeData?.rates?.KRW;if(exchangeData)renderExchange();if(!force&&fresh&&hasAll)return;exchangeLoading=true;$('#exchangeState').textContent='환율 확인 중';$('#exchangeState').className='exchange-state stale';try{const response=await fetch('/api/exchange-rate',{cache:'no-store'});if(!response.ok)throw new Error('exchange_failed');const data=await response.json();if(!data?.rates?.JPY||!data?.rates?.KRW)throw new Error('invalid_exchange_data');exchangeData={...data,fetchedAt:data.fetchedAt||Date.now()};localStorage.setItem(EXCHANGE_CACHE_KEY,JSON.stringify(exchangeData))}catch(e){if(!exchangeData)toast('환율을 불러오지 못했어요');else toast('저장된 최근 환율을 보여드려요')}finally{exchangeLoading=false;renderExchange()}}
+    // 환율: GitHub Pages 정적 호스팅에는 서버가 없어 예전 /api/exchange-rate 가 404 였다.
+    //       ExchangeRate-API 무료 공개 엔드포인트를 기기에서 직접 받는다(CORS 허용·키 불필요·1일 1회 갱신).
+    const EXCHANGE_ENDPOINT='https://open.er-api.com/v6/latest/KRW',EXCHANGE_PROVIDER='ExchangeRate-API';
+    function exchangeStamp(iso){const d=new Date(iso);return Number.isNaN(d.getTime())?'기준 시각 확인 불가':d.toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}
+    function renderExchange(){
+      const from=$('#exchangeFrom').value,to=$('#exchangeTo').value,fromMeta=currencyMeta[from],toMeta=currencyMeta[to],amount=exchangeAmount();
+      $('#exchangeSymbol').textContent=fromMeta.symbol;$('#exchangeResultLabel').textContent=toMeta.name+'으로';renderQuickAmounts();
+      const converted=exchangeValue(amount,from,to);
+      if(converted==null){
+        $('#exchangeResult').textContent=exchangeLoading?'환율을 불러오는 중':'환율 정보를 확인할 수 없어요';
+        $('#exchangeUnit').textContent='인터넷 연결 후 다시 시도해주세요';
+        $('#exchangeState').textContent='환율 정보 없음';$('#exchangeState').className='exchange-state stale';
+        $('#exchangeUpdated').textContent='마지막 갱신 정보 없음';
+        return;
+      }
+      $('#exchangeResult').textContent=toMeta.symbol+formatMoney(converted,to);
+      const unit=from==='JPY'?100:from==='KRW'?1000:from==='IDR'?10000:1,unitValue=exchangeValue(unit,from,to);
+      $('#exchangeUnit').textContent=`${formatMoney(unit,from)} ${from} = ${formatMoney(unitValue,to)} ${to}`;
+      // 저장된 값과 방금 받은 값을 구분해서 보여준다.
+      const fetchedAt=Number(exchangeData.fetchedAt)||Date.parse(exchangeData.updatedAt)||0,
+            providerAt=Date.parse(exchangeData.providerUpdatedAt||''),
+            fetchedAge=fetchedAt?Date.now()-fetchedAt:Infinity,
+            providerAge=Number.isNaN(providerAt)?Infinity:Date.now()-providerAt,
+            offlineRecently=exchangeData.live===false,
+            stale=!fetchedAt||fetchedAge>24*3600000||providerAge>36*3600000;
+      if(exchangeData.live===true&&fetchedAge<3600000&&!stale){
+        $('#exchangeState').textContent='제공사 기준 환율';$('#exchangeState').className='exchange-state live';
+      }else if(offlineRecently||navigator.onLine===false){
+        $('#exchangeState').textContent='저장된 환율 사용 중';$('#exchangeState').className='exchange-state stale';
+      }else if(stale){
+        $('#exchangeState').textContent='저장된 환율 · 갱신 필요';$('#exchangeState').className='exchange-state stale';
+      }else{
+        $('#exchangeState').textContent='기기에 저장된 최근 환율';$('#exchangeState').className='exchange-state live';
+      }
+      const parts=[];
+      if(Number.isFinite(providerAt))parts.push(exchangeStamp(exchangeData.providerUpdatedAt)+' 기준(제공사)');
+      if(fetchedAt)parts.push(exchangeStamp(new Date(fetchedAt).toISOString())+'에 기기에 저장');
+      parts.push(EXCHANGE_PROVIDER);
+      $('#exchangeUpdated').textContent=parts.join(' · ');
+    }
+    async function loadExchange(force=false){
+      if(exchangeLoading)return;
+      const fresh=exchangeData?.fetchedAt&&Date.now()-exchangeData.fetchedAt<3600000,hasAll=exchangeData?.rates?.JPY&&exchangeData?.rates?.KRW&&exchangeData?.rates?.IDR;
+      if(exchangeData)renderExchange();
+      if(!force&&fresh&&hasAll)return;
+      exchangeLoading=true;$('#exchangeState').textContent='환율 확인 중';$('#exchangeState').className='exchange-state stale';
+      try{
+        const response=await fetch(EXCHANGE_ENDPOINT,{cache:'no-store',signal:AbortSignal.timeout(10000)});
+        if(!response.ok)throw Error('exchange_http_'+response.status);
+        const data=await response.json();
+        if(data.result!=='success'||!data.rates?.JPY||!data.rates?.KRW)throw Error('invalid_exchange_data');
+        exchangeData={rates:data.rates,base:data.base_code||'KRW',provider:EXCHANGE_PROVIDER,source:EXCHANGE_PROVIDER+' (open.er-api.com)',providerUpdatedAt:data.time_last_update_utc?new Date(data.time_last_update_utc).toISOString():null,providerNextUpdateAt:data.time_next_update_utc?new Date(data.time_next_update_utc).toISOString():null,fetchedAt:Date.now(),live:true,lastError:null};
+        localStorage.setItem(EXCHANGE_CACHE_KEY,JSON.stringify(exchangeData));
+      }catch(e){
+        if(exchangeData){
+          exchangeData={...exchangeData,live:false,lastError:navigator.onLine===false?'offline':'error',lastAttemptAt:Date.now()};
+          localStorage.setItem(EXCHANGE_CACHE_KEY,JSON.stringify(exchangeData));
+          toast('저장된 최근 환율을 보여드려요');
+        }else toast('환율을 불러오지 못했어요 · 인터넷 연결을 확인해주세요');
+      }finally{exchangeLoading=false;renderExchange()}
+    }
     const tabViews=['schedule','today','map','exchange'];
     function panelForView(v){return{schedule:$('#itineraryPanel'),today:$('#todayPanel'),map:$('#mapPanel'),exchange:$('#exchangePanel')}[v]}
     function animateTab(v,direction){if(!direction||innerWidth>850)return;const panel=panelForView(v);if(!panel)return;panel.classList.remove('tab-enter-forward','tab-enter-back');void panel.offsetWidth;panel.classList.add(direction>0?'tab-enter-forward':'tab-enter-back');setTimeout(()=>panel.classList.remove('tab-enter-forward','tab-enter-back'),350)}
@@ -1042,10 +1290,10 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
-    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=48',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=49',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
   <script src="./journey-preview.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a549003acaef302c',t:'MTc5MzY4Mzk3Mg=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a549003acaef302c',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
