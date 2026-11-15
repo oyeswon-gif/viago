@@ -484,9 +484,13 @@
       if(status===429)return{ok:false,reason:'quota',platform};
       const data=body&&body.status==='success'?body.data:null;
       if(data){
-        return{ok:true,platform,source:{url,finalUrl:data.url||url,platform:platform.name,title:data.title||'',description:data.description||'',image:typeof data.image==='string'?data.image:data.image?.url||'',author:data.author||data.publisher||''}};
+        const source={url,finalUrl:data.url||url,platform:platform.name,title:data.title||'',description:data.description||'',image:typeof data.image==='string'?data.image:data.image?.url||'',author:data.author||data.publisher||''};
+        // 로그인 벽(예: Threads "Log in")은 설명이 비어 있는 공개 게시물과 다르다 — 접근 제한으로 안내한다.
+        if(!String(source.description).trim()&&/(log ?in|로그인|sign ?in|계속하려면)/i.test(source.title))return{ok:false,reason:'blocked',platform,source};
+        return{ok:true,platform,source};
       }
       const code=String(body?.code||''),msg=String(body?.message||'');
+      if(/rate.?limit|ERATE/i.test(code+' '+msg))return{ok:false,reason:'quota',platform};
       if(code==='EPROXYNEEDED'||/antibot|robot|blocked|forbidden/i.test(msg+' '+JSON.stringify(body?.data||'')))return{ok:false,reason:'blocked',platform};
       if(status===401||status===403)return{ok:false,reason:'blocked',platform};
       if(status===404||/not found|private|login/i.test(msg))return{ok:false,reason:'private',platform};
