@@ -93,7 +93,7 @@
     </header>
 
     <div id="launchCover" aria-hidden="true"><div class="launch-logo"><span class="launch-mark">✈</span><strong>VIAGO</strong><span>함께 떠나는 여행</span></div></div>
-    <div id="bootState"><div id="bootMessage" role="status">저장된 여행을 확인하고 있어요.</div><form id="inviteRecovery" hidden><label for="recoveryLink">받은 전체 초대 링크</label><input id="recoveryLink" type="url" required autocomplete="off" placeholder="https://…/travel#invite=…" style="width:100%;min-width:0;margin:12px 0;padding:14px;border:1px solid #dce2e8;border-radius:12px"><button class="confirm" style="width:100%" type="submit">초대 링크로 여행 열기</button><p id="recoveryError" role="alert"></p></form></div>
+    <div id="bootState"><div id="bootMessage" role="status">저장된 여행을 확인하고 있어요.</div><form id="inviteRecovery" hidden><label for="recoveryLink">받은 전체 초대 링크</label><input id="recoveryLink" type="url" required autocomplete="off" placeholder="https://…/viago/#invite=…" style="width:100%;min-width:0;margin:12px 0;padding:14px;border:1px solid #dce2e8;border-radius:12px"><button class="confirm" style="width:100%" type="submit">초대 링크로 여행 열기</button><p id="recoveryError" role="alert"></p></form></div>
     <section class="trip-head">
       <div class="eyebrow-row"><div class="eyebrow" id="tripDday">D-86</div><button class="trip-change" id="tripPickerBtn">여행 변경</button></div>
       <div class="trip-title-row">
@@ -240,6 +240,20 @@
     // Keep the invitation in the URL when handing off to Safari or installing the PWA.
     if(!inviteInUrl&&/^[a-f0-9]{64}$/.test(inviteToken)){const inviteUrl=new URL(location.href);inviteUrl.hash='invite='+inviteToken;history.replaceState(null,'',inviteUrl.pathname+inviteUrl.search+inviteUrl.hash)}
     function apiFetch(url,options={}){return fetch(url,{signal:AbortSignal.timeout(10000),...options,headers:{...(options.headers||{}),...(inviteToken?{Authorization:'Bearer '+inviteToken}:{})}})}
+    // 초대 링크 복구: 배포 주소(/viago/)·옛 주소(/travel)·index.html 로 연 경우 모두 "지금 이 앱의 경로"만 받는다.
+    function appBasePath(pathname){const p=String(pathname||location.pathname||'/').replace(/\/index\.html?$/i,'/').replace(/\/+$/,'/');return p||'/'}
+    function inviteRecoveryTarget(raw,options={}){
+      const origin=options.origin||location.origin,base=appBasePath(options.pathname||location.pathname);
+      let url;try{url=new URL(String(raw||'').trim())}catch{return{ok:false,reason:'url'}}
+      const token=String(new URLSearchParams(url.hash.slice(1)).get('invite')||'').toLowerCase();
+      if(url.origin!==origin)return{ok:false,reason:'origin'};
+      if(appBasePath(url.pathname)!==base)return{ok:false,reason:'path'};
+      if(!/^[a-f0-9]{64}$/.test(token))return{ok:false,reason:'token'};
+      return{ok:true,token,target:base+'#invite='+token};
+    }
+    // 참여 권한이 없을 때: 숨겨 두었던 복구 폼을 띄운다(예전에는 어디서도 띄우지 않아 익명 계정을 잃으면 빈 화면이었다).
+    function showInviteRecovery(message){hideLaunchCover();document.body.classList.remove('booting');const form=$('#inviteRecovery');if(!form)return;form.hidden=false;if(message)$('#recoveryError').textContent=message}
+    function isAccessError(err){const code=String(err&&err.message||'');return /_(401|403)$/.test(code)||/^(no_invite|invite_unusable|invite_taken|join_denied|join_failed)$/.test(code)}
     function normalizeShared(payload){payload?.trips?.forEach(t=>ensureTripFeatures(t));return payload}
     const pendingDraft=readLocal('journey-note-pending');
     const SHARED_ROOM='nagoya-2026-shared';
@@ -341,7 +355,7 @@
       setSyncStatus('공유 연결 중','saving');
       try{
         const res = await fetch('https://firestore.googleapis.com/v1/projects/wedding-ring-app-810cd/databases/(default)/documents/weddingRingRooms/VIAGO-NAGOYA-2026', {cache:'no-store'});
-        if(!res.ok) throw Error('firestore_load');
+        if(!res.ok) throw Error('firestore_load_'+res.status);
         const doc = await res.json();
         const fields = doc.fields || {};
         const rev = parseInt(fields.revision?.integerValue || '1', 10);
@@ -364,9 +378,14 @@
         console.warn('Sync fallback to local cache:', err);
         hideLaunchCover();
         document.body.classList.remove('booting');
+        const accessDenied=isAccessError(err);
+        if(accessDenied)showInviteRecovery('이 여행에 참여할 수 없어요. 받은 초대 링크를 붙여넣어 주세요.');
         if(localStorage.getItem('journey-note-trips')){
           sharedReady = true;
-          setSyncStatus('오프라인 보관 모드','online');
+          setSyncStatus(accessDenied?'참여 확인 필요 · 오프라인 보관 모드':'오프라인 보관 모드','online');
+        }else if(accessDenied){
+          setSyncStatus('참여 확인 필요','offline');
+          setTimeout(startSharedSync, 15000);
         }else{
           setSyncStatus('연결 재시도 중','offline');
           setTimeout(startSharedSync, 10000);
@@ -1028,7 +1047,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     function hideLaunchCover(){const cover=$('#launchCover');if(cover)cover.remove()}
     // No fixed loading wait: paint first; decorative cover never blocks recovery.
     setTimeout(hideLaunchCover,1200);
-    $('#inviteRecovery').onsubmit=e=>{e.preventDefault();try{const url=new URL($('#recoveryLink').value.trim());const token=new URLSearchParams(url.hash.slice(1)).get('invite');if(url.origin!==location.origin||!/^\/travel\/?$/.test(url.pathname)||!/^[a-f0-9]{64}$/.test(token||''))throw Error();localStorage.setItem('journey-note-invite',token);location.replace('/travel#invite='+token)}catch{$('#recoveryError').textContent='이 여행 앱에서 받은 전체 초대 링크를 붙여넣어주세요.'}};
+    $('#inviteRecovery').onsubmit=e=>{e.preventDefault();const out=inviteRecoveryTarget($('#recoveryLink').value.trim());if(!out.ok){$('#recoveryError').textContent=out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체를 붙여넣어주세요.':'이 여행 앱에서 받은 전체 초대 링크를 붙여넣어주세요.';return}$('#recoveryError').textContent='';localStorage.setItem('journey-note-invite',out.token);location.replace(out.target)};
     window.addEventListener('online',()=>{googleMapsReady=null;paintProviderNotes();if(!sharedReady&&!accessDenied)startSharedSync();else{pollShared();if(sharedDirty)pushSharedState()}});
     window.addEventListener('offline',paintProviderNotes);
     paintProviderNotes();
