@@ -15,7 +15,8 @@
   if(!points.length)return {zoom:13,lat:35.1709,lng:136.9065};
   if(new Set(points.map(x=>x.c[0].toFixed(6)+','+x.c[1].toFixed(6))).size===1)return {zoom:FIT_MAX,lat:points[0].c[0],lng:points[0].c[1]};
   const aw=Math.max(60,w-pad.left-pad.right),ah=Math.max(60,h-pad.top-pad.bottom);
-  let zoom=1;
+  // 어떤 배율에서도 들어가지 않으면(좌표 이상) 세계지도(1)로 떨어지지 않게 도시 배율에서 멈춘다.
+  let zoom=4;
   for(let z=FIT_MAX;z>=1;z--){const px=points.map(x=>project(x.c,z)),xs=px.map(p=>p[0]),ys=px.map(p=>p[1]);if(Math.max(...xs)-Math.min(...xs)<=aw&&Math.max(...ys)-Math.min(...ys)<=ah){zoom=z;break}}
   const px=points.map(x=>project(x.c,zoom)),xs=px.map(p=>p[0]),ys=px.map(p=>p[1]);
   const midX=(Math.min(...xs)+Math.max(...xs))/2,midY=(Math.min(...ys)+Math.max(...ys))/2;

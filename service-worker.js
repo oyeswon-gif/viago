@@ -12,7 +12,7 @@
 //    한 번은 그대로 실행돼 초대 참여가 실패했다(옛 코드 + 새 화면). 그 창을 없앤다.
 // 4) 새 워커는 skipWaiting + clients.claim 으로 바로 활성화된다. 화면(index.html)은
 //    controllerchange 를 받으면 한 번 새로고침해, 옛 코드가 남은 화면을 새 코드로 갈아 끼운다.
-const VERSION = 'v13';   // 2026-11-15 카드 카테고리 pill·예약 강조·카드 사이 이동시간 pill·카드 밑 인라인 미리보기
+const VERSION = 'v14';   // 2026-11-16 지도 카메라 보호: 사용자가 확대한 배율을 재렌더·동기화가 덮어쓰지 않는다
 const SHELL = `viago-shell-${VERSION}`;
 // 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
 const OUR_PREFIX = 'viago-';
