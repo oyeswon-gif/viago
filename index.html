@@ -1,3 +1,4 @@
+<!-- VIAGO migration build · room v1-06e9cc03c400af45d41def7c87d05628 · production · build-migration.py -->
 <!doctype html>
 <html lang="ko">
 <head>
@@ -166,8 +167,10 @@
       <ul class="marker-sheet-list" id="markerSheetList"></ul>
     </div>
   </div>
+<script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
   <script src="./journey-sync.js"></script>
-  <script src="./viago-sync-v3.js"></script>
+  <script src="./viago-auth-client.js"></script>
+  <script src="./viago-auth-firebase.js"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -195,8 +198,8 @@
     const hoursCache=new Map();let lastHoursRefresh=0,hoursGeneration=0;
     let sharedRevision=0,sharedReady=false,sharedSaving=false,sharedDirty=false,sharedTimer=null,applyingRemote=false,sharedChange=0,sharedBase=structuredClone({trips}),syncConflictState=null,accessOwner=false,accessDenied=false,sharedPolling=false,saveRetry=1000,sharedUpdateTime=null;
     // 동시 편집 보호: 저장은 :commit + currentDocument.updateTime 사전 조건으로 보낸다.
-    const SHARED_ROOM_COLLECTION='weddingRingRooms',SHARED_ROOM_CODE='VIAGO-NAGOYA-2026';
-    const sharedSync=createViagoSync({config:{roomCollection:SHARED_ROOM_COLLECTION,roomCode:SHARED_ROOM_CODE},fetchImpl:apiFetch,mergeJourney:(b,l,r,p)=>mergeJourney(b,l,r,p)});
+    const SHARED_ROOM_COLLECTION='viagoRooms',SHARED_ROOM_CODE='v1-06e9cc03c400af45d41def7c87d05628';
+    const sharedSync=createViagoSync({config:{roomCollection:SHARED_ROOM_COLLECTION,roomCode:SHARED_ROOM_CODE},mergeJourney:(b,l,r,p)=>mergeJourney(b,l,r,p)});
     const inviteInUrl=new URLSearchParams(location.hash.slice(1)).get('invite');if(inviteInUrl&&/^[a-f0-9]{64}$/.test(inviteInUrl)){localStorage.setItem('journey-note-invite',inviteInUrl)}
     const inviteToken=localStorage.getItem('journey-note-invite')||'',participantId=localStorage.getItem('journey-note-participant')||crypto.randomUUID();localStorage.setItem('journey-note-participant',participantId);
     // Keep the invitation in the URL when handing off to Safari or installing the PWA.
@@ -291,7 +294,7 @@
       if(sharedDirty){pushSharedState();return;}
       sharedPolling=true;
       try{
-        const res = await fetch('https://firestore.googleapis.com/v1/projects/wedding-ring-app-810cd/databases/(default)/documents/weddingRingRooms/VIAGO-NAGOYA-2026', {cache:'no-store'});
+        const res = await sharedSync.fetchDoc();
         if(!res.ok) throw Error('poll_failed');
         const doc = await res.json();
         const fields = doc.fields || {};
@@ -316,7 +319,7 @@
     async function startSharedSync(){
       setSyncStatus('공유 연결 중','saving');
       try{
-        const res = await fetch('https://firestore.googleapis.com/v1/projects/wedding-ring-app-810cd/databases/(default)/documents/weddingRingRooms/VIAGO-NAGOYA-2026', {cache:'no-store'});
+        const res = await sharedSync.fetchDoc();
         if(!res.ok) throw Error('firestore_load_'+res.status);
         const doc = await res.json();
         const fields = doc.fields || {};
@@ -330,6 +333,7 @@
         sharedRevision = rev;
         sharedUpdateTime = doc.updateTime || null;
         sharedReady = true;
+        if(window.__VIAGO_PENDING__&&window.__VIAGO_PENDING__.status==='conflict')openSyncConflict(window.__VIAGO_PENDING__);
         if(rawPayload && rawPayload.trips){
           const remote = normalizeShared(rawPayload);
           sharedBase = structuredClone(remote);

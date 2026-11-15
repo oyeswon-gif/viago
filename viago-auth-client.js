@@ -1,0 +1,283 @@
+// viago-auth-client.js — VIAGO 인증 클라이언트 + 동시 편집 보호 (v3 기준, 이전용 최종 빌드에 포함)
+// 배포본에서는 익명 로그인(identitytoolkit)과 토큰 갱신(securetoken)을 직접 호출한다.
+// 에뮬레이터 검증용으로만 authBaseUrl·secureTokenBaseUrl 을 지정할 수 있다(기본값은 실제 서비스 주소).
+// ─────────────────────────────────────────────────────────────
+// v3-auth = v2(viago-auth-client.v2.js) 의 인증·참여 + viago-sync-v3.js 의 저장 보호를 한 파일로 합친 것.
+//
+//  · 인증/참여: 익명 로그인 → 1회용 초대를 \"초대 소진 + 멤버 등록\" 한 번의 :commit 으로 참여 (v2 그대로)
+//  · 저장: 일정 저장을 `:commit` + `updateMask` + `currentDocument.updateTime` 사전 조건으로 보낸다.
+//      1) 두 기기가 같은 시점에 저장하면 먼저 보낸 한 건만 통과(409), 나머지는 덮어쓰지 않고 3-way 병합.
+//      2) 겹치지 않은 변경(서로 다른 항목)은 대화상자 없이 자동 병합해 저장.
+//      3) 같은 항목을 다르게 고쳤으면 저장하지 않고 conflict 를 돌려준다 → 앱은 #syncConflict 로 물어본다.
+//      4) 오프라인·앱 종료로 저장하지 못한 payload 는 localStorage 에 pending 으로 남기고,
+//         다음 실행에서 최신 원격과 병합해 반영한다(오래된 기기가 최신 일정을 덮어쓰지 않는다).
+//
+// 의존성 없음(fetch·localStorage 만). 브라우저에서는 window.createViagoAuthV3, 테스트에서는 require.
+
+const VIAGO_V3_DEFAULT_CONFIG = {
+  firebaseApiKey: (typeof window !== 'undefined' && window.VIAGO_FIREBASE_API_KEY) || '',
+  projectId: 'wedding-ring-app-810cd',
+  roomCollection: 'viagoRooms',
+  roomCode: (typeof window !== 'undefined' && window.VIAGO_ROOM_CODE) || '',
+  storageKey: 'viago.auth.v3',
+  updatedBy: '재원'
+};
+
+// journey-sync.js 의 mergeJourney 와 같은 규칙의 순수 3-way 병합(파일 자체에 포함해 단독 동작).
+function mergeJourney(base, local, remote, preferRemote = false) {
+  const conflicts = []; const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  function merge(b, l, r, path) {
+    if (eq(l, r)) return l; if (eq(l, b)) return r; if (eq(r, b)) return l;
+    if (Array.isArray(l) && Array.isArray(r) && Array.isArray(b) && [...b, ...l, ...r].every(x => x && typeof x === 'object' && x.id)) {
+      const bm = new Map(b.map(x => [x.id, x])), lm = new Map(l.map(x => [x.id, x])), rm = new Map(r.map(x => [x.id, x]));
+      const reordered = !eq(l.filter(x => bm.has(x.id)).map(x => x.id), b.filter(x => lm.has(x.id)).map(x => x.id));
+      const remoteReordered = !eq(r.filter(x => bm.has(x.id)).map(x => x.id), b.filter(x => rm.has(x.id)).map(x => x.id));
+      if (reordered && remoteReordered && !eq(l.map(x => x.id), r.map(x => x.id))) conflicts.push(path + ' / 순서');
+      const order = (reordered && !preferRemote ? [...l, ...r, ...b] : [...r, ...l, ...b]).map(x => x.id), seen = new Set(), out = [];
+      for (const id of order) { if (seen.has(id)) continue; seen.add(id); const value = merge(bm.get(id), lm.get(id), rm.get(id), path + '/' + id); if (value !== undefined) out.push(value) } return out;
+    }
+    if (b && l && r && !Array.isArray(l) && !Array.isArray(r) && typeof b === 'object' && typeof l === 'object' && typeof r === 'object') {
+      const out = {}; for (const k of new Set([...Object.keys(b), ...Object.keys(l), ...Object.keys(r)])) { if (['__proto__', 'constructor', 'prototype'].includes(k)) continue; const v = merge(b[k], l[k], r[k], path + '/' + k); if (v !== undefined) out[k] = v } return out;
+    }
+    conflicts.push(path); return preferRemote ? r : l;
+  }
+  return { payload: merge(base, local, remote, '일정'), conflicts };
+}
+
+function viagoV3DocName(projectId, path) { return `projects/${projectId}/databases/(default)/documents/${path}`; }
+
+function createViagoAuthV3(opts) {
+  const o = opts || {};
+  const cfg = Object.assign({}, VIAGO_V3_DEFAULT_CONFIG, o.config || {});
+  const f = o.fetchImpl || (typeof fetch !== 'undefined' ? fetch.bind(globalThis) : null);
+  const store = o.storage || (typeof localStorage !== 'undefined' ? localStorage : null);
+  const base = o.baseUrl || `https://firestore.googleapis.com/v1/projects/${cfg.projectId}/databases/(default)/documents`;
+  const authBase = o.authBaseUrl || 'https://identitytoolkit.googleapis.com';
+  const tokenBase = o.secureTokenBaseUrl || 'https://securetoken.googleapis.com';
+  const projectInBase = /\/projects\/([^/]+)\//.exec(base);
+  if (projectInBase) cfg.projectId = projectInBase[1];
+  const merge = o.mergeJourney || mergeJourney;
+  const pendingKey = cfg.storageKey + '.pending';
+  let session = null;
+
+  async function f_(url, init) {
+    try { return await f(url, init) }
+    catch (e) { const err = new Error('offline'); err.network = true; err.cause = e; throw err }
+  }
+
+  // ── 인증 ─────────────────────────────────────────────
+  function load() { if (store) { try { session = JSON.parse(store.getItem(cfg.storageKey) || 'null') } catch (e) { session = null } } return session }
+  function save(s) { session = s; if (store) { try { store.setItem(cfg.storageKey, JSON.stringify(s)) } catch (e) {} } }
+  function decodeJwt(t) { try { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))) } catch (e) { return {} } }
+  async function signInAnonymously() {
+    const res = await f_(`${authBase}/v1/accounts:signUp?key=${encodeURIComponent(cfg.firebaseApiKey)}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ returnSecureToken: true })
+    });
+    if (!res.ok) throw new Error('auth_failed');
+    const d = await res.json(), p = decodeJwt(d.idToken);
+    const s = { idToken: d.idToken, refreshToken: d.refreshToken, uid: d.localId, expiresAt: (p.exp || 0) * 1000 };
+    save(s); return s;
+  }
+  async function refreshIfNeeded() {
+    if (o.getIdToken) {
+      const idToken = await o.getIdToken(), p = decodeJwt(idToken);
+      session = { idToken, uid: (o.uidProvider && o.uidProvider()) || p.user_id || p.sub, expiresAt: (p.exp || 0) * 1000, external: true };
+      return session;
+    }
+    if (!session) load();
+    if (!session) return signInAnonymously();
+    if (Date.now() < session.expiresAt - 5 * 60 * 1000) return session;
+    const res = await f_(`${tokenBase}/v1/token?key=${encodeURIComponent(cfg.firebaseApiKey)}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `grant_type=refresh_token&refresh_token=${encodeURIComponent(session.refreshToken)}`
+    });
+    if (!res.ok) return signInAnonymously();
+    const d = await res.json();
+    const s = { idToken: d.id_token, refreshToken: d.refresh_token, uid: d.user_id, expiresAt: (decodeJwt(d.id_token).exp || 0) * 1000 };
+    save(s); return s;
+  }
+  async function uid() { return (await refreshIfNeeded()).uid }
+  async function authedFetch(path, options) {
+    const s = await refreshIfNeeded(), opt = options || {};
+    const headers = Object.assign({}, opt.headers || {}, { Authorization: `Bearer ${s.idToken}` });
+    return f_(base + path, Object.assign({}, opt, { headers }));
+  }
+
+  // ── 초대 참여(원자적): 초대 소진 + 멤버 등록을 한 커밋으로 ──
+  async function joinWithInvite(token) {
+    const me = await uid();
+    let inviteDoc = null;
+    const read = await authedFetch(`/viagoInvites/${encodeURIComponent(token)}`);
+    if (read.ok) inviteDoc = await read.json();
+    if (!inviteDoc) {
+      const roomId = cfg.roomCode;
+      if (roomId) {
+        const memberTry = await authedFetch(`/${cfg.roomCollection}/${encodeURIComponent(roomId)}/members/${me}?currentDocument.exists=false`, {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fields: { role: { stringValue: 'editor' }, invite: { stringValue: token }, joinedAt: { timestampValue: new Date().toISOString() } } })
+        });
+        if (memberTry.ok) { cfg.roomCode = roomId; return roomId }
+      }
+      throw new Error('invite_unusable');
+    }
+    const fields = inviteDoc.fields || {};
+    const roomId = (fields.roomId && fields.roomId.stringValue) || cfg.roomCode;
+    const role = (fields.role && fields.role.stringValue) || 'editor';
+    if (!roomId) throw new Error('invite_unusable');
+    const now = new Date().toISOString();
+    const commit = await authedFetch(':commit', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        writes: [
+          { update: { name: viagoV3DocName(cfg.projectId, `viagoInvites/${token}`), fields: { usedBy: { stringValue: me }, usedAt: { timestampValue: now } } }, updateMask: { fieldPaths: ['usedBy', 'usedAt'] }, currentDocument: { updateTime: inviteDoc.updateTime } },
+          { update: { name: viagoV3DocName(cfg.projectId, `${cfg.roomCollection}/${roomId}/members/${me}`), fields: { role: { stringValue: role }, invite: { stringValue: token }, joinedAt: { timestampValue: now } } }, currentDocument: { exists: false } }
+        ]
+      })
+    });
+    if (commit.ok) { cfg.roomCode = roomId; return roomId }
+    if (commit.status === 409) {
+      const mine = await authedFetch(`/${cfg.roomCollection}/${encodeURIComponent(roomId)}/members/${me}`);
+      if (mine.ok) { cfg.roomCode = roomId; return roomId }
+      throw new Error('invite_taken');
+    }
+    if (commit.status === 403) throw new Error('join_denied');
+    throw new Error('join_failed');
+  }
+  async function amIMember(roomId) {
+    const rid = roomId || cfg.roomCode;
+    if (!rid) return false;
+    const me = await uid();
+    const res = await authedFetch(`/${cfg.roomCollection}/${encodeURIComponent(rid)}/members/${me}`);
+    return res.ok;
+  }
+
+  // ── 읽기 ─────────────────────────────────────────────
+  // { payload, revision, updateTime, raw } | null
+  async function readRoom(roomId) {
+    const rid = roomId || cfg.roomCode;
+    if (!rid) return null;
+    const res = await authedFetch(`/${cfg.roomCollection}/${encodeURIComponent(rid)}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const doc = await res.json(), fields = doc.fields || {};
+    let payload = null;
+    try { payload = JSON.parse(fields.payload?.stringValue || 'null') } catch (e) { payload = null }
+    return { payload, revision: parseInt(fields.revision?.integerValue || '0', 10), updateTime: doc.updateTime, fields, raw: doc };
+  }
+
+  // ── 저장(사전 조건 포함) ──────────────────────────────
+  // { ok:true, updateTime, revision } | { ok:false, reason:'conflict'|'precondition'|'denied'|'offline'|'error' }
+  async function saveRoom(args) {
+    const rid = args.roomId || cfg.roomCode;
+    const fields = {
+      payload: { stringValue: JSON.stringify(args.payload) },
+      revision: { integerValue: String(Number(args.revision)) },
+      updatedAt: { timestampValue: new Date().toISOString() },
+      updatedBy: { stringValue: args.updatedBy || cfg.updatedBy }
+    };
+    const write = { update: { name: viagoV3DocName(cfg.projectId, `${cfg.roomCollection}/${rid}`), fields }, updateMask: { fieldPaths: ['payload', 'revision', 'updatedAt', 'updatedBy'] } };
+    if (args.expectedUpdateTime) write.currentDocument = { updateTime: args.expectedUpdateTime };
+    let res;
+    try {
+      res = await authedFetch(':commit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ writes: [write] }) });
+    } catch (e) {
+      if (e.network) return { ok: false, reason: 'offline' };
+      return { ok: false, reason: 'error', text: String(e && e.message) };
+    }
+    if (res.ok) {
+      const body = await res.json();
+      return { ok: true, updateTime: body.writeResults?.[0]?.updateTime || body.commitTime || null, revision: Number(args.revision) };
+    }
+    const text = await res.text().catch(() => '');
+    if (res.status === 403) return { ok: false, reason: 'denied', status: 403, text };
+    if (res.status === 409) return { ok: false, reason: 'conflict', status: 409, text };
+    if (res.status === 400 && /FAILED_PRECONDITION|precondition/i.test(text)) return { ok: false, reason: 'precondition', status: 400, text };
+    return { ok: false, reason: 'error', status: res.status, text };
+  }
+
+  // ── 저장 + 병합 (앱이 부르는 한 덩어리) ─────────────────
+  // base: 마지막으로 확인한 공유본, payload: 지금 화면의 일정
+  async function saveJourney(args) {
+    const expected = args.expectedUpdateTime || args.remoteUpdateTime || null;
+    const first = await saveRoom(Object.assign({}, args, { expectedUpdateTime: expected }));
+    if (first.ok) { clearPending(); return { status: 'saved', ...first } }
+    if (first.reason === 'offline') { writePending(args); return { status: 'offline' } }
+    if (first.reason === 'denied' || first.reason === 'error') return { status: 'failed', ...first };
+
+    const current = await readRoom(args.roomId);
+    if (!current) return { status: 'failed', reason: 'reread_failed' };
+    const merged = merge(args.base || { trips: [] }, args.payload, current.payload || { trips: [] }, false);
+    if (merged.conflicts && merged.conflicts.length) {
+      return { status: 'conflict', base: args.base || { trips: [] }, local: args.payload, remote: current.payload, merge: merged, paths: merged.conflicts, remoteUpdateTime: current.updateTime, remoteRevision: current.revision };
+    }
+    const second = await saveRoom(Object.assign({}, args, { payload: merged.payload, revision: current.revision + 1, expectedUpdateTime: current.updateTime }));
+    if (second.ok) { clearPending(); return { status: 'merged', ...second, merged: merged.payload } }
+    if (second.reason === 'offline') { writePending(args); return { status: 'offline' } }
+    if (second.reason === 'conflict' || second.reason === 'precondition') {
+      const again = await readRoom(args.roomId);
+      const remote = again ? again.payload : current.payload;
+      const m2 = merge(args.base || { trips: [] }, args.payload, remote || { trips: [] }, false);
+      if (!m2.conflicts.length) {   // 그 사이 또 바뀌었지만 겹치지 않으면 한 번 더 병합 저장
+        const third = await saveRoom(Object.assign({}, args, { payload: m2.payload, revision: (again || current).revision + 1, expectedUpdateTime: (again || current).updateTime }));
+        if (third.ok) { clearPending(); return { status: 'merged', ...third, merged: m2.payload } }
+        if (third.reason === 'offline') { writePending(args); return { status: 'offline' } }
+      }
+      return { status: 'conflict', base: args.base || { trips: [] }, local: args.payload, remote, merge: m2, paths: m2.conflicts, remoteUpdateTime: (again || current).updateTime, remoteRevision: (again || current).revision };
+    }
+    return { status: 'failed', ...second };
+  }
+
+  // 사용자가 #syncConflict 에서 고른 뒤 저장 (preferRemote=true 면 겹친 항목은 상대 것)
+  async function saveResolved(conflict, preferRemote) {
+    const result = merge(conflict.base, conflict.local, conflict.remote, !!preferRemote);
+    const out = await saveRoom({ payload: result.payload, revision: (conflict.remoteRevision || 0) + 1, expectedUpdateTime: conflict.remoteUpdateTime });
+    if (out.ok) clearPending();
+    return { ...out, status: out.ok ? 'saved' : out.reason, payload: result.payload, paths: result.conflicts };
+  }
+
+  // ── 오프라인 pending (앱 재실행 복구) ───────────────────
+  function writePending(args) {
+    if (!store) return;
+    try {
+      store.setItem(pendingKey, JSON.stringify({
+        payload: args.payload,
+        base: args.base || null,
+        savedAt: new Date().toISOString(),
+        expectedUpdateTime: args.expectedUpdateTime || args.remoteUpdateTime || null
+      }));
+    } catch (e) {}
+  }
+  function readPending() {
+    if (!store) return null;
+    try { return JSON.parse(store.getItem(pendingKey) || 'null') } catch (e) { return null }
+  }
+  function clearPending() { if (store) { try { store.removeItem(pendingKey) } catch (e) {} } }
+
+  // 앱 시작 시: 남아 있는 pending 을 최신 원격과 병합해 저장. 실패하면 pending 을 그대로 둔다.
+  async function flushPending(roomId) {
+    const pending = readPending();
+    if (!pending) return { status: 'none' };
+    const current = await readRoom(roomId);
+    if (!current) return { status: 'failed', reason: 'reread_failed' };
+    const merged = merge(pending.base || { trips: [] }, pending.payload, current.payload || { trips: [] }, false);
+    if (merged.conflicts.length) {
+      return { status: 'conflict', base: pending.base || { trips: [] }, local: pending.payload, remote: current.payload, merge: merged, paths: merged.conflicts, remoteUpdateTime: current.updateTime, remoteRevision: current.revision, pendingAt: pending.savedAt };
+    }
+    const out = await saveRoom({ roomId, payload: merged.payload, revision: current.revision + 1, expectedUpdateTime: current.updateTime });
+    if (out.ok) { clearPending(); return { status: 'flushed', ...out } }
+    if (out.reason === 'offline') return { status: 'offline' };
+    return { status: 'failed', ...out };
+  }
+
+  return {
+    config: cfg, mergeJourney: merge,
+    load, signInAnonymously, refreshIfNeeded, uid,
+    joinWithInvite, amIMember, readRoom, saveRoom, saveJourney, saveResolved,
+    readPending, writePending, clearPending, flushPending,
+    get session() { return session },
+    get roomCode() { return cfg.roomCode },
+    setRoomCode(id) { cfg.roomCode = id }
+  };
+}
+
+if (typeof module !== 'undefined' && module.exports) module.exports = { createViagoAuthV3, mergeJourney, VIAGO_V3_DEFAULT_CONFIG };
+if (typeof window !== 'undefined') window.createViagoAuthV3 = createViagoAuthV3;
