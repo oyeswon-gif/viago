@@ -111,9 +111,13 @@ function createViagoAuthV3(opts) {
   // ── 인증 ─────────────────────────────────────────────
   function load() {
     if (store) { try { session = JSON.parse(store.getItem(cfg.storageKey) || 'null') } catch (e) { session = null } }
-    if (!session) {
-      // 홈 화면 앱: 사파리에서 '홈 화면에 추가'할 때 복사된 세션 쿠키로 이어받는다.
-      const inherited = readViagoSessionCookie();
+    // 홈 화면 앱: 사파리에서 '홈 화면에 추가'할 때 복사된 세션 쿠키로 이어받는다.
+    //   · 쿠키에는 uid·갱신 토큰만 있다(idToken 은 없다). 그대로 쓰면 idToken 이 비어
+    //     `Authorization: Bearer undefined` 로 나가 **모든 요청이 401** 이 된다
+    //     → 멤버 확인·초대 읽기가 실패해 '만료/회수된 초대'처럼 보였다.
+    //     그래서 idToken 이 없거나, 저장된 세션에 갱신 토큰이 없으면 쿠키 세션을 쓴다.
+    const inherited = readViagoSessionCookie();
+    if (!session || !session.uid || !session.refreshToken) {
       if (inherited) { save(inherited); return session }
     }
     // 세션이 있으면 쿠키도 최신으로 유지한다(다음 '홈 화면에 추가'가 이어받을 수 있게).
@@ -143,7 +147,9 @@ function createViagoAuthV3(opts) {
     }
     if (!session) load();
     if (!session) return signInAnonymously();
-    if (Date.now() < session.expiresAt - 5 * 60 * 1000) return session;
+    // idToken 이 없으면(쿠키에서 이어받은 세션) 만료 시각과 무관하게 갱신한다.
+    if (session.idToken && Date.now() < session.expiresAt - 5 * 60 * 1000) return session;
+    if (!session.refreshToken) return signInAnonymously();
     const res = await f_(`${tokenBase}/v1/token?key=${encodeURIComponent(cfg.firebaseApiKey)}`, {
       method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `grant_type=refresh_token&refresh_token=${encodeURIComponent(session.refreshToken)}`
@@ -155,9 +161,20 @@ function createViagoAuthV3(opts) {
   }
   async function uid() { return (await refreshIfNeeded()).uid }
   async function authedFetch(path, options) {
-    const s = await refreshIfNeeded(), opt = options || {};
-    const headers = Object.assign({}, opt.headers || {}, { Authorization: `Bearer ${s.idToken}` });
-    return f_(base + path, Object.assign({}, opt, { headers }));
+    const opt = options || {};
+    const send = (idToken) => f_(base + path, Object.assign({}, opt, {
+      headers: Object.assign({}, opt.headers || {}, { Authorization: `Bearer ${idToken}` })
+    }));
+    let s = await refreshIfNeeded();
+    const res = await send(s.idToken);
+    if (res.status !== 401) return res;
+    // 서버가 토큰을 거부했다(만료·기기 시계 오차·옛 세션). 이대로 두면 초대 읽기·멤버 확인이
+    // 전부 401 이 되어 '만료된 초대'처럼 보인다 → 세션을 새로 만들고 한 번만 다시 보낸다.
+    session = null; cookieSynced = false;
+    try { if (store) store.removeItem(cfg.storageKey) } catch (e) {}
+    clearViagoSessionCookie();
+    s = await signInAnonymously();
+    return send(s.idToken);
   }
 
   // ── 초대 참여(원자적): 초대 소진 + 멤버 등록을 한 커밋으로 ──
@@ -167,6 +184,8 @@ function createViagoAuthV3(opts) {
     const read = await authedFetch(`/viagoInvites/${encodeURIComponent(token)}`);
     if (read.ok) inviteDoc = await read.json();
     if (!inviteDoc) {
+      // 없는 코드(잘렸거나 다른 여행의 코드)는 '만료·회수'와 구분해 알려 준다.
+      if (read.status === 404) throw new Error('invite_not_found');
       const roomId = cfg.roomCode;
       if (roomId) {
         const memberTry = await authedFetch(`/${cfg.roomCollection}/${encodeURIComponent(roomId)}/members/${me}?currentDocument.exists=false`, {

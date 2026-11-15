@@ -20,7 +20,7 @@
   <meta name="description" content="지인들과 함께 일정을 정리하고 Google 지도로 바로 길찾는 개인 여행 앱" />
   <title>viago</title>
   <link rel="preconnect" href="https://www.google.com" />
-  <script src="./journey-install.js"></script>
+  <script src="./journey-install.js?v=56"></script>
   <link rel="apple-touch-startup-image" href="/viago-start-390x844.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" />
   <link rel="apple-touch-startup-image" href="/viago-start-393x852.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
   <link rel="apple-touch-startup-image" href="/viago-start-430x932.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
@@ -186,7 +186,7 @@
       <p>이 기기에서는 여행 참여가 확인되지 않아 서버의 최신 일정을 열지 못했어요. 받은 <b>초대 링크</b>나 <b>초대 코드</b>를 붙여넣으면 바로 연결됩니다. 한 번 연결한 기기는 다시 넣지 않아도 돼요.</p>
       <input id="gateInvite" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="초대 링크 또는 초대 코드 64자리">
       <p id="gateError" role="alert"></p>
-      <div class="gate-actions"><button type="button" class="confirm" id="gateConnect">연결하기</button><button type="button" class="cancel" id="gatePaste">복사한 코드 붙여넣기</button><button type="button" class="cancel" id="gateLater">기기에 저장된 이전 사본 보기</button></div>
+      <div class="gate-actions"><button type="button" class="confirm" id="gateConnect">연결하기</button><button type="button" class="cancel" id="gatePaste">복사한 코드 붙여넣기</button><button type="button" class="cancel" id="gateLater">기기에 저장된 이전 사본 보기</button><button type="button" class="cancel" id="gateReload" hidden>앱 새로 불러오기</button></div>
       <details class="gate-help" id="gateHelp"><summary>이미 사파리에서 참여했다면 (새 초대 없이 연결)</summary><ol><li>사파리에서 이 여행이 정상으로 열리는지 확인해 주세요.</li><li>홈 화면의 <b>viago</b> 아이콘을 길게 눌러 <b>삭제</b>해요. 서버 일정은 그대로 남아 있어요.</li><li>같은 사파리 화면에서 <b>공유 → 홈 화면에 추가 → 추가</b>를 눌러요.</li><li>홈 화면의 아이콘을 열면 <b>초대 없이 그대로</b> 연결돼요.</li></ol><p>사파리에서도 초대를 물으면 받은 초대 링크를 다시 붙여넣으면 됩니다. 초대 링크는 기간 안에서 여러 기기에서 다시 쓸 수 있어요.</p></details>
       <p class="gate-hint">홈 화면에 추가한 앱과 사파리는 저장 공간이 따로예요. 사파리에서 참여한 뒤 <b>홈 화면에 추가</b>하면 이 앱으로 그대로 이어지고, 그 전에 추가했다면 위 안내대로 한 번만 다시 추가해 주세요.</p>
     </div>
@@ -223,9 +223,9 @@
     </div>
   </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js"></script>
-  <script src="./viago-auth-client.js"></script>
-  <script src="./viago-auth-firebase.js"></script>
+  <script src="./journey-sync.js?v=56"></script>
+  <script src="./viago-auth-client.js?v=56"></script>
+  <script src="./viago-auth-firebase.js?v=56"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -304,9 +304,14 @@
     //   · 링크 없이 코드만 있으면 그 코드를 받는다.
     function inviteUrlInText(raw){const m=String(raw||'').match(/https?:\/\/[^\s"'<>]+/i);return m?m[0]:''}
     function inviteTokenInText(raw){const m=String(raw||'').match(/#?invite=([a-f0-9]{64})/i)||String(raw||'').match(/(?:^|[^0-9a-z])([a-f0-9]{64})(?:[^0-9a-z]|$)/i);return m?m[1].toLowerCase():''}
+    function inviteTokensInText(raw){return [...String(raw||'').matchAll(/([a-f0-9]{64})/gi)].map(m=>m[1].toLowerCase())}
     function parseInviteInput(raw){
       const v=String(raw||'').trim();
       if(/^[a-f0-9]{64}$/i.test(v))return{ok:true,token:v.toLowerCase(),target:appBasePath()+'#invite='+v.toLowerCase()};
+      // 미리 채워 둔 옛 링크 뒤에 새 코드를 이어 붙인 경우: 마지막(가장 최근에 붙여넣은) 코드를 쓴다.
+      // (옛 코드를 먼저 읽으면 새 코드를 넣어도 '만료·회수' 오류가 그대로 난다)
+      const tokens=inviteTokensInText(v);
+      if(tokens.length>1){const t=tokens[tokens.length-1];return{ok:true,token:t,target:appBasePath()+'#invite='+t}}
       const url=inviteUrlInText(v);
       if(url)return inviteRecoveryTarget(url);
       const token=inviteTokenInText(v);
@@ -360,7 +365,7 @@
       const help=$('#gateHelp');
       if(help&&!help.dataset.initialized&&isStandaloneApp()&&!knownInviteToken()){help.open=true;help.dataset.initialized='1'}
       const inviteField=$('#gateInvite');
-      if(inviteField&&!inviteField.value){const link=knownInviteLink();if(link)inviteField.value=link}
+      if(inviteField&&!inviteField.value){const link=knownInviteLink();if(link){inviteField.value=link;inviteField.dataset.prefilled='1'}}
       if(focus&&(wasHidden||focus==='force')){const input=$('#gateInvite');if(input)setTimeout(()=>{try{input.focus({preventScroll:true})}catch(e){}},60)}
     }
     function closeInviteGate(){
@@ -392,8 +397,10 @@
       const m=String(err&&err.message||err||'');
       if(/offline|network|Failed to fetch|Load failed/i.test(m))return '네트워크에 연결되지 않았어요. 연결을 확인하고 다시 눌러주세요.';
       if(/invite_taken/.test(m))return '이 초대는 다른 곳에서 이미 쓰였어요. 여행을 만든 사람에게 새 초대 링크를 받아주세요.';
-      if(/invite_unusable/.test(m))return '이 초대는 쓸 수 없어요(만료됐거나 회수됐어요). 여행을 만든 사람에게 새 초대 링크를 받아주세요.';
+      if(/invite_not_found/.test(m))return '이 초대 코드를 찾을 수 없어요. 코드 64자리가 빠짐없이 들어갔는지 확인하고 다시 붙여넣어 주세요.';
+      if(/invite_unusable/.test(m))return '이 초대는 쓸 수 없어요(만료됐거나 회수됐거나 잘못된 코드). 여행을 만든 사람에게 새 초대 링크를 받아 다시 넣어주세요.';
       if(/join_denied/.test(m))return '이 초대는 이 여행에 쓸 수 없어요. 새 초대 코드를 받아 다시 넣어주세요.';
+      if(/auth_failed/.test(m))return '연결 준비(로그인)에 실패했어요. 잠시 후 다시 눌러주세요. 계속 그러면 [앱 새로 불러오기]를 눌러주세요.';
       if(/no_invite/.test(m))return '이 기기는 아직 이 여행에 참여하지 않았어요. 받은 초대 코드를 넣어주세요.';
       return '연결하지 못했어요'+(m?' ('+m+')':'')+'. 잠시 후 다시 눌러주세요.';
     }
@@ -417,10 +424,18 @@
       }
       if(!joined){
         gateConnecting=false;
+        const msg=String(error&&error.message||'');
         setGateError(gateJoinMessage(error));
         if(btn){btn.disabled=false;btn.textContent='연결하기'}
+        // 연결이 실패할 때만 '앱 새로 불러오기'를 꺼내 둔다(평소 화면을 어지럽히지 않게).
+        const reloadBtn=$('#gateReload');if(reloadBtn)reloadBtn.hidden=false;
+        // 서버가 거부한 코드는 기억해 두고, 입력칸에 미리 채워 둔 옛 코드도 지운다.
+        if(/invite_unusable|invite_taken|invite_not_found|join_denied/.test(msg)){
+          markInviteBad(out.token);
+          if(input&&input.dataset.prefilled==='1'){input.value='';delete input.dataset.prefilled}
+        }
         // 인앱 브라우저에서 이미 소모된 초대면, 코드를 다시 넣어도 풀리지 않는다 → 사파리 안내로 바꾼다.
-        if(inAppBrowser&&/invite_unusable|invite_taken/.test(String(error&&error.message||'')))showInAppGuide('spent');
+        if(inAppBrowser&&/invite_unusable|invite_taken/.test(msg))showInAppGuide('spent');
         return;
       }
       // 참여 성공: 소진된 초대 토큰을 이 기기에 남겨 두지 않는다(다음 실행에서 재시도하며 막히는 것을 막는다).
@@ -436,7 +451,13 @@
     function showInviteRecovery(message,gateMessage){hideLaunchCover();document.body.classList.remove('booting');const form=$('#inviteRecovery');if(form)form.hidden=false;if(message)$('#recoveryError').textContent=message;if(gateMessage)setGateError(gateMessage);markAccessBlocked()}
     // ── 인앱 브라우저 안내(사파리로 열기·링크 복사·이 창에서 참여) ──────────────
     let accessBlockedAt=0,gateDismissed=false;
-    function knownInviteToken(){const fromHash=new URLSearchParams(location.hash.slice(1)).get('invite');if(/^[a-f0-9]{64}$/i.test(fromHash||''))return fromHash.toLowerCase();return /^[a-f0-9]{64}$/.test(inviteToken)?inviteToken:''}
+    function knownInviteToken(){const fromHash=new URLSearchParams(location.hash.slice(1)).get('invite');if(/^[a-f0-9]{64}$/i.test(fromHash||''))return fromHash.toLowerCase();let bad='';try{bad=localStorage.getItem('journey-note-invite-bad')||''}catch(e){}if(/^[a-f0-9]{64}$/.test(inviteToken)&&inviteToken!==bad)return inviteToken;return ''}
+    // 서버가 '쓸 수 없다'고 한 코드는 기억해 두고 다음 실행에서 다시 시도하거나 입력칸에 다시 채우지 않는다.
+    function markInviteBad(token){
+      try{localStorage.setItem('journey-note-invite-bad',token||'')}catch(e){}
+      if(inAppBrowser)return;   // 인앱 브라우저는 '사파리로 열기'에 이 링크를 써야 한다
+      try{if(!token||localStorage.getItem('journey-note-invite')===token)localStorage.removeItem('journey-note-invite')}catch(e){}
+    }
     function knownInviteLink(){const token=knownInviteToken();return token?location.origin+appBasePath()+'#invite='+token:''}
     async function copyText(text){
       if(!text)return false;
@@ -1654,6 +1675,31 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       connectWithInvite();
     };
     $('#gateInvite').addEventListener('keydown',e=>{if(e.key==='Enter'||e.keyCode===13){e.preventDefault();connectWithInvite()}});
+    // 미리 채워 둔 옛 코드 뒤에 붙여넣으면 코드가 이어 붙는다(그러면 옛 코드로 참여를 시도해
+    // '만료·회수' 오류가 그대로 난다). 탭하면 전체 선택하고, 붙여넣기는 붙여넣은 내용만 남긴다.
+    (function gateFieldPasteFix(){
+      const input=$('#gateInvite');if(!input)return;
+      const selectPrefilled=()=>{if(input.dataset.prefilled==='1'){try{input.setSelectionRange(0,input.value.length)}catch(e){}}};
+      input.addEventListener('focus',selectPrefilled);
+      input.addEventListener('click',selectPrefilled);
+      input.addEventListener('input',()=>{delete input.dataset.prefilled});
+      input.addEventListener('paste',e=>{
+        const text=(e.clipboardData||window.clipboardData)&&(e.clipboardData||window.clipboardData).getData('text');
+        if(!text)return;
+        e.preventDefault();
+        input.value=String(text).trim();
+        delete input.dataset.prefilled;
+        setGateError('');
+      });
+    })();
+    // 예전 워커·캐시가 남아 게이트가 계속 실패하는 기기를 위한 한 번짜리 복구 버튼.
+    $('#gateReload').onclick=async()=>{
+      const btn=$('#gateReload');if(btn){btn.disabled=true;btn.textContent='새로 불러오는 중…'}
+      try{const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(r=>r.unregister()))}catch(e){}
+      try{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('viago-')).map(k=>caches.delete(k)))}catch(e){}
+      try{sessionStorage.removeItem('viago-sw-reloaded')}catch(e){}
+      location.replace(location.pathname+'?fresh='+Date.now());
+    };
     $('#gateLater').onclick=()=>{gateDismissed=true;closeInviteGate()};
     $('#staleJoin').onclick=()=>{gateDismissed=false;showInviteGate('force')};
     $('#inAppOpenSafari').onclick=()=>{
@@ -1681,10 +1727,22 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
-    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=55',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+    // 서비스 워커: 새 버전이 설치되면 이 화면도 새 코드로 한 번 갈아 끼운다.
+    //   · 스크립트 주소에 ?v=56 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 예전 워커가 제어하던 화면에서 새 워커가 활성화되면(controllerchange) 한 번만 새로고침한다.
+    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
+      const hadController=!!navigator.serviceWorker.controller;let swReloading=false;
+      navigator.serviceWorker.addEventListener('controllerchange',()=>{
+        if(!hadController||swReloading)return;
+        if(document.querySelector('input:focus,textarea:focus,select:focus'))return; // 입력 중이면 다음 실행에 적용
+        try{if(sessionStorage.getItem('viago-sw-reloaded'))return;sessionStorage.setItem('viago-sw-reloaded','1')}catch(e){}
+        swReloading=true;location.reload();
+      });
+      navigator.serviceWorker.register('./service-worker.js?v=56',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+    }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js"></script>
+  <script src="./journey-preview.js?v=56"></script>
 </body>
 </html>
