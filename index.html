@@ -108,6 +108,11 @@
     #inviteGate .gate-actions button,#inAppGate .gate-actions button{width:100%;min-height:50px;padding:13px;border-radius:12px;font-weight:800;font-size:14px;touch-action:manipulation;-webkit-tap-highlight-color:rgba(49,135,255,.18);cursor:pointer}
     #inviteGate .gate-actions button[disabled],#inAppGate .gate-actions button[disabled]{opacity:.62;cursor:default}
     #inviteGate .gate-actions .cancel,#inAppGate .gate-actions .cancel{background:#fff;border:1px solid #dce2e8;color:var(--sub);font-weight:700;font-size:13px}
+    #inviteGate .gate-help{margin:2px 0 8px;font-size:12px;color:#5f7083;line-height:1.55}
+    #inviteGate .gate-help summary{font-weight:800;color:#2b6cf6;cursor:pointer;padding:4px 0}
+    #inviteGate .gate-help ol{margin:4px 0 6px;padding-left:20px}
+    #inviteGate .gate-help li{margin:2px 0}
+    #inviteGate .gate-help p{margin:6px 0 0;color:#8494a6;font-size:11.5px}
     #gateError{color:#d64545;font-size:12.5px;min-height:20px;margin:4px 0 6px;line-height:1.45}
   </style>
   <link rel="stylesheet" href="./journey-design.css" />
@@ -181,8 +186,9 @@
       <p>이 기기에서는 여행 참여가 확인되지 않아 서버의 최신 일정을 열지 못했어요. 받은 <b>초대 링크 전체</b> 또는 <b>초대 코드 64자리</b>를 붙여넣고 <b>초대 코드로 연결</b>을 눌러주세요.</p>
       <input id="gateInvite" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="초대 링크 또는 초대 코드 64자리">
       <p id="gateError" role="alert"></p>
-      <div class="gate-actions"><button type="button" class="confirm" id="gateConnect">초대 코드로 연결</button><button type="button" class="cancel" id="gateLater">기기에 저장된 이전 사본 보기</button></div>
-      <p class="gate-hint">홈 화면에 추가한 앱과 사파리는 저장 공간이 따로예요. 사파리에서 열리더라도 이 앱에서는 한 번 더 참여해야 해요. 새 초대는 여행을 만든 사람(소유자)이 앱의 <b>+</b> 버튼으로 만들 수 있어요.</p>
+      <div class="gate-actions"><button type="button" class="confirm" id="gateConnect">초대 코드로 연결</button><button type="button" class="cancel" id="gatePaste">복사한 코드 붙여넣기</button><button type="button" class="cancel" id="gateLater">기기에 저장된 이전 사본 보기</button></div>
+      <details class="gate-help" id="gateHelp"><summary>이미 사파리에서 참여했다면 (새 초대 없이 연결)</summary><ol><li>사파리에서 이 여행이 정상으로 열리는지 확인해 주세요.</li><li>홈 화면의 <b>viago</b> 아이콘을 길게 눌러 <b>삭제</b>해요. 서버 일정은 그대로 남아 있어요.</li><li>같은 사파리 화면에서 <b>공유 → 홈 화면에 추가 → 추가</b>를 눌러요.</li><li>홈 화면의 아이콘을 열면 <b>초대 없이 그대로</b> 연결돼요.</li></ol><p>사파리에서 다시 열어도 초대를 물으면, 여행을 만든 사람에게 새 초대를 받아 사파리에서 한 번 열어 주세요.</p></details>
+      <p class="gate-hint">홈 화면에 추가한 앱과 사파리는 저장 공간이 따로예요. 사파리에서 참여한 뒤 <b>홈 화면에 추가</b>하면 이 앱으로 그대로 이어지고, 그 전에 추가했다면 위 안내대로 한 번만 다시 추가해 주세요.</p>
     </div>
   </div>
   <div id="inAppGate" role="dialog" aria-modal="true" aria-labelledby="inAppTitle" hidden>
@@ -280,14 +286,51 @@
       if(!/^[a-f0-9]{64}$/.test(token))return{ok:false,reason:'token'};
       return{ok:true,token,target:base+'#invite='+token};
     }
-    // 입력은 '전체 초대 링크' 또는 '초대 코드 64자리' 둘 다 받는다(홈 화면 앱에는 링크를 눌러 열 수 없어 코드만 복사하는 경우가 있다).
-    function parseInviteInput(raw){const v=String(raw||'').trim();if(/^[a-f0-9]{64}$/i.test(v))return{ok:true,token:v.toLowerCase(),target:appBasePath()+'#invite='+v.toLowerCase()};return inviteRecoveryTarget(v)}
+    // 입력은 '전체 초대 링크' 또는 '초대 코드 64자리' 둘 다 받는다(홈 화면 앱에는 링크를 눌러 열 수 없어 코드만 복사하는 경우가 많다).
+    // 카카오톡 공유 문구를 통째로 붙여넣어도 되게, 글 안에서 링크나 64자리 코드를 찾아 쓴다.
+    //   · 링크가 들어 있으면 지금처럼 '이 앱의 주소'인지 검증한다(남의 도메인 링크로 참여되지 않게).
+    //   · 링크 없이 코드만 있으면 그 코드를 받는다.
+    function inviteUrlInText(raw){const m=String(raw||'').match(/https?:\/\/[^\s"'<>]+/i);return m?m[0]:''}
+    function inviteTokenInText(raw){const m=String(raw||'').match(/#?invite=([a-f0-9]{64})/i)||String(raw||'').match(/(?:^|[^0-9a-z])([a-f0-9]{64})(?:[^0-9a-z]|$)/i);return m?m[1].toLowerCase():''}
+    function parseInviteInput(raw){
+      const v=String(raw||'').trim();
+      if(/^[a-f0-9]{64}$/i.test(v))return{ok:true,token:v.toLowerCase(),target:appBasePath()+'#invite='+v.toLowerCase()};
+      const url=inviteUrlInText(v);
+      if(url)return inviteRecoveryTarget(url);
+      const token=inviteTokenInText(v);
+      if(token)return{ok:true,token,target:appBasePath()+'#invite='+token};
+      return{ok:false,reason:/invite=/i.test(v)?'token':'url'};
+    }
+    function inviteInputError(out){
+      const reason=String(out&&out.reason||'');
+      if(reason==='token')return '링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.';
+      if(reason==='origin'||reason==='path')return '이 여행 앱에서 받은 링크가 아니에요. 받은 초대 링크 전체(https://oyeswon-gif.github.io/viago/#invite=…)나 초대 코드 64자리를 붙여넣어주세요.';
+      return '초대 링크나 초대 코드 64자리를 찾지 못했어요. 받은 링크 전체를 붙여넣어주세요.';
+    }
     // 참여가 확인되지 않은 기기: 이전 사본을 정상 일정처럼 보이지 않게 배너를 켜고, 초대를 넣을 수 있는 게이트를 띄운다.
     // ── 초대 게이트(iOS 사파리·홈 화면 앱 공통) ──────────────────────────────
     // <dialog>/showModal·method=dialog 의 submit 에 기대지 않는다. 일반 고정 오버레이 + 실제 click 핸들러로
     // '탭 → 참여 시도'가 한 번에 일어나게 하고, iOS 키보드가 올라와도 버튼이 가려지지 않게 visualViewport 에 맞춘다.
     function gateEl(){return $('#inviteGate')}
     function gateIsOpen(){const g=gateEl();return !!(g&&!g.hidden)}
+    // 홈 화면 앱(standalone)인지 — 사파리 탭과 구분해 안내를 다르게 보여준다.
+    function isStandaloneApp(){
+      try{
+        if(navigator.standalone===true)return true;
+        return !!(window.matchMedia&&(matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches));
+      }catch(e){return false}
+    }
+    // 사파리에서 참여한 뒤 '홈 화면에 추가'하면 세션 쿠키를 물려받아 앱에서도 그대로 이어진다.
+    // 그 사실을 한 번만 알려 준다(설치 전에 참여해야 한다는 것을 놓치지 않게).
+    function maybeSuggestInstall(){
+      try{
+        if(inAppBrowser||isStandaloneApp())return;
+        if(!/iPhone|iPad|iPod/.test(navigator.userAgent||''))return;
+        if(localStorage.getItem('journey-note-install-hint'))return;
+        localStorage.setItem('journey-note-install-hint','1');
+        setTimeout(()=>toast('홈 화면에 추가하면 앱에서도 그대로 이어져요 · 공유 → 홈 화면에 추가'),1800);
+      }catch(e){}
+    }
     function fitGateViewport(){
       const g=gateEl();if(!g||g.hidden)return;
       const vv=window.visualViewport;
@@ -301,6 +344,9 @@
       // 네이티브 dialog(top layer)가 떠 있으면 게이트를 덮으므로 닫는다.
       if(wasHidden)document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});
       g.hidden=false;fitGateViewport();
+      // 홈 화면 앱에서 처음 열었을 때는 복구 방법(다시 추가)을 펼쳐 둔다.
+      const help=$('#gateHelp');
+      if(help&&!help.dataset.initialized&&isStandaloneApp()&&!knownInviteToken()){help.open=true;help.dataset.initialized='1'}
       const inviteField=$('#gateInvite');
       if(inviteField&&!inviteField.value){const link=knownInviteLink();if(link)inviteField.value=link}
       if(focus&&(wasHidden||focus==='force')){const input=$('#gateInvite');if(input)setTimeout(()=>{try{input.focus({preventScroll:true})}catch(e){}},60)}
@@ -345,7 +391,7 @@
       window.VIAGO_HOLD_INVITE=false;   // 사용자가 직접 누른 참여 시도는 보류를 풀고 진행한다
       const btn=$('#gateConnect'),input=$('#gateInvite');
       const out=parseInviteInput(input?input.value:'');
-      if(!out.ok){setGateError(out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.':'이 여행 앱에서 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.');return}
+      if(!out.ok){setGateError(inviteInputError(out));return}
       gateConnecting=true;setGateError('');
       if(btn){btn.disabled=true;btn.textContent='연결 중…'}
       try{localStorage.setItem('journey-note-invite',out.token)}catch(e){}
@@ -604,6 +650,7 @@
         const rawPayload = JSON.parse(fields.payload?.stringValue || '{}');
         hideLaunchCover();
         accessBlockedAt=0;clearAccessBlocked();
+        maybeSuggestInstall();
         $('#inviteRecovery').hidden = true;
         document.body.classList.remove('booting');
         // 소유자 여부는 멤버 문서의 role 로 판단한다(편집자는 초대 발급·여행 삭제 불가).
@@ -1582,6 +1629,17 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     // No fixed loading wait: paint first; decorative cover never blocks recovery.
     setTimeout(hideLaunchCover,1200);
     $('#gateConnect').onclick=connectWithInvite;
+    // 홈 화면 앱에는 링크를 '눌러서' 열 수 없다. 사파리에서 복사만 해 두고 여기서 한 번에 붙여넣게 한다.
+    $('#gatePaste').onclick=async()=>{
+      let text='';
+      try{text=await navigator.clipboard.readText()}catch(e){}
+      if(!text||!text.trim()){setGateError('클립보드에 복사된 내용이 없어요. 사파리에서 초대 링크나 코드를 복사한 뒤 다시 눌러주세요(입력칸을 길게 눌러 붙여넣어도 돼요).');return}
+      const out=parseInviteInput(text);
+      if(!out.ok){setGateError(inviteInputError(out));return}
+      const field=$('#gateInvite');if(field)field.value=/^[a-f0-9]{64}$/i.test(text.trim())?text.trim():out.token;
+      setGateError('');
+      connectWithInvite();
+    };
     $('#gateInvite').addEventListener('keydown',e=>{if(e.key==='Enter'||e.keyCode===13){e.preventDefault();connectWithInvite()}});
     $('#gateLater').onclick=()=>{gateDismissed=true;closeInviteGate()};
     $('#staleJoin').onclick=()=>{gateDismissed=false;showInviteGate('force')};
@@ -1601,7 +1659,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     };
     $('#inAppLater').onclick=()=>{gateDismissed=true;hideInAppGuide()};
     if(window.visualViewport){window.visualViewport.addEventListener('resize',fitGateViewport);window.visualViewport.addEventListener('scroll',fitGateViewport)}
-    $('#inviteRecovery').onsubmit=e=>{e.preventDefault();const raw=$('#recoveryLink').value,out=parseInviteInput(raw);if(!out.ok){$('#recoveryError').textContent=out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체를 붙여넣어주세요.':'이 여행 앱에서 받은 전체 초대 링크를 붙여넣어주세요.';return}$('#recoveryError').textContent='';const g=$('#gateInvite');if(g)g.value=raw;connectWithInvite()};
+    $('#inviteRecovery').onsubmit=e=>{e.preventDefault();const raw=$('#recoveryLink').value,out=parseInviteInput(raw);if(!out.ok){$('#recoveryError').textContent=inviteInputError(out);return}$('#recoveryError').textContent='';const g=$('#gateInvite');if(g)g.value=raw;connectWithInvite()};
     window.addEventListener('online',()=>{googleMapsReady=null;paintProviderNotes();if(!sharedReady&&!accessDenied)startSharedSync();else{pollShared();if(sharedDirty)pushSharedState()}});
     window.addEventListener('offline',paintProviderNotes);
     paintProviderNotes();
@@ -1610,7 +1668,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
-    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=53',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=54',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>

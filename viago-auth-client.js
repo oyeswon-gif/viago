@@ -46,6 +46,47 @@ function mergeJourney(base, local, remote, preferRemote = false) {
 
 function viagoV3DocName(projectId, path) { return `projects/${projectId}/databases/(default)/documents/${path}`; }
 
+// ── 세션 쿠키(iOS 사파리 → 홈 화면 추가) ────────────────────────────────
+// 아이폰 '홈 화면에 추가'한 웹 앱은 사파리와 저장 공간이 분리되어 localStorage 가 복사되지 않는다.
+// WebKit 은 iOS 17.2 부터 **쿠키만** 복사한다(document.cookie 로 심은 1st-party 쿠키 중
+// Secure·SameSite=Lax·path 가 있는 것 — WebKit 'Safari 17.2' 릴리스 노트).
+// 그래서 로그인(익명 세션)을 localStorage 와 함께 쿠키에도 남긴다.
+//   · 사파리에서 초대를 받아 참여 → 쿠키에 세션이 심김
+//   · 공유 → 홈 화면에 추가 → 앱이 그 쿠키를 물려받아 **같은 uid = 이미 멤버**로 시작
+// 1회용 초대를 다시 쓰지 않고도 새 기기(앱)가 이어지고, 규칙·권한은 그대로다.
+// 값은 갱신 토큰만 담는다(idToken 은 크고 수명이 짧다) — 앱이 시작할 때 갱신한다.
+const VIAGO_SESSION_COOKIE = 'viago_session_v1';
+const VIAGO_SESSION_COOKIE_DAYS = 30;
+function viagoCookiePath() {
+  if (typeof location === 'undefined' || !location.pathname) return '/viago/';
+  const first = location.pathname.split('/').filter(Boolean)[0];
+  return first ? '/' + first + '/' : '/';
+}
+function readViagoSessionCookie() {
+  if (typeof document === 'undefined' || !document.cookie) return null;
+  try {
+    const prefix = VIAGO_SESSION_COOKIE + '=';
+    const raw = document.cookie.split(';').map(s => s.trim()).find(s => s.indexOf(prefix) === 0);
+    if (!raw) return null;
+    const data = JSON.parse(decodeURIComponent(raw.slice(prefix.length)));
+    if (!data || !data.u || !data.r) return null;
+    return { uid: String(data.u), refreshToken: String(data.r), expiresAt: Number(data.e) || 0 };
+  } catch (e) { return null }
+}
+function writeViagoSessionCookie(s) {
+  if (typeof document === 'undefined' || !s || !s.uid || !s.refreshToken || s.external) return false;
+  try {
+    const value = encodeURIComponent(JSON.stringify({ u: s.uid, r: s.refreshToken, e: s.expiresAt || 0 }));
+    const secure = (typeof location !== 'undefined' && location.protocol === 'https:') ? '; Secure' : '';
+    document.cookie = `${VIAGO_SESSION_COOKIE}=${value}; path=${viagoCookiePath()}; max-age=${VIAGO_SESSION_COOKIE_DAYS * 86400}; SameSite=Lax${secure}`;
+    return true;
+  } catch (e) { return false }
+}
+function clearViagoSessionCookie() {
+  if (typeof document === 'undefined') return;
+  try { document.cookie = `${VIAGO_SESSION_COOKIE}=; path=${viagoCookiePath()}; max-age=0; SameSite=Lax`; } catch (e) {}
+}
+
 function createViagoAuthV3(opts) {
   const o = opts || {};
   const cfg = Object.assign({}, VIAGO_V3_DEFAULT_CONFIG, o.config || {});
@@ -59,6 +100,7 @@ function createViagoAuthV3(opts) {
   const merge = o.mergeJourney || mergeJourney;
   const pendingKey = cfg.storageKey + '.pending';
   let session = null;
+  let cookieSynced = false;
 
   async function f_(url, init) {
     try { return await f(url, init) }
@@ -66,8 +108,22 @@ function createViagoAuthV3(opts) {
   }
 
   // ── 인증 ─────────────────────────────────────────────
-  function load() { if (store) { try { session = JSON.parse(store.getItem(cfg.storageKey) || 'null') } catch (e) { session = null } } return session }
-  function save(s) { session = s; if (store) { try { store.setItem(cfg.storageKey, JSON.stringify(s)) } catch (e) {} } }
+  function load() {
+    if (store) { try { session = JSON.parse(store.getItem(cfg.storageKey) || 'null') } catch (e) { session = null } }
+    if (!session) {
+      // 홈 화면 앱: 사파리에서 '홈 화면에 추가'할 때 복사된 세션 쿠키로 이어받는다.
+      const inherited = readViagoSessionCookie();
+      if (inherited) { save(inherited); return session }
+    }
+    // 세션이 있으면 쿠키도 최신으로 유지한다(다음 '홈 화면에 추가'가 이어받을 수 있게).
+    if (session && !cookieSynced) { cookieSynced = true; writeViagoSessionCookie(session) }
+    return session
+  }
+  function save(s) {
+    session = s;
+    if (store) { try { store.setItem(cfg.storageKey, JSON.stringify(s)) } catch (e) {} }
+    if (s && !s.external) { cookieSynced = true; writeViagoSessionCookie(s) }
+  }
   function decodeJwt(t) { try { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))) } catch (e) { return {} } }
   async function signInAnonymously() {
     const res = await f_(`${authBase}/v1/accounts:signUp?key=${encodeURIComponent(cfg.firebaseApiKey)}`, {
@@ -326,6 +382,10 @@ function createViagoAuthV3(opts) {
     load, signInAnonymously, refreshIfNeeded, uid,
     joinWithInvite, amIMember, myRole, createInvite, readRoom, saveRoom, saveJourney, saveResolved,
     readPending, writePending, clearPending, flushPending,
+    // 진단용: 홈 화면 앱이 사파리의 세션 쿠키를 물려받았는지 확인할 때 쓴다(쓰기는 하지 않는다).
+    readSessionCookie: function () { return readViagoSessionCookie() },
+    writeSessionCookie: function () { return writeViagoSessionCookie(session) },
+    clearSessionCookie: function () { clearViagoSessionCookie() },
     get session() { return session },
     get roomCode() { return cfg.roomCode },
     setRoomCode(id) { cfg.roomCode = id }

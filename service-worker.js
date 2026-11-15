@@ -10,7 +10,7 @@
 //    오프라인일 때만 마지막으로 받은 화면을 보여준다.
 // 4) 새 워커는 skipWaiting 하지 않는다. 사용 중인 화면을 갑자기 갈아치우지 않고,
 //    앱을 완전히 닫았다 열 때 적용된다.
-const VERSION = 'v7';   // 2026-11-15 장소 추천 선택·인앱 브라우저 초대 안내 수정(화면·인증 어댑터 갱신)
+const VERSION = 'v8';   // 2026-11-15 사파리→홈 화면 추가 시 세션 쿠키 이어받기·초대 게이트 보강
 const SHELL = `viago-shell-${VERSION}`;
 // 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
 const OUR_PREFIX = 'viago-';
