@@ -81,6 +81,26 @@
     .marker-sheet-copy strong{display:block;font-size:14.5px;font-weight:780;letter-spacing:-.2px;color:var(--ink)}
     .marker-sheet-copy span{display:block;margin-top:3px;color:var(--sub);font-size:12px;line-height:1.45}
     .marker-sheet-row a{flex:0 0 auto;padding:8px 12px;border-radius:11px;background:#e8f3ff;color:#1b64da;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap}
+    /* 참여가 확인되지 않은 기기(PWA/사파리 저장 공간 분리) — 이전 사본을 정상 일정처럼 보이지 않게 */
+    #staleBanner{display:none}
+    body.access-blocked #staleBanner{display:block;margin:0 0 12px;padding:12px 14px;border:1px solid #f0c36d;background:#fff8e6;color:#7a4d00;border-radius:14px;font-size:13px;line-height:1.55}
+    body.access-blocked #staleBanner strong{display:block;margin-bottom:4px;font-size:13.5px}
+    body.access-blocked #staleBanner b{color:#6b3f00}
+    body.access-blocked #staleBanner .stale-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    body.access-blocked #staleBanner button{padding:8px 12px;border-radius:10px;border:1px solid #e6c274;background:#fff;color:#7a4d00;font-weight:800;font-size:12.5px}
+    body.access-blocked #staleBanner .stale-note{display:block;margin-top:8px;color:#8a6520;font-size:12px}
+    #inviteGate{width:min(420px,calc(100% - 28px));border:0;border-radius:20px;padding:0;box-shadow:0 20px 60px rgba(16,32,52,.28)}
+    #inviteGate::backdrop{background:rgba(16,32,52,.42)}
+    #inviteGate[open]{position:fixed;inset:0;margin:auto;height:fit-content;max-height:90vh;overflow:auto;background:#fff;z-index:210}
+    #inviteGate .gate-inner{padding:22px 20px 18px}
+    #inviteGate h3{margin:0 0 8px;font-size:17px;letter-spacing:-.3px}
+    #inviteGate p{margin:0 0 10px;color:var(--sub);font-size:13px;line-height:1.6}
+    #inviteGate .gate-hint{font-size:12px;color:#8494a6}
+    #inviteGate input{width:100%;margin:6px 0 10px;padding:14px;border:1px solid #dce2e8;border-radius:12px;font-size:14px;line-height:1.25;min-height:50px;box-sizing:border-box}
+    #inviteGate .gate-actions{display:flex;flex-direction:column;gap:8px}
+    #inviteGate .gate-actions button{width:100%;padding:13px;border-radius:12px;font-weight:800;font-size:14px}
+    #inviteGate .gate-actions .cancel{background:#fff;border:1px solid #dce2e8;color:var(--sub);font-weight:700;font-size:13px}
+    #gateError{color:#d64545;font-size:12.5px;min-height:16px;margin:0}
   </style>
   <link rel="stylesheet" href="./journey-design.css" />
 </head>
@@ -124,6 +144,7 @@
       </article>
       <article class="panel itinerary-panel" id="itineraryPanel">
         <div class="panel-head"><div><h2 id="dayTitle">12월 10일 목요일</h2><p id="daySummary">도착 후 사카에와 오스 산책</p></div><span class="sync-state" id="syncStatus">공유 연결 중</span></div>
+        <div id="staleBanner" role="status"><strong>이 기기는 이 여행에 참여한 상태가 아니에요</strong><span>지금 보이는 일정은 <b>기기에 저장된 이전 사본</b>이라 서버의 최신 일정과 다를 수 있어요. 서버 일정은 그대로 있고, 이 기기에서만 연결이 안 된 상태예요.</span><div class="stale-actions"><button type="button" id="staleJoin">초대 코드 넣기</button></div><span class="stale-note" id="staleNote"></span></div>
         <section class="quick-map" id="quickMap" aria-live="polite"><div class="quick-map-head"><strong>이동 구간 미리보기</strong><button class="quick-map-close" id="quickMapClose" aria-label="지도 닫기">×</button></div><div id="quickMapProvider" class="free-map-note" aria-live="polite">Google 지도</div><div class="quick-map-frame"><div id="quickLeafletMap" class="quick-leaflet-map" aria-label="선택한 일정의 이동 구간 미리보기"></div></div><div class="quick-map-foot"><span id="quickMapStatus">이동 구간을 표시하고 있어요</span><button class="quick-route-btn" id="freeGooglePreview" hidden>Google 미리보기</button><button class="quick-route-btn" id="quickRouteBtn">Google 지도에서 열기</button></div></section>
         <div class="journey-day-preview" id="journeyDayPreview" hidden><div class="journey-day-map" id="journeyDayMap" role="img" aria-label="선택한 날짜의 장소 위치와 번호 · 손가락으로 이동하고 확대할 수 있어요"></div><span class="journey-preview-note" id="journeyPreviewNote" hidden></span><button class="journey-preview-button" id="journeyPreviewOpen" aria-label="선택한 날짜의 전체 동선 지도 열기">전체 동선</button></div>
         <div class="timeline" id="timeline"></div>
@@ -146,6 +167,7 @@
   </nav>
 
   <dialog id="syncConflict"><div class="dialog-inner"><h3>같은 일정이 함께 수정됐어요</h3><p>서로 다른 변경은 합쳤어요. 겹친 변경에 사용할 내용을 선택해주세요. 저장 전 내용은 휴대폰에 보관됩니다.</p><pre id="syncConflictDetails" style="white-space:pre-wrap;max-height:30vh;overflow:auto"></pre><div class="dialog-actions"><button type="button" id="syncRemote" class="cancel">공유된 변경 사용</button><button type="button" id="syncLocal" class="confirm">내 변경 유지</button></div></div></dialog>
+  <dialog id="inviteGate"><form class="gate-inner" id="gateForm" method="dialog"><h3>이 여행에 연결되지 않았어요</h3><p>이 기기에서는 여행 참여가 확인되지 않아 서버의 최신 일정을 열지 못했어요. 받은 <b>초대 링크 전체</b> 또는 <b>초대 코드 64자리</b>를 붙여넣으면 이 기기에서 바로 열립니다.</p><p class="gate-hint">홈 화면에 추가한 앱과 사파리는 저장 공간이 따로예요. 사파리에서 열리더라도 이 앱에서는 한 번 더 참여해야 해요.</p><input id="gateInvite" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="초대 링크 또는 초대 코드 64자리"><p id="gateError" role="alert"></p><div class="gate-actions"><button type="submit" class="confirm">초대 코드로 연결</button><button type="button" class="cancel" id="gateLater">기기에 저장된 이전 사본 보기</button></div></form></dialog>
   <dialog id="addDialog"><form method="dialog" class="dialog-inner" id="addForm"><h3>장소 추가</h3><p>장소를 검색해 정확한 지점을 선택해주세요. 추가한 순서가 이동 순서가 됩니다.</p><label class="field"><span>장소명</span><div class="autocomplete"><input id="placeName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="placeSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="placeSuggestions" role="listbox"></div></div></label><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="addMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="placeNote" placeholder="예약 정보나 할 일" /></label><div class="dialog-actions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="addConfirm" value="default">일정에 추가</button></div></form></dialog>
   <dialog id="editDialog"><form method="dialog" class="dialog-inner" id="editForm"><h3>일정 수정</h3><p>장소명, 메모, 분류를 바로 고칠 수 있어요.</p><label class="field"><span>장소명</span><div class="autocomplete"><input id="editPlaceName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="editPlaceSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="editPlaceSuggestions" role="listbox"></div></div></label><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="editMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="editPlaceNote" placeholder="예약 정보나 할 일" /></label><label class="field"><span>영업시간 (직접 확인·선택)</span><input id="editHoursText" maxlength="100" placeholder="11:00-14:00 / 17:00-20:00" /><small>방문일 기준으로 확인한 시간을 입력해주세요. 휴무·24시간도 입력할 수 있어요.</small></label><label class="field"><span>지도 위치 (선택)</span><input id="editCoordinates" placeholder="35.1853, 136.8992 또는 지도 링크" /><small>지도에서 복사한 위도·경도 또는 좌표가 포함된 링크를 넣으면 무료 번호 지도에 바로 반영돼요.</small></label><div class="field-row"><label class="field"><span>분류</span><select id="editPlaceKind"><option>장소</option><option>관광</option><option>식당</option><option>카페</option><option>쇼핑</option><option>숙소</option><option>항공</option><option>공항</option><option>투어</option></select></label><label class="field"><span>날짜</span><select id="editPlaceDay"></select></label></div><div class="dialog-actions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="editConfirm" value="default">수정 저장</button></div></form></dialog>
   <dialog id="foodDialog"><form method="dialog" class="dialog-inner" id="foodForm"><h3>맛집 추가</h3><p>가보고 싶은 식당을 저장하면 지도에 함께 표시해드려요.</p><label class="field"><span>맛집 이름</span><input id="foodName" required placeholder="예: 야바톤 사카에점" /></label><label class="field"><span>메모</span><input id="foodNote" placeholder="대표 메뉴, 예약 정보 등" /></label><div class="dialog-actions"><button class="cancel" value="cancel">취소</button><button class="confirm" id="foodConfirm" value="default">맛집에 추가</button></div></form></dialog>
@@ -216,8 +238,27 @@
       if(!/^[a-f0-9]{64}$/.test(token))return{ok:false,reason:'token'};
       return{ok:true,token,target:base+'#invite='+token};
     }
-    // 참여 권한이 없을 때: 숨겨 두었던 복구 폼을 띄운다(예전에는 어디서도 띄우지 않아 익명 계정을 잃으면 빈 화면이었다).
-    function showInviteRecovery(message){hideLaunchCover();document.body.classList.remove('booting');const form=$('#inviteRecovery');if(!form)return;form.hidden=false;if(message)$('#recoveryError').textContent=message}
+    // 입력은 '전체 초대 링크' 또는 '초대 코드 64자리' 둘 다 받는다(홈 화면 앱에는 링크를 눌러 열 수 없어 코드만 복사하는 경우가 있다).
+    function parseInviteInput(raw){const v=String(raw||'').trim();if(/^[a-f0-9]{64}$/i.test(v))return{ok:true,token:v.toLowerCase(),target:appBasePath()+'#invite='+v.toLowerCase()};return inviteRecoveryTarget(v)}
+    // 참여가 확인되지 않은 기기: 이전 사본을 정상 일정처럼 보이지 않게 배너를 켜고, 초대를 넣을 수 있는 게이트를 띄운다.
+    function markAccessBlocked(openGate){
+      document.body.classList.add('access-blocked');
+      const note=$('#staleNote');
+      if(note){const pend=readLocal('journey-note-pending');const has=!!(pend&&pend.payload&&Array.isArray(pend.payload.trips));note.textContent=has?'기기에 저장 대기 중인 변경이 있어요. 이 기기에서 고친 내용은 참여한 뒤 자동으로 합쳐지고, 지금은 지우지 않습니다.':'';}
+      const form=$('#inviteRecovery');if(form)form.hidden=false;
+      if(openGate!==false&&!gateDismissed)showInviteGate();
+    }
+    function clearAccessBlocked(){
+      document.body.classList.remove('access-blocked');
+      const dlg=$('#inviteGate');if(dlg&&dlg.open)dlg.close();
+    }
+    function showInviteGate(){
+      const dlg=$('#inviteGate');if(!dlg)return;
+      if(!dlg.open){try{if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','')}catch(e){try{dlg.setAttribute('open','')}catch(e2){}}}
+      const input=$('#gateInvite');if(input&&!input.value)setTimeout(()=>{try{input.focus()}catch(e){}},60);
+    }
+    function showInviteRecovery(message){hideLaunchCover();document.body.classList.remove('booting');const form=$('#inviteRecovery');if(form)form.hidden=false;if(message)$('#recoveryError').textContent=message;markAccessBlocked()}
+    let accessBlockedAt=0,gateDismissed=false;
     function isAccessError(err){const code=String(err&&err.message||'');return /_(401|403)$/.test(code)||/^(no_invite|invite_unusable|invite_taken|join_denied|join_failed)$/.test(code)}
     function normalizeShared(payload){payload?.trips?.forEach(t=>ensureTripFeatures(t));return payload}
     const pendingDraft=readLocal('journey-note-pending');
@@ -330,6 +371,7 @@
     function applySharedPayload(payload){if(!payload||!Array.isArray(payload.trips))return;normalizeShared(payload);applyingRemote=true;trips=payload.trips;activeTrip=trips.find(t=>t.id===currentTripId)||trips[0];if(!activeTrip){applyingRemote=false;return}currentTripId=activeTrip.id;ensureTripFeatures(activeTrip);days=activeTrip.days||[];restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=Math.min(dayIndex,Math.max(0,days.length-1));localStorage.setItem('journey-note-trips',JSON.stringify(trips));localStorage.setItem('journey-note-current-trip',currentTripId);applyingRemote=false;render();if(currentView==='today')renderToday()}
     async function pollShared(){
       if(document.hidden||navigator.onLine===false||sharedPolling||!sharedReady||draggingSchedule||sharedSaving||syncConflictState)return;
+      if(accessBlockedAt&&Date.now()-accessBlockedAt<60000)return;
       if(sharedDirty){pushSharedState();return;}
       sharedPolling=true;
       const startedChange=sharedChange,localBefore=structuredClone({trips}),baseBefore=structuredClone(sharedBase);
@@ -365,8 +407,11 @@
           }
         }
         if(!syncConflictState)setSyncStatus('실시간 동기화 완료','online');
+        accessBlockedAt=0;clearAccessBlocked();
       }catch(e){
-        setSyncStatus(navigator.onLine===false?'오프라인 보관 모드 · 저장 대기':'연결 확인 중 · 휴대폰 보관본','offline');
+        // 참여 권한이 없어서 실패한 경우에는 '연결 확인 중'으로 덮지 않는다(원인을 흐리지 않게).
+        if(isAccessError(e)){accessBlockedAt=Date.now();markAccessBlocked(false);setSyncStatus('참여 확인 필요 · 오프라인 보관 모드','offline');}
+        else setSyncStatus(navigator.onLine===false?'오프라인 보관 모드 · 저장 대기':'연결 확인 중 · 휴대폰 보관본','offline');
       }finally{
         sharedPolling=false;
       }
@@ -388,6 +433,7 @@
         const rev = parseInt(fields.revision?.integerValue || '1', 10);
         const rawPayload = JSON.parse(fields.payload?.stringValue || '{}');
         hideLaunchCover();
+        accessBlockedAt=0;clearAccessBlocked();
         $('#inviteRecovery').hidden = true;
         document.body.classList.remove('booting');
         // 소유자 여부는 멤버 문서의 role 로 판단한다(편집자는 초대 발급·여행 삭제 불가).
@@ -424,6 +470,7 @@
           setSyncStatus(accessDenied?'참여 확인 필요 · 오프라인 보관 모드':offlineNow?'오프라인 보관 모드 · 저장 대기':'연결 재시도 중 · 휴대폰 보관본','offline');
           if(!accessDenied&&!offlineNow)setTimeout(startSharedSync,10000);
         }else if(accessDenied){
+          accessBlockedAt=Date.now();markAccessBlocked();
           setSyncStatus('참여 확인 필요','offline');
           setTimeout(startSharedSync, 15000);
         }else{
@@ -1289,7 +1336,10 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     function hideLaunchCover(){const cover=$('#launchCover');if(cover)cover.remove()}
     // No fixed loading wait: paint first; decorative cover never blocks recovery.
     setTimeout(hideLaunchCover,1200);
-    $('#inviteRecovery').onsubmit=e=>{e.preventDefault();const out=inviteRecoveryTarget($('#recoveryLink').value.trim());if(!out.ok){$('#recoveryError').textContent=out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체를 붙여넣어주세요.':'이 여행 앱에서 받은 전체 초대 링크를 붙여넣어주세요.';return}$('#recoveryError').textContent='';localStorage.setItem('journey-note-invite',out.token);location.replace(out.target)};
+    $('#gateForm').onsubmit=e=>{e.preventDefault();const out=parseInviteInput($('#gateInvite').value);if(!out.ok){$('#gateError').textContent=out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.':'이 여행 앱에서 받은 링크 전체나 초대 코드 64자리를 붙여넣어주세요.';return}$('#gateError').textContent='';localStorage.setItem('journey-note-invite',out.token);location.replace(out.target)};
+    $('#gateLater').onclick=()=>{gateDismissed=true;const dlg=$('#inviteGate');if(dlg&&dlg.open)dlg.close()};
+    $('#staleJoin').onclick=()=>{gateDismissed=false;showInviteGate();};
+    $('#inviteRecovery').onsubmit=e=>{e.preventDefault();const out=parseInviteInput($('#recoveryLink').value);if(!out.ok){$('#recoveryError').textContent=out.reason==='token'?'링크에 초대 코드(#invite=…)가 없어요. 받은 링크 전체를 붙여넣어주세요.':'이 여행 앱에서 받은 전체 초대 링크를 붙여넣어주세요.';return}$('#recoveryError').textContent='';localStorage.setItem('journey-note-invite',out.token);location.replace(out.target)};
     window.addEventListener('online',()=>{googleMapsReady=null;paintProviderNotes();if(!sharedReady&&!accessDenied)startSharedSync();else{pollShared();if(sharedDirty)pushSharedState()}});
     window.addEventListener('offline',paintProviderNotes);
     paintProviderNotes();
@@ -1298,7 +1348,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
-    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=49',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=50',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
