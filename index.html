@@ -1172,6 +1172,11 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     $('#tripPickerBtn').onclick=()=>{renderTripList();const now=new Date(),later=new Date(Date.now()+3*86400000);$('#tripStartInput').value=localIso(now);$('#tripEndInput').value=localIso(later);$('#tripDialog').showModal()};
     document.querySelectorAll('.destination-chip').forEach(b=>b.onclick=()=>{$('#destinationInput').value=b.dataset.destination;document.querySelectorAll('.destination-chip').forEach(x=>x.classList.toggle('active',x===b))});
     $('#newTripForm').addEventListener('submit',e=>{e.preventDefault();const destination=$('#destinationInput').value.trim(),start=$('#tripStartInput').value,end=$('#tripEndInput').value;if(!destination||!start||!end||end<start)return toast('여행지와 날짜를 다시 확인해주세요');const newDays=makeEmptyDays(start,end);if(!newDays.length)return toast('여행 날짜를 다시 확인해주세요');persistTrips();const trip={id:'trip-'+Date.now(),destination,name:destination+' 여행',start,end,mode:'transit',days:newDays,restaurants:[],candidates:[],todayProgress:{},weatherAlternatives:[],weatherBackups:[]};trips.push(trip);activeTrip=trip;currentTripId=trip.id;days=trip.days;restaurants=trip.restaurants;tripInfo={name:trip.name,mode:trip.mode};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();persistTrips();$('#tripDialog').close();$('#newTripForm').reset();document.querySelectorAll('.destination-chip').forEach(x=>x.classList.remove('active'));$('#quickMap').classList.remove('open');render();if(currentView==='today')renderToday();toast(destination+' 여행을 만들었어요')});
+    // iOS Safari 는 사용자 동작 밖에서 navigator.share 를 거부할 수 있다 → 거부되면 클립보드로 넘긴다.
+    async function shareOrCopy(data,text,copyToast){
+      if(navigator.share){try{await navigator.share(data);return}catch(e){if(e&&e.name==='AbortError')return}}
+      try{await navigator.clipboard.writeText(text);toast(copyToast)}catch(e){toast('링크를 복사하지 못했어요')}
+    }
     // + 버튼: 1회용 초대 링크를 실제로 발급해 공유한다.
     //   규칙이 초대 발급을 허용하지 않는 구성에서는 주소를 '초대 링크'라고 부르지 않고,
     //   함께 편집 권한이 없는 앱 주소임을 분명히 알린다.
@@ -1184,12 +1189,11 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         const made=sharedSync.createInvite?await sharedSync.createInvite({expiresInDays:7,role:'editor'}):null;
         if(made&&made.ok){
           const link=appUrl+'#invite='+made.token,title=activeTrip.name+'에 함께하기',text=title+'\n'+link+'\n(7일 안에 한 사람만 쓸 수 있는 초대 링크예요)';
-          if(navigator.share)await navigator.share({title,text,url:link});else{await navigator.clipboard.writeText(link);toast('1회용 초대 링크를 복사했어요 · 7일 안에 한 사람만 쓸 수 있어요')}
+          await shareOrCopy({title,text,url:link},link,'1회용 초대 링크를 복사했어요 · 7일 안에 한 사람만 쓸 수 있어요');
           return;
         }
         const denied=made&&made.status===403,hint=denied?'이 앱에서는 새 초대 링크를 아직 만들 수 없어요(초대 발급 권한이 꺼져 있음).':'초대 링크를 만들지 못했어요.';
-        if(navigator.share)await navigator.share({title:activeTrip.name,text:hint+'\n앱 주소(보기 전용): '+appUrl,url:appUrl});
-        else{await navigator.clipboard.writeText(appUrl);toast(hint+' 앱 주소만 복사했어요')}
+        await shareOrCopy({title:activeTrip.name,text:hint+'\n앱 주소(보기 전용): '+appUrl,url:appUrl},appUrl,hint+' 앱 주소만 복사했어요');
       }catch(e){if(e.name!=='AbortError')toast('공유를 마치지 못했어요')}
     }
     $('#memberShare').onclick=share;
