@@ -140,3 +140,64 @@ body{background:#f4f8ff;color:var(--ink)}
   .place-status.info,.place-status.safe{display:none}
   .more{padding-top:0}
 }
+
+/* ===== 2026-11-15 v2: 카테고리 pill 카드 · 카드 사이 이동시간 pill · 카드 밑 인라인 이동구간 미리보기 =====
+   사진(썸네일)은 넣지 않는다. 배경색·상단 헤더·지도 높이·축척 핀·카테고리 색·하단 탭바는 그대로 둔다. */
+.quick-map-home{display:block}
+.place-cat{display:inline-flex;align-items:center;gap:4px;width:max-content;max-width:100%;height:21px;padding:0 8px 0 2px;border-radius:99px;background:var(--cat-tint);color:var(--cat);font-size:11px;font-weight:750;line-height:1;letter-spacing:-.1px}
+.place-cat .place-type-icon{display:inline-grid;place-items:center;flex:0 0 15px;width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.86);color:var(--cat)}
+.place-cat .place-type-icon svg{width:10.5px;height:10.5px}
+.place-cat .place-kind{display:inline-flex;margin:0;padding:0;border:0;background:none;color:inherit;font-size:11px;font-weight:750;letter-spacing:-.1px;white-space:nowrap}
+.place-cat .place-kind::after{content:none;margin:0}
+.place-subline{display:flex;align-items:center;gap:6px;min-width:0;margin:0}
+.place-resv{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;color:#c2410c;font-size:12.5px;font-weight:750;letter-spacing:-.1px}
+.place-resv-icon{flex:0 0 13px;width:13px;height:13px}
+.place-rest{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#9aa3b2;font-size:11.5px;font-weight:600}
+.trip-leg{display:none}
+
+@media(max-width:850px){
+  /* 카드: ①카테고리 pill ②장소명 ③메모(예약 시각 강조) ④오른쪽 꺾쇠 */
+  .timeline{padding:0 0 14px}
+  .swipe-row{position:relative;margin:0;padding-left:32px;border-radius:13px}
+  .swipe-row:not(.has-next){margin-bottom:10px}
+  .swipe-row.scroll-margin, .swipe-row{scroll-margin-top:8px}
+  .swipe-row::after{content:"";position:absolute;left:10px;top:-4px;bottom:-4px;z-index:1;width:2px;border-radius:2px;background:#e4e9f2}
+  .swipe-row:first-of-type::after{top:16px}
+  .swipe-row:not(.has-next)::after{display:none}
+  .place{display:grid;grid-template-columns:minmax(0,1fr) 18px;gap:2px;min-height:0;padding:10px 8px 10px 12px;align-items:center;border-radius:13px}
+  .place-main{display:block;padding:0;min-width:0}
+  .place-main:before{display:none}
+  .place-text{min-width:0}
+  .place-cat{margin-bottom:4px}
+  .place-name{margin:0 0 2px;font-size:15.5px;line-height:1.3;font-weight:750;letter-spacing:-.3px}
+  .place-sub{display:block;min-width:0;font-size:12.5px;line-height:1.35;color:#7b8494}
+  .place-note{margin:0;font-size:12.5px;line-height:1.35;color:#7b8494;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .place-badges{margin-top:4px}
+  .more{align-self:center;justify-self:end;padding:0;color:#c3c9d3;transition:transform .22s ease,color .18s ease}
+  .more .icon{width:16px}
+  .place.open .more,.place.selected .more{transform:rotate(90deg);color:var(--cat)}
+  /* 카드와 카드 사이 이동시간 pill — 세로선에서 가지선으로 이어진다 */
+  .trip-leg{position:relative;display:flex;align-items:center;min-height:32px;padding:2px 0 2px 32px;margin:0}
+  .trip-leg::before{content:"";position:absolute;left:10px;top:-2px;bottom:-2px;z-index:1;width:2px;border-radius:2px;background:#e4e9f2}
+  .trip-leg::after{content:"";position:absolute;left:10px;top:50%;z-index:2;width:11px;height:2px;border-radius:2px;background:#e4e9f2;transform:translateY(-1px)}
+  .trip-leg-pill{display:inline-flex;align-items:center;gap:5px;max-width:100%;height:25px;padding:0 10px;border-radius:99px;background:#f4f6fa;color:#5b6472;font-size:12px;font-weight:600;line-height:1;letter-spacing:-.15px}
+  .trip-leg[data-leg="unknown"] .trip-leg-pill{background:transparent;border:1px dashed #dfe5ee;color:#9aa3b2}
+  .leg-icon{flex:0 0 13px;width:13px;height:13px;color:#8b95a3}
+  .trip-leg-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .trip-leg-text b{font-weight:750;color:#3d4757}
+  .trip-leg-text i{font-style:normal;color:#9aa3b2;font-weight:600}
+  /* 인라인 이동구간 미리보기: 누른 카드 바로 아래 슬롯 */
+  .quick-map-slot{position:relative;padding-left:32px;margin:0}
+  .quick-map-slot::before{content:"";position:absolute;left:10px;top:-4px;bottom:-4px;z-index:1;width:2px;border-radius:2px;background:#e4e9f2}
+  .quick-map-slot::after{content:"";position:absolute;left:10px;top:18px;z-index:2;width:11px;height:2px;border-radius:2px;background:#e4e9f2}
+  .quick-map-slot .quick-map{display:block;width:100%;max-height:0;margin:0;opacity:0;transform:none;overflow:hidden;border:1px solid #dbe7f8;border-radius:14px;background:#fff;transition:max-height .42s ease,opacity .28s ease,margin .28s ease}
+  .quick-map-slot .quick-map.open{max-height:520px;margin:4px 0 10px;opacity:1;box-shadow:0 8px 22px rgba(17,53,112,.07)}
+  .quick-map-slot .quick-map-head{padding:10px 12px 4px}
+  .quick-map-slot .quick-map-head strong{font-size:13.5px;color:#101c34;font-weight:750}
+  .quick-map-slot .quick-map-close{width:26px;height:26px;border-radius:8px;font-size:16px;background:#f2f5f9}
+  .quick-map-slot .free-map-note{padding:0 12px 6px;font-size:10.5px;color:#7b8494}
+  .quick-map-slot .quick-map-frame{height:172px;margin:0 10px;border-radius:11px}
+  .quick-map-slot .quick-map-foot{padding:8px 12px 10px;gap:8px;flex-wrap:nowrap}
+  .quick-map-slot .quick-map-foot span{min-width:0;flex:1;font-size:11px;white-space:normal;line-height:1.3}
+  .quick-map-slot .quick-route-btn{padding:8px 11px;border-radius:9px;font-size:11.5px;flex:0 0 auto}
+}

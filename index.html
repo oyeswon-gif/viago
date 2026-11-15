@@ -20,7 +20,7 @@
   <meta name="description" content="지인들과 함께 일정을 정리하고 Google 지도로 바로 길찾는 개인 여행 앱" />
   <title>viago</title>
   <link rel="preconnect" href="https://www.google.com" />
-  <script src="./journey-install.js?v=58"></script>
+  <script src="./journey-install.js?v=59"></script>
   <link rel="apple-touch-startup-image" href="/viago-start-390x844.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" />
   <link rel="apple-touch-startup-image" href="/viago-start-393x852.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
   <link rel="apple-touch-startup-image" href="/viago-start-430x932.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
@@ -158,7 +158,7 @@
       <article class="panel itinerary-panel" id="itineraryPanel">
         <div class="panel-head"><div><h2 id="dayTitle">12월 10일 목요일</h2><p id="daySummary">도착 후 사카에와 오스 산책</p></div><span class="sync-state" id="syncStatus">공유 연결 중</span></div>
         <div id="staleBanner" role="status"><strong>이 기기는 이 여행에 참여한 상태가 아니에요</strong><span>지금 보이는 일정은 <b>기기에 저장된 이전 사본</b>이라 서버의 최신 일정과 다를 수 있어요. 서버 일정은 그대로 있고, 이 기기에서만 연결이 안 된 상태예요.</span><div class="stale-actions"><button type="button" id="staleJoin">초대 코드 넣기</button></div><span class="stale-note" id="staleNote"></span></div>
-        <section class="quick-map" id="quickMap" aria-live="polite"><div class="quick-map-head"><strong>이동 구간 미리보기</strong><button class="quick-map-close" id="quickMapClose" aria-label="지도 닫기">×</button></div><div id="quickMapProvider" class="free-map-note" aria-live="polite">Google 지도</div><div class="quick-map-frame"><div id="quickLeafletMap" class="quick-leaflet-map" aria-label="선택한 일정의 이동 구간 미리보기"></div></div><div class="quick-map-foot"><span id="quickMapStatus">이동 구간을 표시하고 있어요</span><button class="quick-route-btn" id="freeGooglePreview" hidden>Google 미리보기</button><button class="quick-route-btn" id="quickRouteBtn">Google 지도에서 열기</button></div></section>
+        <div class="quick-map-home" id="quickMapHome"><section class="quick-map" id="quickMap" aria-live="polite"><div class="quick-map-head"><strong>이동 구간 미리보기</strong><button class="quick-map-close" id="quickMapClose" aria-label="지도 닫기">×</button></div><div id="quickMapProvider" class="free-map-note" aria-live="polite">Google 지도</div><div class="quick-map-frame"><div id="quickLeafletMap" class="quick-leaflet-map" aria-label="선택한 일정의 이동 구간 미리보기"></div></div><div class="quick-map-foot"><span id="quickMapStatus">이동 구간을 표시하고 있어요</span><button class="quick-route-btn" id="freeGooglePreview" hidden>Google 미리보기</button><button class="quick-route-btn" id="quickRouteBtn">Google 지도에서 열기</button></div></section></div>
         <div class="journey-day-preview" id="journeyDayPreview" hidden><div class="journey-day-map" id="journeyDayMap" role="img" aria-label="선택한 날짜의 장소 위치와 번호 · 손가락으로 이동하고 확대할 수 있어요"></div><span class="journey-preview-note" id="journeyPreviewNote" hidden></span><div class="map-legend" role="note" aria-label="지도 범례: 먹거리, 관광, 쇼핑, 숙소, 항공·교통"><b data-cat="food"><i></i>먹거리</b><b data-cat="sight"><i></i>관광</b><b data-cat="shop"><i></i>쇼핑</b><b data-cat="stay"><i></i>숙소</b><b data-cat="transit"><i></i>항공·교통</b></div><button class="journey-preview-button" id="journeyPreviewOpen" aria-label="선택한 날짜의 전체 동선 지도 열기">전체 동선</button></div>
         <div class="timeline" id="timeline"></div>
       </article>
@@ -223,9 +223,9 @@
     </div>
   </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js?v=58"></script>
-  <script src="./viago-auth-client.js?v=58"></script>
-  <script src="./viago-auth-firebase.js?v=58"></script>
+  <script src="./journey-sync.js?v=59"></script>
+  <script src="./viago-auth-client.js?v=59"></script>
+  <script src="./viago-auth-firebase.js?v=59"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -876,6 +876,55 @@
     function deleteCandidate(index){const c=activeTrip.candidates[index];if(!c)return;if(!confirm(`“${c.name}” 후보를 삭제할까요?`))return;activeTrip.candidates.splice(index,1);save();render();toast('후보 장소를 삭제했어요')}
     function confirmCandidate(index){const c=activeTrip.candidates[index];if(!c||!days[c.day])return;days[c.day].places.push({name:c.name,note:c.note||'후보 투표로 확정',kind:c.kind||'장소',...selectionFields(c)});activeTrip.candidates.splice(index,1);dayIndex=c.day;candidateMode=false;foodMode=false;save();render();toast(`${c.name}을(를) ${c.day+1}일차 일정에 확정했어요`)}
     function closeSwipeRows(except){timeline.querySelectorAll('.place').forEach(el=>{if(el!==except){el.style.transform='translateX(0)';el.dataset.open='0'}})}
+    /* ===== 2026-11-15 v2: 카테고리 pill · 예약 시각 강조 · 카드 사이 이동시간 pill =====
+       이동 거리·시간은 저장된 좌표만으로 어림한다. Directions/Places/Geocoding 호출은 없다(무료 한도 그대로). */
+    function viagoCategoryLabel(kind,name){const cat=viagoCategory(kind,name),k=String(kind||'')+' '+String(name||'');
+      if(cat==='food')return /카페|cafe|커피/i.test(k)?'카페':'식당';
+      if(cat==='sight')return '관광';
+      if(cat==='shop')return '쇼핑';
+      if(cat==='stay')return '숙소';
+      if(cat==='transit')return /항공|공항|airport/i.test(k)?'항공':'교통';
+      return '장소';}
+    // 메모에 '예약'과 시각이 함께 있을 때만 '13:30 예약'으로 강조하고, 나머지 문구는 뒤에 흐리게 붙인다.
+    function placeReservation(note){const text=String(note||'').trim();if(!/예약/.test(text))return null;
+      const m=text.match(/(오전|오후)?\s*(\d{1,2})\s*[:시]\s*(\d{2})?\s*분?/);if(!m)return null;
+      let hours=Number(m[2]),minutes=Number(m[3]||0);if(!Number.isFinite(hours)||hours>23||minutes>59)return null;
+      if(/오후/.test(m[1]||'')&&hours<12)hours+=12;
+      const rest=text.replace(m[0],'').replace(/예약\s*완료?|예약/,'').replace(/\s{2,}/g,' ').replace(/^[\s·,\/-]+|[\s·,\/-]+$/g,'').trim();
+      return {time:hours+':'+String(minutes).padStart(2,'0'),rest:/^\d{1,2}월\s*\d{1,2}일$/.test(rest)?'':rest};}
+    const PLACE_RESV_ICON='<svg class="place-resv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>';
+    function placeSubline(p){const note=String(p?.note||'').trim(),res=note?placeReservation(note):null;
+      if(!res)return '<p class="place-note">'+esc(note||'메모 없음')+'</p>';
+      return '<p class="place-subline"><span class="place-resv">'+PLACE_RESV_ICON+esc(res.time)+' 예약</span>'+(res.rest?'<span class="place-rest">'+esc(res.rest)+'</span>':'')+'</p>';}
+    function legMeters(a,b){const ca=coordsFor(a),cb=coordsFor(b);if(!ca||!cb)return null;
+      const rad=x=>x*Math.PI/180,R=6371000,dLat=rad(cb[0]-ca[0]),dLng=rad(cb[1]-ca[1]);
+      const h=Math.sin(dLat/2)**2+Math.cos(rad(ca[0]))*Math.cos(rad(cb[0]))*Math.sin(dLng/2)**2;
+      return 2*R*Math.asin(Math.min(1,Math.sqrt(h)));}
+    function legKmText(m){if(m<1000)return '약 '+Math.max(10,Math.round(m/10)*10)+'m';
+      const km=m/1000;return '약 '+(km<10?km.toFixed(1).replace(/\.0$/,''):Math.round(km).toLocaleString('ko-KR'))+'km';}
+    // 도보 1.5km 이내 / 그 밖은 지하철(자동차 설정이면 차량) / 15km 넘는 공항·시외 이동은 거리만 안내
+    function travelLeg(a,b){if(!a||!b)return null;const m=legMeters(a,b),mode=tripInfo.mode||'transit';
+      if(!Number.isFinite(m))return {kind:'unknown',label:'이동 거리 확인 필요',aria:'두 장소의 좌표가 없어 이동 시간을 어림하지 못했어요'};
+      const aviation=/항공|공항|airport/i.test(String(a.kind||'')+' '+String(b.kind||'')+' '+String(a.name||'')+' '+String(b.name||''));
+      // 15km 를 넘으면 시내 대중교통 속도로 어림할 수 없다(공항·시외) → 시간 대신 거리만 안내한다.
+      if(m>15000){const km=legKmText(m),name=aviation?'공항 이동':'시외 이동';return {kind:'air',minutes:null,label:'<b>'+name+'</b> <i>('+km+')</i>',aria:name+' · '+km};}
+      const walk=m<=1500&&mode!=='driving',name=walk?'도보':mode==='driving'?'차량':'지하철';
+      // 도보 4.8km/h · 지하철 25km/h(6km 부터는 33km/h) · 차량 27km/h, 여기에 우회 25%와 승하차 대기를 더한다.
+      const minutes=walk?Math.max(1,Math.round(m*1.25/80))
+        :mode==='driving'?Math.max(3,Math.round(m*1.25/450)+3)
+        :m<=6000?Math.max(4,Math.round(m*1.25/420)+5)
+        :Math.max(8,Math.round(m*1.25/550)+8);
+      const km=legKmText(m);
+      return {kind:walk?'walk':mode==='driving'?'driving':'transit',minutes,label:'<b>'+name+'</b> '+minutes+'분 <i>('+km+')</i>',aria:a.name+'에서 '+b.name+'까지 '+name+' 약 '+minutes+'분 · '+km};}
+    const LEG_ICONS={
+      walk:'<circle cx="12.6" cy="4.4" r="1.7"/><path d="m10 21 2.1-5.7-2.2-3.1 1-4.4 2.6 2 2.6 1.3"/><path d="m13.7 15.4 2.5 5.6M15.2 8.2l2.1-.9"/>',
+      transit:'<rect x="6" y="3.5" width="12" height="12.5" rx="3.2"/><path d="M6 13.2h12M9.2 19.5l-1.7 2M14.8 19.5l1.7 2M9.5 7.2h5"/>',
+      driving:'<path d="M4 16.5v-3l2-5h12l2 5v3"/><path d="M4 13.5h16"/><circle cx="7.5" cy="17.5" r="1.6"/><circle cx="16.5" cy="17.5" r="1.6"/>',
+      air:'<path d="M2.5 16.2 10 13.5l1-9.3 1.9-1.7 2 9.9 6.2 3 .8 1.9-7.6-.9-.9 4.8-1.9.9-1-5.4-6 2.1z"/>',
+      unknown:'<circle cx="12" cy="12" r="8.5"/><path d="M9.7 9.6a2.4 2.4 0 1 1 3.4 2.2c-.7.4-1.1 1-1.1 1.8v.4M12 17.2h.01"/>'};
+    function legIconSvg(kind){return '<svg class="leg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(LEG_ICONS[kind]||LEG_ICONS.unknown)+'</svg>';}
+    function tripLegHtml(a,b,i){if(!b)return '';const leg=travelLeg(a,b);if(!leg)return '';
+      return '<span class="trip-leg" data-leg="'+leg.kind+'" data-after="'+i+'"'+(leg.minutes?' data-minutes="'+leg.minutes+'"':'')+' role="note" aria-label="'+esc(leg.aria)+'"><span class="trip-leg-pill">'+legIconSvg(leg.kind)+'<span class="trip-leg-text">'+leg.label+'</span></span></span>';}
     function placeIcon(p){
       const kind=String(p?.kind||''), name=String(p?.name||'');
       let shape='<path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>';
@@ -888,15 +937,20 @@
     }
     function render(){
       sortable?.destroy();sortable=null;updateTripHeader();renderTabs();
+      // 다시 그려도 인라인 미리보기는 같은 카드 아래에 그대로 둔다(지도 인스턴스 보존).
+      const keepRoute=inlineRoute&&inlineRoute.day===dayIndex?inlineRoute.index:null;
+      if(inlineRoute&&inlineRoute.day!==dayIndex)inlineRoute=null;
+      parkQuickMap();
       if(candidateMode){renderCandidates();return}
       if(foodMode){renderFood();return}
       const d=days[dayIndex];$('#dayTitle').textContent=d.title;$('#daySummary').textContent=d.summary;
       const addActions='<div class="schedule-add-actions" aria-label="일정 장소 추가"><button class="place-add" id="placeAdd">직접 장소 추가</button><button class="place-add schedule-link-add" id="scheduleLinkAdd">링크에서 장소 찾기</button></div>';
       if(!d.places.length){timeline.innerHTML='<div class="empty">아직 등록한 장소가 없어요.</div>'+addActions;bindScheduleAddActions();if(sharedReady&&(innerWidth>850||currentView==='map'))showOverview();return}
-      timeline.innerHTML=d.places.map((p,i)=>`<div class="swipe-row" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}"><div class="row-actions"><button class="edit-action" aria-label="${esc(p.name)} 편집">편집</button><button class="delete-action" aria-label="${esc(p.name)} 삭제">삭제</button></div><div class="place" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}" tabindex="0"><div class="place-main">${placeIcon(p)}<div class="place-text"><h3 class="place-name">${esc(p.name)}</h3><div class="place-sub"><p class="place-note">${esc(p.note||'메모 없음')}</p><span class="place-kind">${esc(p.kind||'장소')}</span></div></div><span class="place-badges">${coordBadge(p)}<span class="place-status info" data-hours="${i}">영업시간 확인</span></span></div><button class="more" aria-label="${esc(p.name)} 지도에서 보기"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>`).join('')+addActions;
+      timeline.innerHTML=d.places.map((p,i)=>`<div class="swipe-row${i<d.places.length-1?' has-next':''}" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}"><div class="row-actions"><button class="edit-action" aria-label="${esc(p.name)} 편집">편집</button><button class="delete-action" aria-label="${esc(p.name)} 삭제">삭제</button></div><div class="place" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}" tabindex="0"><div class="place-main"><span class="place-cat">${placeIcon(p)}<span class="place-kind">${esc(viagoCategoryLabel(p.kind,p.name))}</span></span><div class="place-text"><h3 class="place-name">${esc(p.name)}</h3><div class="place-sub">${placeSubline(p)}</div><span class="place-badges">${coordBadge(p)}<span class="place-status info" data-hours="${i}">영업시간 확인</span></span></div></div><button class="more" aria-label="${esc(p.name)} 지도에서 보기"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>`+tripLegHtml(d.places[i],d.places[i+1],i)).join('')+addActions;
       timeline.querySelectorAll('.swipe-row').forEach(row=>{bindSwipe(row);row.querySelector('.edit-action').onclick=e=>{e.stopPropagation();closeSwipeRows();openEditDialog(+row.dataset.i)};row.querySelector('.delete-action').onclick=e=>{e.stopPropagation();deletePlace(+row.dataset.i)}});
-      timeline.querySelectorAll('.place').forEach(el=>{const open=()=>{if(Date.now()<suppressPlaceClickUntil)return;if(el.dataset.swiped==='1'){el.dataset.swiped='0';return}selectPlace(+el.dataset.i,el)};el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter')open()}});
-      bindScheduleAddActions();setupLongPressSort();if(sharedReady&&(innerWidth>850||currentView==='map'))showOverview();if(sharedReady)scheduleDayHours(dayIndex)
+      timeline.querySelectorAll('.place').forEach(el=>{const open=()=>{if(Date.now()<suppressPlaceClickUntil)return;if(el.dataset.swiped==='1'){el.dataset.swiped='0';return}const index=+el.dataset.i;if(innerWidth<=850&&inlineRoute&&inlineRoute.day===dayIndex&&inlineRoute.index===index){closeInlineRoute();return}selectPlace(index,el)};el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter')open()}});
+      bindScheduleAddActions();setupLongPressSort();if(keepRoute!=null&&days[dayIndex].places[keepRoute]){inlineRoute={day:dayIndex,index:keepRoute};const row=timeline.querySelector('.swipe-row[data-i="'+keepRoute+'"]');row?.querySelector('.place')?.classList.add('selected','open');if(mountQuickMap(keepRoute)){setTimeout(resizeQuickMap,60);setTimeout(resizeQuickMap,420)}}
+      if(sharedReady&&(innerWidth>850||currentView==='map'))showOverview();if(sharedReady)scheduleDayHours(dayIndex)
     }
     function bindScheduleAddActions(){const direct=$('#placeAdd'),link=$('#scheduleLinkAdd');if(direct)direct.onclick=openAddDialog;if(link)link.onclick=()=>openLinkDialog('schedule')}
     function bindSwipe(row){const card=row.querySelector('.place'),actions=row.querySelector('.row-actions'),max=Math.max(88,actions?.offsetWidth||88);let startX=0,startY=0,delta=0,horizontal=false;card.addEventListener('touchstart',e=>{closeSwipeRows(card);startX=e.touches[0].clientX;startY=e.touches[0].clientY;delta=0;horizontal=false;card.classList.add('dragging')},{passive:true});card.addEventListener('touchmove',e=>{const dx=e.touches[0].clientX-startX,dy=e.touches[0].clientY-startY;if(!horizontal&&Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy))horizontal=true;if(!horizontal)return;e.preventDefault();delta=Math.max(-max,Math.min(0,dx));card.style.transform=`translateX(${delta}px)`},{passive:false});card.addEventListener('touchend',()=>{card.classList.remove('dragging');const open=delta<-Math.min(46,max*.34);card.style.transform=open?`translateX(-${max}px)`:'translateX(0)';card.dataset.open=open?'1':'0';if(Math.abs(delta)>8)card.dataset.swiped='1'})}
@@ -1475,17 +1529,35 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     }
     // 좌표는 그 장소에 저장된 값만 쓴다. 이름이 같다는 이유로 다른 지점 좌표를 가져오지 않는다.
     async function locatePlace(p){return coordsFor(p)}
-    let placePreviewRequest=0;
+    let placePreviewRequest=0,inlineRoute=null;
+    function quickMapHome(){return $('#quickMapHome')}
+    function resizeQuickMap(){try{const el=$('#quickMap');if(!el||!quickMapInstance)return;
+      if(el.dataset.provider==='google'&&window.google?.maps?.event)google.maps.event.trigger(quickMapInstance,'resize');
+      else quickMapInstance.invalidateSize?.()}catch(e){}}
+    // 누른 카드 바로 아래에 미리보기를 끼워 넣는다. 패널 노드째로 옮기므로 지도 인스턴스는 그대로 살아 있다.
+    function mountQuickMap(index){const el=$('#quickMap'),row=timeline.querySelector('.swipe-row[data-i="'+index+'"]');if(!el||!row)return false;
+      let slot=el.parentElement&&el.parentElement.classList.contains('quick-map-slot')?el.parentElement:null;
+      if(!slot){slot=document.createElement('section');slot.className='quick-map-slot'}
+      row.after(slot);slot.appendChild(el);el.classList.add('open');return true}
+    function parkQuickMap(){const el=$('#quickMap'),home=quickMapHome();if(!el||!home)return;el.classList.remove('open');
+      const slot=el.parentElement&&el.parentElement.classList.contains('quick-map-slot')?el.parentElement:null;
+      if(slot){home.appendChild(el);slot.remove()}else if(el.parentElement!==home)home.appendChild(el)}
+    // 접기만 한다(진행 중인 지도 요청은 건드리지 않는다) — 화면 전환·여행 전환에서 쓴다.
+    function resetInlineRoute(){inlineRoute=null;$('#quickMap')?.classList.remove('open');parkQuickMap();timeline.querySelectorAll('.place').forEach(x=>x.classList.remove('selected','open'))}
+    function closeInlineRoute(){++placePreviewRequest;resetInlineRoute()}
     async function selectPlace(i,el,focus=true){
       const ps=days[dayIndex]?.places||[],p=ps[i];if(!p)return;
       const request=++placePreviewRequest,selectedDay=dayIndex,selectedTrip=activeTrip.id;
-      closeSwipeRows();timeline.querySelectorAll('.place').forEach(x=>x.classList.remove('selected'));el?.classList.add('selected');
+      closeSwipeRows();timeline.querySelectorAll('.place').forEach(x=>x.classList.remove('selected','open'));el?.classList.add('selected','open');
       const prev=i>0?ps[i-1]:null,status=prev?prev.name+' → '+p.name:'출발 장소 · '+p.name,items=prev?[prev,p]:[p];
       const openUrl=()=>prev?gmapsRoute(prev.name,p.name):gmapsPlace(p);
       $('#mapHeading').textContent='이동 구간 미리보기';$('#mapDescription').textContent='장소 위치를 확인한 뒤 Google 지도에서 경로를 열 수 있어요';$('#mapStatus').textContent=status;
       $('#overviewBtn').classList.remove('hidden');$('#routeTitle').textContent=prev?prev.name+'에서 이동':p.name;$('#routeSummary').textContent=prev?p.name+'까지 '+modeLabels[tripInfo.mode]+' 이동 구간':'오늘의 첫 번째 장소';$('#routeBtn').textContent='Google 지도에서 열기';$('#routeBtn').disabled=false;$('#routeBtn').dataset.single=openUrl();
       $('#quickMapStatus').textContent=status;$('#quickRouteBtn').dataset.url=openUrl();
-      if(focus&&innerWidth<=850){setView('schedule');$('#quickMap').classList.add('open');setTimeout(()=>{if(request===placePreviewRequest&&$('#quickMap').classList.contains('open'))$('#quickMap').scrollIntoView({behavior:'smooth',block:'start'})},380)}
+      // 모바일: 그 카드 아래로 인라인 확장 (예전에는 목록 맨 위로 올라갔다)
+      if(focus&&innerWidth<=850){setView('schedule');inlineRoute={day:selectedDay,index:i};mountQuickMap(i);
+        setTimeout(()=>{if(request!==placePreviewRequest)return;resizeQuickMap();
+          timeline.querySelector('.swipe-row[data-i="'+i+'"]')?.scrollIntoView({behavior:'smooth',block:'start'})},90)}
       try{
         const coords=await Promise.all(items.map(locatePlace));
         if(request!==placePreviewRequest||selectedDay!==dayIndex||selectedTrip!==activeTrip.id)return;
@@ -1494,7 +1566,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         $('#mapStatus').textContent=status+missing;$('#quickMapStatus').textContent=status+missing;
         $('#routeBtn').dataset.single=openUrl();$('#quickRouteBtn').dataset.url=openUrl();
         if(innerWidth>850||!focus)await drawLocated(ensureMainMap(),'main',located,'#3187ff',{connect:!!prev,labels:true});
-        else await drawLocated(ensureQuickMap(),'quick',located,'#3187ff',{connect:!!prev,labels:true});
+        else{await drawLocated(ensureQuickMap(),'quick',located,'#3187ff',{connect:!!prev,labels:true});setTimeout(resizeQuickMap,80);setTimeout(resizeQuickMap,460)}
       }catch{if(request===placePreviewRequest){$('#quickLeafletMap').textContent=mapFailureMessage();$('#quickMapStatus').textContent=status+' · Google 지도에서 경로를 확인해주세요'}}
     }
     async function selectFood(i,el){const p=restaurants[i];if(!p)return;closeSwipeRows();timeline.querySelectorAll('.place').forEach(x=>x.classList.remove('selected'));el?.classList.add('selected');const c=await locatePlace(p);if(!c)return toast('지도에서 맛집 위치를 찾지 못했어요');$('#mapHeading').textContent='맛집 위치 미리보기';$('#mapDescription').textContent='한국어 장소명으로 위치를 확인할 수 있어요';$('#mapStatus').textContent=p.name;$('#overviewBtn').classList.remove('hidden');$('#routeTitle').textContent=p.name;$('#routeSummary').textContent='선택한 맛집 위치';$('#routeBtn').textContent='Google 지도에서 열기';$('#routeBtn').disabled=false;$('#routeBtn').dataset.single=gmapsPlace(p);drawLocated(ensureMainMap(),'main',[{p,i,c,label:i+1}],'#ff4f7b',{connect:false,labels:true});if(innerWidth<=850)setView('map')}
@@ -1557,10 +1629,10 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       if(deletingActive){activeTrip=trips.slice().sort((a,b)=>a.start.localeCompare(b.start))[0];ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear()}
       persistTrips();renderTripList();render();if(currentView==='today')renderToday();toast('여행을 삭제했어요')
     }
-    function switchTrip(id){persistTrips();activeTrip=trips.find(t=>t.id===id)||activeTrip;ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();localStorage.setItem('journey-note-current-trip',currentTripId);$('#tripDialog').close();$('#quickMap').classList.remove('open');render();if(currentView==='today')renderToday();toast(activeTrip.destination+' 여행을 열었어요')}
+    function switchTrip(id){persistTrips();activeTrip=trips.find(t=>t.id===id)||activeTrip;ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();localStorage.setItem('journey-note-current-trip',currentTripId);$('#tripDialog').close();resetInlineRoute();render();if(currentView==='today')renderToday();toast(activeTrip.destination+' 여행을 열었어요')}
     $('#tripPickerBtn').onclick=()=>{renderTripList();const now=new Date(),later=new Date(Date.now()+3*86400000);$('#tripStartInput').value=localIso(now);$('#tripEndInput').value=localIso(later);$('#tripDialog').showModal()};
     document.querySelectorAll('.destination-chip').forEach(b=>b.onclick=()=>{$('#destinationInput').value=b.dataset.destination;document.querySelectorAll('.destination-chip').forEach(x=>x.classList.toggle('active',x===b))});
-    $('#newTripForm').addEventListener('submit',e=>{e.preventDefault();const destination=$('#destinationInput').value.trim(),start=$('#tripStartInput').value,end=$('#tripEndInput').value;if(!destination||!start||!end||end<start)return toast('여행지와 날짜를 다시 확인해주세요');const newDays=makeEmptyDays(start,end);if(!newDays.length)return toast('여행 날짜를 다시 확인해주세요');persistTrips();const trip={id:'trip-'+Date.now(),destination,name:destination+' 여행',start,end,mode:'transit',days:newDays,restaurants:[],candidates:[],todayProgress:{},weatherAlternatives:[],weatherBackups:[]};trips.push(trip);activeTrip=trip;currentTripId=trip.id;days=trip.days;restaurants=trip.restaurants;tripInfo={name:trip.name,mode:trip.mode};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();persistTrips();$('#tripDialog').close();$('#newTripForm').reset();document.querySelectorAll('.destination-chip').forEach(x=>x.classList.remove('active'));$('#quickMap').classList.remove('open');render();if(currentView==='today')renderToday();toast(destination+' 여행을 만들었어요')});
+    $('#newTripForm').addEventListener('submit',e=>{e.preventDefault();const destination=$('#destinationInput').value.trim(),start=$('#tripStartInput').value,end=$('#tripEndInput').value;if(!destination||!start||!end||end<start)return toast('여행지와 날짜를 다시 확인해주세요');const newDays=makeEmptyDays(start,end);if(!newDays.length)return toast('여행 날짜를 다시 확인해주세요');persistTrips();const trip={id:'trip-'+Date.now(),destination,name:destination+' 여행',start,end,mode:'transit',days:newDays,restaurants:[],candidates:[],todayProgress:{},weatherAlternatives:[],weatherBackups:[]};trips.push(trip);activeTrip=trip;currentTripId=trip.id;days=trip.days;restaurants=trip.restaurants;tripInfo={name:trip.name,mode:trip.mode};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();persistTrips();$('#tripDialog').close();$('#newTripForm').reset();document.querySelectorAll('.destination-chip').forEach(x=>x.classList.remove('active'));resetInlineRoute();render();if(currentView==='today')renderToday();toast(destination+' 여행을 만들었어요')});
     // iOS Safari 는 사용자 동작 밖에서 navigator.share 를 거부할 수 있다 → 거부되면 클립보드로 넘긴다.
     // 주의: 본문(text)에 이미 주소가 들어 있으면 share 데이터에 url 을 함께 넣지 않는다.
     //       iOS 공유 시트·카카오톡은 url 필드와 본문 속 링크를 각각 링크 미리보기로 만들어
@@ -1592,7 +1664,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       }catch(e){if(e.name!=='AbortError')toast('공유를 마치지 못했어요')}
     }
     $('#memberShare').onclick=share;
-    $('#quickMapClose').onclick=()=>$('#quickMap').classList.remove('open');
+    $('#quickMapClose').onclick=()=>closeInlineRoute();
     $('#quickRouteBtn').onclick=e=>window.open(e.currentTarget.dataset.url,'_blank','noopener');
     function exchangeAmount(){const value=$('#exchangeAmount').value.replace(/,/g,'').trim();return Number(value)}
     function exchangeValue(amount,from,to){const rates=exchangeData?.rates;if(!rates||!rates[from]||!rates[to]||!Number.isFinite(amount))return null;return amount/rates[from]*rates[to]}
@@ -1662,7 +1734,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     const tabViews=['schedule','today','map','exchange'];
     function panelForView(v){return{schedule:$('#itineraryPanel'),today:$('#todayPanel'),map:$('#mapPanel'),exchange:$('#exchangePanel')}[v]}
     function animateTab(v,direction){if(!direction||innerWidth>850)return;const panel=panelForView(v);if(!panel)return;panel.classList.remove('tab-enter-forward','tab-enter-back');void panel.offsetWidth;panel.classList.add(direction>0?'tab-enter-forward':'tab-enter-back');setTimeout(()=>panel.classList.remove('tab-enter-forward','tab-enter-back'),350)}
-    function setView(v,swipeDirection=0){currentView=v;const map=v==='map',today=v==='today',exchange=v==='exchange';if(today){todayDayOverride=null;const automatic=automaticTodayDayIndex();if(automatic!=null){dayIndex=automatic;renderTabs()}$('#quickMap').classList.remove('open');renderToday()}if(exchange)$('#quickMap').classList.remove('open');$('#workspace').className=`workspace ${v}-view`;$('#mapPanel').classList.toggle('mobile-active',map);$('#todayPanel').classList.toggle('mobile-active',today);$('#exchangePanel').classList.toggle('mobile-active',exchange);$('#itineraryPanel').classList.toggle('map-hidden',map||today||exchange);document.querySelectorAll('.nav-item[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));if(map)setTimeout(()=>showOverview(),30);if(exchange)loadExchange();requestAnimationFrame(()=>animateTab(v,swipeDirection))}
+    function setView(v,swipeDirection=0){currentView=v;const map=v==='map',today=v==='today',exchange=v==='exchange';if(today){todayDayOverride=null;const automatic=automaticTodayDayIndex();if(automatic!=null){dayIndex=automatic;renderTabs()}resetInlineRoute();renderToday()}if(exchange)resetInlineRoute();$('#workspace').className=`workspace ${v}-view`;$('#mapPanel').classList.toggle('mobile-active',map);$('#todayPanel').classList.toggle('mobile-active',today);$('#exchangePanel').classList.toggle('mobile-active',exchange);$('#itineraryPanel').classList.toggle('map-hidden',map||today||exchange);document.querySelectorAll('.nav-item[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));if(map)setTimeout(()=>showOverview(),30);if(exchange)loadExchange();requestAnimationFrame(()=>animateTab(v,swipeDirection))}
     document.querySelectorAll('.nav-item[data-view]').forEach(x=>x.onclick=()=>setView(x.dataset.view));
     $('#exchangeAmount').addEventListener('input',renderExchange);
     $('#exchangeFrom').addEventListener('change',()=>{if($('#exchangeFrom').value===$('#exchangeTo').value)$('#exchangeTo').value=$('#exchangeFrom').value==='KRW'?'JPY':'KRW';renderExchange()});
@@ -1750,7 +1822,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
     // 서비스 워커: 새 버전이 설치되면 이 화면도 새 코드로 한 번 갈아 끼운다.
-    //   · 스크립트 주소에 ?v=58 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 스크립트 주소에 ?v=59 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
     //   · 예전 워커가 제어하던 화면에서 새 워커가 활성화되면(controllerchange) 한 번만 새로고침한다.
     if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
       const hadController=!!navigator.serviceWorker.controller;let swReloading=false;
@@ -1760,11 +1832,11 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         try{if(sessionStorage.getItem('viago-sw-reloaded'))return;sessionStorage.setItem('viago-sw-reloaded','1')}catch(e){}
         swReloading=true;location.reload();
       });
-      navigator.serviceWorker.register('./service-worker.js?v=58',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=59',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js?v=58"></script>
+  <script src="./journey-preview.js?v=59"></script>
 </body>
 </html>
