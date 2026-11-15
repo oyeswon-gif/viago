@@ -1301,6 +1301,9 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     document.querySelectorAll('.destination-chip').forEach(b=>b.onclick=()=>{$('#destinationInput').value=b.dataset.destination;document.querySelectorAll('.destination-chip').forEach(x=>x.classList.toggle('active',x===b))});
     $('#newTripForm').addEventListener('submit',e=>{e.preventDefault();const destination=$('#destinationInput').value.trim(),start=$('#tripStartInput').value,end=$('#tripEndInput').value;if(!destination||!start||!end||end<start)return toast('여행지와 날짜를 다시 확인해주세요');const newDays=makeEmptyDays(start,end);if(!newDays.length)return toast('여행 날짜를 다시 확인해주세요');persistTrips();const trip={id:'trip-'+Date.now(),destination,name:destination+' 여행',start,end,mode:'transit',days:newDays,restaurants:[],candidates:[],todayProgress:{},weatherAlternatives:[],weatherBackups:[]};trips.push(trip);activeTrip=trip;currentTripId=trip.id;days=trip.days;restaurants=trip.restaurants;tripInfo={name:trip.name,mode:trip.mode};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();persistTrips();$('#tripDialog').close();$('#newTripForm').reset();document.querySelectorAll('.destination-chip').forEach(x=>x.classList.remove('active'));$('#quickMap').classList.remove('open');render();if(currentView==='today')renderToday();toast(destination+' 여행을 만들었어요')});
     // iOS Safari 는 사용자 동작 밖에서 navigator.share 를 거부할 수 있다 → 거부되면 클립보드로 넘긴다.
+    // 주의: 본문(text)에 이미 주소가 들어 있으면 share 데이터에 url 을 함께 넣지 않는다.
+    //       iOS 공유 시트·카카오톡은 url 필드와 본문 속 링크를 각각 링크 미리보기로 만들어
+    //       같은 카드가 위아래로 두 번 붙는다(2026-11-15 재원 님 제보).
     async function shareOrCopy(data,text,copyToast){
       if(navigator.share){try{await navigator.share(data);return}catch(e){if(e&&e.name==='AbortError')return}}
       try{await navigator.clipboard.writeText(text);toast(copyToast)}catch(e){toast('링크를 복사하지 못했어요')}
@@ -1317,11 +1320,13 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         const made=sharedSync.createInvite?await sharedSync.createInvite({expiresInDays:7,role:'editor'}):null;
         if(made&&made.ok){
           const link=appUrl+'#invite='+made.token,title=activeTrip.name+'에 함께하기',text=title+'\n'+link+'\n(7일 안에 한 사람만 쓸 수 있는 초대 링크예요)';
-          await shareOrCopy({title,text,url:link},link,'1회용 초대 링크를 복사했어요 · 7일 안에 한 사람만 쓸 수 있어요');
+          // url 은 넘기지 않는다 — text 안의 초대 링크 하나만 나가야 미리보기 카드가 한 번만 붙는다.
+          await shareOrCopy({title,text},link,'1회용 초대 링크를 복사했어요 · 7일 안에 한 사람만 쓸 수 있어요');
           return;
         }
         const denied=made&&made.status===403,hint=denied?'이 앱에서는 새 초대 링크를 아직 만들 수 없어요(초대 발급 권한이 꺼져 있음).':'초대 링크를 만들지 못했어요.';
-        await shareOrCopy({title:activeTrip.name,text:hint+'\n앱 주소(보기 전용): '+appUrl,url:appUrl},appUrl,hint+' 앱 주소만 복사했어요');
+        // 이 경로도 본문에 앱 주소가 들어 있으므로 url 을 따로 넘기지 않는다(중복 미리보기 방지).
+        await shareOrCopy({title:activeTrip.name,text:hint+'\n앱 주소(보기 전용): '+appUrl},appUrl,hint+' 앱 주소만 복사했어요');
       }catch(e){if(e.name!=='AbortError')toast('공유를 마치지 못했어요')}
     }
     $('#memberShare').onclick=share;
@@ -1431,7 +1436,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
-    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=51',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=52',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
