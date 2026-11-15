@@ -4,7 +4,8 @@
 // ─────────────────────────────────────────────────────────────
 // v3-auth = v2(viago-auth-client.v2.js) 의 인증·참여 + viago-sync-v3.js 의 저장 보호를 한 파일로 합친 것.
 //
-//  · 인증/참여: 익명 로그인 → 1회용 초대를 \"초대 소진 + 멤버 등록\" 한 번의 :commit 으로 참여 (v2 그대로)
+//  · 인증/참여: 익명 로그인 → 초대로 멤버 등록 (1회용은 '초대 소진 + 멤버 등록'을 한 :commit 으로,
+//      다회용(multiUse)은 초대를 건드리지 않고 멤버만 등록 — 같은 링크로 여러 기기가 참여한다)
 //  · 저장: 일정 저장을 `:commit` + `updateMask` + `currentDocument.updateTime` 사전 조건으로 보낸다.
 //      1) 두 기기가 같은 시점에 저장하면 먼저 보낸 한 건만 통과(409), 나머지는 덮어쓰지 않고 3-way 병합.
 //      2) 겹치지 않은 변경(서로 다른 항목)은 대화상자 없이 자동 병합해 저장.
@@ -181,6 +182,30 @@ function createViagoAuthV3(opts) {
     const role = (fields.role && fields.role.stringValue) || 'editor';
     if (!roomId) throw new Error('invite_unusable');
     const now = new Date().toISOString();
+    const multiUse = !!(fields.multiUse && fields.multiUse.booleanValue === true);
+    // 이미 다른 기기가 쓴 1회용 초대 — 쓰기를 시도하지 않고 이유를 정확히 알려 준다(게이트 문구 분기).
+    const usedBy = (fields.usedBy && fields.usedBy.stringValue) || '';
+    if (!multiUse && usedBy && usedBy !== me) throw new Error('invite_taken');
+    // 다회용 초대: 초대 문서를 소모시키지 않고 내 멤버 문서만 만든다.
+    //   같은 링크로 사파리·홈 화면 앱·다른 사람 기기·재설치한 기기가 각각 참여할 수 있다.
+    if (multiUse) {
+      const makeMember = await authedFetch(':commit', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          writes: [
+            { update: { name: viagoV3DocName(cfg.projectId, `${cfg.roomCollection}/${roomId}/members/${me}`), fields: { role: { stringValue: role }, invite: { stringValue: token }, joinedAt: { timestampValue: now } } }, currentDocument: { exists: false } }
+          ]
+        })
+      });
+      if (makeMember.ok) { cfg.roomCode = roomId; return roomId }
+      // 이미 이 기기(uid)가 멤버면 재접속으로 본다 — 규칙상 멤버 문서는 덮어쓸 수 없으므로 오류가 날 수 있다.
+      if (makeMember.status === 409 || makeMember.status === 403) {
+        const mine = await authedFetch(`/${cfg.roomCollection}/${encodeURIComponent(roomId)}/members/${me}`);
+        if (mine.ok) { cfg.roomCode = roomId; return roomId }
+        throw new Error(makeMember.status === 409 ? 'invite_taken' : 'join_denied');
+      }
+      throw new Error('join_failed');
+    }
     const commit = await authedFetch(':commit', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -191,12 +216,11 @@ function createViagoAuthV3(opts) {
       })
     });
     if (commit.ok) { cfg.roomCode = roomId; return roomId }
-    if (commit.status === 409) {
+    if (commit.status === 409 || commit.status === 403) {
       const mine = await authedFetch(`/${cfg.roomCollection}/${encodeURIComponent(roomId)}/members/${me}`);
       if (mine.ok) { cfg.roomCode = roomId; return roomId }
-      throw new Error('invite_taken');
+      throw new Error(commit.status === 409 ? 'invite_taken' : 'join_denied');
     }
-    if (commit.status === 403) throw new Error('join_denied');
     throw new Error('join_failed');
   }
   async function amIMember(roomId) {
@@ -231,22 +255,28 @@ function createViagoAuthV3(opts) {
     return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
   }
 
-  // 성공: {ok:true, token, expiresAt} · 실패: {ok:false, status, reason}
+  // 성공: {ok:true, token, expiresAt, multiUse} · 실패: {ok:false, status, reason}
+  // 기본은 다회용(같은 링크로 여러 기기·재설치가 참여) 30일 초대다.
   async function createInvite(opts) {
     const o = opts || {};
     const rid = o.roomId || cfg.roomCode;
     if (!rid) return { ok: false, reason: 'no_room' };
     const token = randomToken();
-    const expiresAt = new Date(Date.now() + (o.expiresInDays || 7) * 86400000).toISOString();
+    const days = Math.min(Math.max(Number(o.expiresInDays) || 30, 1), 30);
+    // 규칙은 만료를 '지금 + 30일' 미만으로만 허용한다 → 기기 시계와 서버 시계 차이를 두고 5분 짧게 잡는다.
+    const expiresAt = new Date(Date.now() + days * 86400000 - 5 * 60000).toISOString();
+    const multiUse = o.multiUse !== false;
+    const fields = {
+      roomId: { stringValue: rid },
+      role: { stringValue: o.role || 'editor' },
+      expiresAt: { timestampValue: expiresAt },
+      revoked: { booleanValue: false }
+    };
+    if (multiUse) fields.multiUse = { booleanValue: true };
     const write = {
       update: {
         name: viagoV3DocName(cfg.projectId, `viagoInvites/${token}`),
-        fields: {
-          roomId: { stringValue: rid },
-          role: { stringValue: o.role || 'editor' },
-          expiresAt: { timestampValue: expiresAt },
-          revoked: { booleanValue: false }
-        }
+        fields: fields
       },
       currentDocument: { exists: false }
     };
@@ -256,7 +286,7 @@ function createViagoAuthV3(opts) {
     } catch (e) {
       return { ok: false, reason: e.network ? 'offline' : 'network' };
     }
-    if (res.ok) return { ok: true, token, expiresAt, roomId: rid };
+    if (res.ok) return { ok: true, token, expiresAt, roomId: rid, multiUse: multiUse };
     return { ok: false, status: res.status, reason: res.status === 403 ? 'denied' : 'error' };
   }
 

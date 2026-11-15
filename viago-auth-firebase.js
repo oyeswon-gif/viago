@@ -1,4 +1,4 @@
-// viago-auth-firebase.js — VIAGO 앱의 저장 경로를 익명 로그인 + 1회용 초대 + 동시 편집 보호에 연결한다.
+// viago-auth-firebase.js — VIAGO 앱의 저장 경로를 익명 로그인 + 초대(1회용·다회용) + 동시 편집 보호에 연결한다.
 //
 // 앱(index.html)은 지금까지 `createViagoSync({...})` 를 그대로 부르고, 반환값의
 // fetchDoc / readRoom / saveWithMerge / saveResolved 만 사용한다. 이 파일은 **같은 이름**으로
@@ -10,9 +10,10 @@
 //
 // 동작:
 //   1) 앱 시작 시 익명 로그인(이미 있으면 토큰 재사용/갱신)
-//   2) 내 멤버 문서가 없으면 localStorage 의 초대 토큰으로 1회용 초대를 소진하며 참여
+//   2) 내 멤버 문서가 없으면 localStorage 의 초대 토큰으로 참여
+//      · 다회용 초대(multiUse)는 초대를 소모하지 않고 멤버만 등록한다 — 같은 링크로 여러 기기가 참여한다
 //      · 초대가 없으면 Error('no_invite') → 앱이 초대 복구 폼을 띄운다
-//      · 초대가 이미 쓰였거나 만료면 Error('invite_unusable') → 같은 폼
+//      · 초대가 만료·회수됐거나(1회용은) 이미 쓰였으면 Error('invite_unusable') → 같은 폼
 //   3) 기기에 남은 저장 대기(pending)를 최신 원격과 병합해 반영(flushPending)
 //      · 겹친 항목이 있으면 window.__VIAGO_PENDING__ 에 담아 앱의 #syncConflict 로 넘긴다
 //   4) 이후 읽기/저장은 모두 멤버 토큰으로 나가고, 저장은 updateTime 사전 조건 + 3-way 병합
@@ -99,15 +100,15 @@
       myRole: async function () { await ensure(); try { return await auth.myRole(); } catch (e) { return null; } },
       // 이 기기가 이미 여행 멤버인지(초대 게이트에서 '이미 참여한 기기'를 구분할 때 쓴다).
       amIMember: async function () { try { return await auth.amIMember(); } catch (e) { return false; } },
-      // 초대 게이트에서 '탭 측시' 참여를 시도한다. 이미 멤버면 그대로 성공 처리하고,
-      // 아니면 1회용 초대를 소진해 참여한다. 성공하면 준비된 상태(ready)를 유지해 바로 읽을 수 있게 한다.
+      // 초대 게이트에서 '탭 즉시' 참여를 시도한다. 이미 멤버면 그대로 성공 처리하고,
+      // 아니면 초대로 참여한다(다회용 초대는 소모하지 않는다). 성공하면 준비된 상태(ready)를 유지해 바로 읽을 수 있게 한다.
       join: async function (token) {
         var member = await auth.amIMember().catch(function () { return false; });
         if (!member) await auth.joinWithInvite(token);
         ready = Promise.resolve(true);
         return true;
       },
-      // 1회용 초대 발급(규칙이 허용할 때만 성공). 실패는 {ok:false,status} 로 그대로 돌려준다.
+      // 초대 발급(규칙이 허용할 때만 성공). 기본은 다회용 30일 초대다. 실패는 {ok:false,status} 로 그대로 돌려준다.
       createInvite: async function (opts) { await ensure(); return auth.createInvite(opts); },
       pendingState: function () { return window.__VIAGO_PENDING__; },
       // 앱이 쓰지는 않지만, 문제 진단 때 콘솔에서 확인할 수 있게 둔다.

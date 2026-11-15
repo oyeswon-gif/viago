@@ -183,11 +183,11 @@
   <div id="inviteGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
     <div class="gate-card" id="gateForm">
       <h3 id="gateTitle">이 여행에 연결되지 않았어요</h3>
-      <p>이 기기에서는 여행 참여가 확인되지 않아 서버의 최신 일정을 열지 못했어요. 받은 <b>초대 링크 전체</b> 또는 <b>초대 코드 64자리</b>를 붙여넣고 <b>초대 코드로 연결</b>을 눌러주세요.</p>
+      <p>이 기기에서는 여행 참여가 확인되지 않아 서버의 최신 일정을 열지 못했어요. 받은 <b>초대 링크</b>나 <b>초대 코드</b>를 붙여넣으면 바로 연결됩니다. 한 번 연결한 기기는 다시 넣지 않아도 돼요.</p>
       <input id="gateInvite" type="text" inputmode="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="초대 링크 또는 초대 코드 64자리">
       <p id="gateError" role="alert"></p>
-      <div class="gate-actions"><button type="button" class="confirm" id="gateConnect">초대 코드로 연결</button><button type="button" class="cancel" id="gatePaste">복사한 코드 붙여넣기</button><button type="button" class="cancel" id="gateLater">기기에 저장된 이전 사본 보기</button></div>
-      <details class="gate-help" id="gateHelp"><summary>이미 사파리에서 참여했다면 (새 초대 없이 연결)</summary><ol><li>사파리에서 이 여행이 정상으로 열리는지 확인해 주세요.</li><li>홈 화면의 <b>viago</b> 아이콘을 길게 눌러 <b>삭제</b>해요. 서버 일정은 그대로 남아 있어요.</li><li>같은 사파리 화면에서 <b>공유 → 홈 화면에 추가 → 추가</b>를 눌러요.</li><li>홈 화면의 아이콘을 열면 <b>초대 없이 그대로</b> 연결돼요.</li></ol><p>사파리에서 다시 열어도 초대를 물으면, 여행을 만든 사람에게 새 초대를 받아 사파리에서 한 번 열어 주세요.</p></details>
+      <div class="gate-actions"><button type="button" class="confirm" id="gateConnect">연결하기</button><button type="button" class="cancel" id="gatePaste">복사한 코드 붙여넣기</button><button type="button" class="cancel" id="gateLater">기기에 저장된 이전 사본 보기</button></div>
+      <details class="gate-help" id="gateHelp"><summary>이미 사파리에서 참여했다면 (새 초대 없이 연결)</summary><ol><li>사파리에서 이 여행이 정상으로 열리는지 확인해 주세요.</li><li>홈 화면의 <b>viago</b> 아이콘을 길게 눌러 <b>삭제</b>해요. 서버 일정은 그대로 남아 있어요.</li><li>같은 사파리 화면에서 <b>공유 → 홈 화면에 추가 → 추가</b>를 눌러요.</li><li>홈 화면의 아이콘을 열면 <b>초대 없이 그대로</b> 연결돼요.</li></ol><p>사파리에서도 초대를 물으면 받은 초대 링크를 다시 붙여넣으면 됩니다. 초대 링크는 기간 안에서 여러 기기에서 다시 쓸 수 있어요.</p></details>
       <p class="gate-hint">홈 화면에 추가한 앱과 사파리는 저장 공간이 따로예요. 사파리에서 참여한 뒤 <b>홈 화면에 추가</b>하면 이 앱으로 그대로 이어지고, 그 전에 추가했다면 위 안내대로 한 번만 다시 추가해 주세요.</p>
     </div>
   </div>
@@ -198,7 +198,7 @@
       <input id="inAppLink" type="text" readonly aria-label="받은 초대 링크" />
       <p id="inAppError" role="alert"></p>
       <div class="gate-actions"><button type="button" class="confirm" id="inAppOpenSafari">사파리에서 열기</button><button type="button" class="cancel" id="inAppCopy">초대 링크 복사</button><button type="button" class="cancel" id="inAppContinue">이 창에서 그대로 참여</button><button type="button" class="cancel" id="inAppLater">기기에 저장된 이전 사본 보기</button></div>
-      <p class="gate-hint" id="inAppHint">사파리로 열면 이 기기에서 한 번만 참여하면 계속 이어져요. 초대는 한 사람만 쓸 수 있는 1회용이에요.</p>
+      <p class="gate-hint" id="inAppHint">사파리에서 열면 이 기기에서 바로 연결돼요. 받은 초대 링크는 기간 안에서 다시 쓸 수 있어요.</p>
     </div>
   </div>
   <dialog id="addDialog"><form method="dialog" class="dialog-inner" id="addForm"><h3>장소 추가</h3><p>장소를 검색해 정확한 지점을 선택해주세요. 추가한 순서가 이동 순서가 됩니다.</p><div class="field"><label for="placeName"><span>장소명</span></label><div class="autocomplete"><input id="placeName" required autocomplete="off" role="combobox" aria-expanded="false" aria-controls="placeSuggestions" /><svg class="autocomplete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><div class="suggestion-list" id="placeSuggestions" role="listbox"></div></div></div><label class="field"><span>Google 지도 공유 링크 (선택)</span><input id="addMapsUrl" type="text" inputmode="url" autocomplete="off" placeholder="Google 지도에서 복사한 링크 붙여넣기" /><small>Google 지도에서 장소 선택 → 공유 → 링크 복사 후 붙여넣기. 짧은 공유 링크는 정확한 장소를 여는 데 쓰이며, 앱 지도 핀은 좌표가 있을 때 표시돼요.</small></label><label class="field"><span>메모</span><input id="placeNote" placeholder="예약 정보나 할 일" /></label><div class="dialog-actions"><button type="button" class="cancel" value="cancel">취소</button><button class="confirm" id="addConfirm" value="default">일정에 추가</button></div></form></dialog>
@@ -273,7 +273,7 @@
     if(!inviteInUrl&&/^[a-f0-9]{64}$/.test(inviteToken)){const inviteUrl=new URL(location.href);inviteUrl.hash='invite='+inviteToken;history.replaceState(null,'',inviteUrl.pathname+inviteUrl.search+inviteUrl.hash)}
     // ── 인앱 브라우저(카카오톡·인스타그램 등) ──────────────────────────────────
     // 이 브라우저들은 사파리·홈 화면 앱과 저장 공간이 다르다. 그래서 여기서 1회용 초대를 소모하면
-    //  · 사파리·홈 화면 앱에서는 그 초대를 다시 쓸 수 없고,
+    //  · 사파리·홈 화면 앱에서는 그 1회용 초대를 다시 쓸 수 없고(다회용 링크는 다시 쓸 수 있다),
     //  · 다음에 같은 창을 다시 열면 새 익명 계정으로 보여 참여가 이어지지 않는다.
     // → 인앱 브라우저에서는 초대를 '자동으로' 소모하지 않고, 사파리에서 열도록 먼저 안내한다.
     function inAppBrowserInfo(){
@@ -367,7 +367,7 @@
       const g=gateEl();if(!g)return;
       g.hidden=true;g.style.top='';g.style.height='';g.style.bottom='';
       setGateError('');
-      const btn=$('#gateConnect');if(btn){btn.disabled=false;btn.textContent='초대 코드로 연결'}
+      const btn=$('#gateConnect');if(btn){btn.disabled=false;btn.textContent='연결하기'}
     }
     let gateAutoFocused=false;
     function markAccessBlocked(openGate){
@@ -391,8 +391,8 @@
     function gateJoinMessage(err){
       const m=String(err&&err.message||err||'');
       if(/offline|network|Failed to fetch|Load failed/i.test(m))return '네트워크에 연결되지 않았어요. 연결을 확인하고 다시 눌러주세요.';
-      if(/invite_taken/.test(m))return '이 초대는 방금 다른 사람이 먼저 사용했어요. 이미 참여한 사파리·홈 화면 앱에서 열거나, 여행을 만든 사람에게 새 초대를 받아주세요.';
-      if(/invite_unusable/.test(m))return '이 초대는 이미 사용됐거나 만료됐어요. 이미 참여한 사파리·홈 화면 앱에서 열거나, 여행을 만든 사람에게 새 초대를 받아주세요.';
+      if(/invite_taken/.test(m))return '이 초대는 다른 곳에서 이미 쓰였어요. 여행을 만든 사람에게 새 초대 링크를 받아주세요.';
+      if(/invite_unusable/.test(m))return '이 초대는 쓸 수 없어요(만료됐거나 회수됐어요). 여행을 만든 사람에게 새 초대 링크를 받아주세요.';
       if(/join_denied/.test(m))return '이 초대는 이 여행에 쓸 수 없어요. 새 초대 코드를 받아 다시 넣어주세요.';
       if(/no_invite/.test(m))return '이 기기는 아직 이 여행에 참여하지 않았어요. 받은 초대 코드를 넣어주세요.';
       return '연결하지 못했어요'+(m?' ('+m+')':'')+'. 잠시 후 다시 눌러주세요.';
@@ -418,7 +418,7 @@
       if(!joined){
         gateConnecting=false;
         setGateError(gateJoinMessage(error));
-        if(btn){btn.disabled=false;btn.textContent='초대 코드로 연결'}
+        if(btn){btn.disabled=false;btn.textContent='연결하기'}
         // 인앱 브라우저에서 이미 소모된 초대면, 코드를 다시 넣어도 풀리지 않는다 → 사파리 안내로 바꾼다.
         if(inAppBrowser&&/invite_unusable|invite_taken/.test(String(error&&error.message||'')))showInAppGuide('spent');
         return;
@@ -431,7 +431,7 @@
       try{await startSharedSync()}catch(e){}
       if(!gateIsOpen())return;
       setGateError('참여는 됐지만 서버 일정을 아직 읽지 못했어요. 잠시 후 다시 열어주세요.');
-      if(btn){btn.disabled=false;btn.textContent='초대 코드로 연결'}
+      if(btn){btn.disabled=false;btn.textContent='연결하기'}
     }
     function showInviteRecovery(message,gateMessage){hideLaunchCover();document.body.classList.remove('booting');const form=$('#inviteRecovery');if(form)form.hidden=false;if(message)$('#recoveryError').textContent=message;if(gateMessage)setGateError(gateMessage);markAccessBlocked()}
     // ── 인앱 브라우저 안내(사파리로 열기·링크 복사·이 창에서 참여) ──────────────
@@ -460,8 +460,8 @@
       document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});
       $('#inAppTitle').textContent=spent?'이 초대는 이미 사용됐어요':name+'에서는 참여가 이어지지 않아요';
       $('#inAppWhy').innerHTML=spent
-        ? name+' 안의 브라우저는 사파리·홈 화면 앱과 <b>저장 공간이 달라서</b> 이미 참여한 기기라도 이 창에서는 새 손님으로 보여요. 게다가 <b>이미 사용된 초대는 다시 쓸 수 없어요.</b>'
-        : name+' 안의 브라우저는 사파리·홈 화면 앱과 <b>저장 공간이 따로</b>예요. 여기서 초대를 쓰면 그 초대는 이 창에서만 쓰이고, 사파리·홈 화면 앱에서는 다시 쓸 수 없어요.';
+        ? name+' 안의 브라우저는 사파리·홈 화면 앱과 <b>저장 공간이 달라서</b> 이미 참여한 기기라도 이 창에서는 새 손님으로 보여요. 게다가 <b>이 초대는 이미 다른 곳에서 사용됐어요.</b>'
+        : name+' 안의 브라우저는 사파리·홈 화면 앱과 <b>저장 공간이 따로</b>예요. 새 초대 링크는 기간 안에서 여러 기기에서 다시 쓸 수 있어요.';
       const field=$('#inAppLink');
       if(field){field.value=link||'';field.hidden=!link}
       $('#inAppOpenSafari').hidden=!link;
@@ -469,7 +469,7 @@
       $('#inAppContinue').hidden=spent||!link;
       $('#inAppHint').textContent=spent
         ? '이미 참여한 기기라면 사파리나 홈 화면 앱에서 열어보세요. 새 초대는 여행을 만든 사람(소유자)이 앱의 + 버튼으로 만들 수 있어요.'
-        : '사파리에서 열어 한 번만 참여하면 이 기기에서는 계속 이어져요. 초대는 한 사람만 쓸 수 있는 1회용이에요.';
+        : '사파리에서 열면 이 기기에서 바로 연결돼요. 받은 초대 링크는 기간 안에서 다시 쓸 수 있어요.';
       setInAppError('');
       g.hidden=false;
     }
@@ -1526,7 +1526,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       if(navigator.share){try{await navigator.share(data);return}catch(e){if(e&&e.name==='AbortError')return}}
       try{await navigator.clipboard.writeText(text);toast(copyToast)}catch(e){toast('링크를 복사하지 못했어요')}
     }
-    // + 버튼: 1회용 초대 링크를 실제로 발급해 공유한다.
+    // + 버튼: 다회용(30일) 초대 링크를 실제로 발급해 공유한다 — 같은 링크로 여러 기기·재설치가 참여한다.
     //   규칙이 초대 발급을 허용하지 않는 구성에서는 주소를 '초대 링크'라고 부르지 않고,
     //   함께 편집 권한이 없는 앱 주소임을 분명히 알린다.
     async function share(){
@@ -1535,11 +1535,12 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       const appUrl=location.origin+appBasePath();
       try{
         if(sharedDirty){await pushSharedState();if(sharedDirty)return toast('일정 저장 후 다시 초대 링크를 만들어 주세요')}
-        const made=sharedSync.createInvite?await sharedSync.createInvite({expiresInDays:7,role:'editor'}):null;
+        const made=sharedSync.createInvite?await sharedSync.createInvite({expiresInDays:30,role:'editor',multiUse:true}):null;
         if(made&&made.ok){
-          const link=appUrl+'#invite='+made.token,title=activeTrip.name+'에 함께하기',text=title+'\n'+link+'\n(7일 안에 한 사람만 쓸 수 있는 초대 링크예요)';
+          const until=new Date(made.expiresAt||Date.now()).toLocaleDateString('ko-KR',{month:'long',day:'numeric'});
+          const link=appUrl+'#invite='+made.token,title=activeTrip.name+'에 함께하기',text=title+'\n'+link+'\n('+until+'까지 여러 기기에서 쓸 수 있는 초대 링크예요)';
           // url 은 넘기지 않는다 — text 안의 초대 링크 하나만 나가야 미리보기 카드가 한 번만 붙는다.
-          await shareOrCopy({title,text},link,'1회용 초대 링크를 복사했어요 · 7일 안에 한 사람만 쓸 수 있어요');
+          await shareOrCopy({title,text},link,'초대 링크를 복사했어요 · '+until+'까지 여러 기기에서 쓸 수 있어요');
           return;
         }
         const denied=made&&made.status===403,hint=denied?'이 앱에서는 새 초대 링크를 아직 만들 수 없어요(초대 발급 권한이 꺼져 있음).':'초대 링크를 만들지 못했어요.';
@@ -1680,7 +1681,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
-    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=54',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+    if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./service-worker.js?v=55',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
