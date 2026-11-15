@@ -21,7 +21,6 @@
   <meta name="description" content="지인들과 함께 일정을 정리하고 Google 지도로 바로 길찾는 개인 여행 앱" />
   <title>viago</title>
   <link rel="preconnect" href="https://www.google.com" />
-  <script src="./journey-install.js?v=62"></script>
   <link rel="apple-touch-startup-image" href="./splash/375x812.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" />
   <link rel="apple-touch-startup-image" href="./splash/390x844.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" />
   <link rel="apple-touch-startup-image" href="./splash/393x852.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
@@ -236,9 +235,9 @@
     </div>
   </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js?v=62"></script>
-  <script src="./viago-auth-client.js?v=62"></script>
-  <script src="./viago-auth-firebase.js?v=62"></script>
+  <script src="./journey-sync.js?v=63"></script>
+  <script src="./viago-auth-client.js?v=63"></script>
+  <script src="./viago-auth-firebase.js?v=63"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -1873,13 +1872,15 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     window.addEventListener('offline',()=>{paintProviderNotes();paintNetChip()});
     paintProviderNotes();
     paintNetChip();
+    // 저장소 내구성: 홈 화면 앱의 껍데기 캐시가 자동 삭제되지 않게 조용히 요청한다(iOS 15.4+·Chromium).
+    try{navigator.storage&&navigator.storage.persist&&navigator.storage.persisted&&navigator.storage.persisted().then(has=>{if(!has)navigator.storage.persist().catch(()=>{})})}catch(e){}
     startSharedSync();
     setInterval(refreshOpeningHours,3600000);
     setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
     // 서비스 워커: 새 버전을 조용히 갈아 끼우되, 화면에 짧게 알리고 필요하면 눈에 보이게 물어본다.
-    //   · 스크립트 주소에 ?v=62 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 스크립트 주소에 ?v=63 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
     //   · 새 워커가 활성화되면(controllerchange) 옛 코드가 남은 화면은 한 번 새로고침한다(코드 섞임 방지).
     //     입력 중이면 새로고침하지 않고 아래 안내 막대의 「새로고침」을 기다린다.
     if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
@@ -1911,12 +1912,12 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
         setTimeout(check,8000);
       };
-      navigator.serviceWorker.register('./service-worker.js?v=62',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=63',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
       markUpdated();
     }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js?v=62"></script>
+  <script src="./journey-preview.js?v=63"></script>
 </body>
 </html>

@@ -15,7 +15,7 @@
 // 4) 새 워커는 skipWaiting + clients.claim 으로 바로 활성화된다. 화면(index.html)은
 //    controllerchange 를 받으면 새 코드로 갈아 끼우고, 입력 중이면 안내 막대(새로고침)를 띄운다.
 //    화면이 보내는 { type: 'SKIP_WAITING' } 메시지도 같은 동작을 한다(대기 중인 워커용).
-const VERSION = 'v16';   // 2026-11-16: 새 버전 안내(화면 막대) · 캐시 실패 기록 · SKIP_WAITING 메시지 · 지도 카메라 보호(v14)
+const VERSION = 'v17';   // 2026-11-16: 새 버전 안내(화면 막대) · 캐시 실패 기록 · SKIP_WAITING 메시지 · 지도 카메라 보호(v14)
 const SHELL = `viago-shell-${VERSION}`;
 // 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
 const OUR_PREFIX = 'viago-';
@@ -28,7 +28,6 @@ const SHELL_FILES = [
   './viago-auth-client.js',   // 이전 빌드의 인증·초대 클라이언트
   './viago-auth-firebase.js', // 앱 저장 경로 어댑터
   './viago-sync-v3.js',       // (구) 인증 없는 저장 구현 — 앱이 더 이상 부르지 않지만 남겨 둔다
-  './journey-install.js',
   './manifest.webmanifest',
   './app-icon-192.png',
   './app-icon-512.png',

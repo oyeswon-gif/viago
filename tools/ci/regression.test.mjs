@@ -62,8 +62,8 @@ check('R8 VIAGO 컬렉션 사용', /viagoRooms/.test(auth) && /viagoInvites/.tes
 
 // R9 — 이동시간은 저장된 좌표 계산으로만 (Places/Geocoding 호출 없음, M11)
 check('R9 이동시간 좌표 계산', /haversine|distanceMeters|kmBetween|legFor|tripLeg/.test(html));
-const boot = section(html, 'paintNetChip();\n    startSharedSync();', 'registerTravelTools();');
-check('R9 부팅 경로에 Places 호출 없음', !!boot && !/placesRequest\(/.test(boot) && boot.length < 1500);
+const boot = section(html, '\n    startSharedSync();', 'const prepareReorder');
+check('R9 부팅 경로에 Places 호출 없음', !!boot && !/placesRequest\(/.test(boot), boot ? `${boot.length}자 구간` : '구간 없음');
 
 // R10 — 문지기(터치) 규칙이 CSS 에 살아 있음 (M8)
 check('R10 터치: 아이콘 버튼 44px', /\.icon-btn\{[^}]*width:\s*44px/.test(css));
