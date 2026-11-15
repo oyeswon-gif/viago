@@ -151,6 +151,59 @@ function createViagoAuthV3(opts) {
     return res.ok;
   }
 
+  // ── 역할 · 초대 발급 ──────────────────────────────────
+  // 규칙상 초대 문서 생성은 관리자(콘솔)만 가능하다. 아래 createInvite 는 그 권한이 열려 있는
+  // 구성(= 소유자에게 viagoInvites create 를 허용하는 규칙)에서만 성공하고, 아니면 403 을 그대로 돌려준다.
+  async function myRole(roomId) {
+    const rid = roomId || cfg.roomCode;
+    if (!rid || !session) return null;
+    try {
+      const res = await authedFetch(`/${cfg.roomCollection}/${encodeURIComponent(rid)}/members/${session.uid}`, { cache: 'no-store' });
+      if (!res.ok) return null;
+      const doc = await res.json();
+      return (doc.fields && doc.fields.role && doc.fields.role.stringValue) || null;
+    } catch (e) {
+      if (e.network) throw e;
+      return null;
+    }
+  }
+
+  function randomToken() {
+    const bytes = new Uint8Array(32);
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(bytes);
+    else for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+    return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // 성공: {ok:true, token, expiresAt} · 실패: {ok:false, status, reason}
+  async function createInvite(opts) {
+    const o = opts || {};
+    const rid = o.roomId || cfg.roomCode;
+    if (!rid) return { ok: false, reason: 'no_room' };
+    const token = randomToken();
+    const expiresAt = new Date(Date.now() + (o.expiresInDays || 7) * 86400000).toISOString();
+    const write = {
+      update: {
+        name: viagoV3DocName(cfg.projectId, `viagoInvites/${token}`),
+        fields: {
+          roomId: { stringValue: rid },
+          role: { stringValue: o.role || 'editor' },
+          expiresAt: { timestampValue: expiresAt },
+          revoked: { booleanValue: false }
+        }
+      },
+      currentDocument: { exists: false }
+    };
+    let res;
+    try {
+      res = await authedFetch(':commit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ writes: [write] }) });
+    } catch (e) {
+      return { ok: false, reason: e.network ? 'offline' : 'network' };
+    }
+    if (res.ok) return { ok: true, token, expiresAt, roomId: rid };
+    return { ok: false, status: res.status, reason: res.status === 403 ? 'denied' : 'error' };
+  }
+
   // ── 읽기 ─────────────────────────────────────────────
   // { payload, revision, updateTime, raw } | null
   async function readRoom(roomId) {
@@ -271,7 +324,7 @@ function createViagoAuthV3(opts) {
   return {
     config: cfg, mergeJourney: merge,
     load, signInAnonymously, refreshIfNeeded, uid,
-    joinWithInvite, amIMember, readRoom, saveRoom, saveJourney, saveResolved,
+    joinWithInvite, amIMember, myRole, createInvite, readRoom, saveRoom, saveJourney, saveResolved,
     readPending, writePending, clearPending, flushPending,
     get session() { return session },
     get roomCode() { return cfg.roomCode },

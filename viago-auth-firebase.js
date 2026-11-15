@@ -76,12 +76,24 @@
         return { ok: true, status: 200, json: async function () { return room.raw; } };
       },
       readRoom: async function () { await ensure(); return auth.readRoom(); },
-      saveWithMerge: async function (args) { await ensure(); return auth.saveJourney(args); },
+      saveWithMerge: async function (args) {
+        try { await ensure(); }
+        catch (e) {
+          // 서버에 닿지 못하면 저장할 payload 를 기기에 남긴다(다음 실행에서 최신 원격과 병합).
+          if (e && e.message === 'offline') { auth.writePending(args); return { status: 'offline' }; }
+          throw e;
+        }
+        return auth.saveJourney(args);
+      },
       saveResolved: async function (state, preferRemote) {
         await ensure();
         var r = await auth.saveResolved(state, preferRemote);
         return Object.assign({}, r, { ok: r.status === 'saved' });
       },
+      // 여행에서 내 역할('owner'|'editor') — 초대 발급·여행 삭제 같은 소유자 기능의 근거.
+      myRole: async function () { await ensure(); try { return await auth.myRole(); } catch (e) { return null; } },
+      // 1회용 초대 발급(규칙이 허용할 때만 성공). 실패는 {ok:false,status} 로 그대로 돌려준다.
+      createInvite: async function (opts) { await ensure(); return auth.createInvite(opts); },
       pendingState: function () { return window.__VIAGO_PENDING__; },
       // 앱이 쓰지는 않지만, 문제 진단 때 콘솔에서 확인할 수 있게 둔다.
       authState: function () { return { uid: auth.session && auth.session.uid, room: auth.roomCode }; }
