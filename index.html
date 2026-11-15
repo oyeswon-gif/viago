@@ -20,7 +20,7 @@
   <meta name="description" content="지인들과 함께 일정을 정리하고 Google 지도로 바로 길찾는 개인 여행 앱" />
   <title>viago</title>
   <link rel="preconnect" href="https://www.google.com" />
-  <script src="./journey-install.js?v=57"></script>
+  <script src="./journey-install.js?v=58"></script>
   <link rel="apple-touch-startup-image" href="/viago-start-390x844.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" />
   <link rel="apple-touch-startup-image" href="/viago-start-393x852.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
   <link rel="apple-touch-startup-image" href="/viago-start-430x932.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
@@ -223,9 +223,9 @@
     </div>
   </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js?v=57"></script>
-  <script src="./viago-auth-client.js?v=57"></script>
-  <script src="./viago-auth-firebase.js?v=57"></script>
+  <script src="./journey-sync.js?v=58"></script>
+  <script src="./viago-auth-client.js?v=58"></script>
+  <script src="./viago-auth-firebase.js?v=58"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -893,7 +893,7 @@
       const d=days[dayIndex];$('#dayTitle').textContent=d.title;$('#daySummary').textContent=d.summary;
       const addActions='<div class="schedule-add-actions" aria-label="일정 장소 추가"><button class="place-add" id="placeAdd">직접 장소 추가</button><button class="place-add schedule-link-add" id="scheduleLinkAdd">링크에서 장소 찾기</button></div>';
       if(!d.places.length){timeline.innerHTML='<div class="empty">아직 등록한 장소가 없어요.</div>'+addActions;bindScheduleAddActions();if(sharedReady&&(innerWidth>850||currentView==='map'))showOverview();return}
-      timeline.innerHTML=d.places.map((p,i)=>`<div class="swipe-row" data-i="${i}"><div class="row-actions"><button class="edit-action" aria-label="${esc(p.name)} 편집">편집</button><button class="delete-action" aria-label="${esc(p.name)} 삭제">삭제</button></div><div class="place" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}" tabindex="0"><div class="place-main">${placeIcon(p)}<h3 class="place-name">${esc(p.name)}</h3><p class="place-note">${esc(p.note||'메모 없음')}</p><span class="place-kind">${esc(p.kind||'장소')}</span><span class="place-badges">${coordBadge(p)}<span class="place-status info" data-hours="${i}">영업시간 확인</span></span></div><button class="more" aria-label="${esc(p.name)} 지도에서 보기"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>`).join('')+addActions;
+      timeline.innerHTML=d.places.map((p,i)=>`<div class="swipe-row" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}"><div class="row-actions"><button class="edit-action" aria-label="${esc(p.name)} 편집">편집</button><button class="delete-action" aria-label="${esc(p.name)} 삭제">삭제</button></div><div class="place" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}" tabindex="0"><div class="place-main">${placeIcon(p)}<div class="place-text"><h3 class="place-name">${esc(p.name)}</h3><div class="place-sub"><p class="place-note">${esc(p.note||'메모 없음')}</p><span class="place-kind">${esc(p.kind||'장소')}</span></div></div><span class="place-badges">${coordBadge(p)}<span class="place-status info" data-hours="${i}">영업시간 확인</span></span></div><button class="more" aria-label="${esc(p.name)} 지도에서 보기"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>`).join('')+addActions;
       timeline.querySelectorAll('.swipe-row').forEach(row=>{bindSwipe(row);row.querySelector('.edit-action').onclick=e=>{e.stopPropagation();closeSwipeRows();openEditDialog(+row.dataset.i)};row.querySelector('.delete-action').onclick=e=>{e.stopPropagation();deletePlace(+row.dataset.i)}});
       timeline.querySelectorAll('.place').forEach(el=>{const open=()=>{if(Date.now()<suppressPlaceClickUntil)return;if(el.dataset.swiped==='1'){el.dataset.swiped='0';return}selectPlace(+el.dataset.i,el)};el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter')open()}});
       bindScheduleAddActions();setupLongPressSort();if(sharedReady&&(innerWidth>850||currentView==='map'))showOverview();if(sharedReady)scheduleDayHours(dayIndex)
@@ -1750,7 +1750,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
     // 서비스 워커: 새 버전이 설치되면 이 화면도 새 코드로 한 번 갈아 끼운다.
-    //   · 스크립트 주소에 ?v=57 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 스크립트 주소에 ?v=58 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
     //   · 예전 워커가 제어하던 화면에서 새 워커가 활성화되면(controllerchange) 한 번만 새로고침한다.
     if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
       const hadController=!!navigator.serviceWorker.controller;let swReloading=false;
@@ -1760,11 +1760,11 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         try{if(sessionStorage.getItem('viago-sw-reloaded'))return;sessionStorage.setItem('viago-sw-reloaded','1')}catch(e){}
         swReloading=true;location.reload();
       });
-      navigator.serviceWorker.register('./service-worker.js?v=57',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=58',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js?v=57"></script>
+  <script src="./journey-preview.js?v=58"></script>
 </body>
 </html>

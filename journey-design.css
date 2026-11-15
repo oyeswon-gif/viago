@@ -68,12 +68,12 @@ body{background:#f4f8ff;color:var(--ink)}
 
 /* ===== 2026-11-15 시안 1(균형형): 지도 확대 · 축척 연동 핀 · 카테고리 색 ===== */
 /* 카테고리 팔레트 — 먹거리·관광·쇼핑·숙소·항공·교통, 미분류는 기본 파랑 */
-.place{--cat:#3187ff;--cat-tint:#eaf2ff}
-.place[data-cat="food"]{--cat:#f97316;--cat-tint:#fff2e8}
-.place[data-cat="sight"]{--cat:#8b5cf6;--cat-tint:#f3edff}
-.place[data-cat="shop"]{--cat:#ec4899;--cat-tint:#fdecf5}
-.place[data-cat="stay"]{--cat:#10b981;--cat-tint:#e6f8f1}
-.place[data-cat="transit"]{--cat:#2563eb;--cat-tint:#e9f0ff}
+.place,.swipe-row{--cat:#3187ff;--cat-tint:#eaf2ff}
+.place[data-cat="food"],.swipe-row[data-cat="food"]{--cat:#f97316;--cat-tint:#fff2e8}
+.place[data-cat="sight"],.swipe-row[data-cat="sight"]{--cat:#8b5cf6;--cat-tint:#f3edff}
+.place[data-cat="shop"],.swipe-row[data-cat="shop"]{--cat:#ec4899;--cat-tint:#fdecf5}
+.place[data-cat="stay"],.swipe-row[data-cat="stay"]{--cat:#10b981;--cat-tint:#e6f8f1}
+.place[data-cat="transit"],.swipe-row[data-cat="transit"]{--cat:#2563eb;--cat-tint:#e9f0ff}
 .place .place-type-icon{color:var(--cat);background:var(--cat-tint)}
 .place .place-main:before{background:var(--cat)}
 .place-badges{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center}
@@ -114,19 +114,26 @@ body{background:#f4f8ff;color:var(--ink)}
   .journey-preview-note{bottom:60px;max-width:calc(100% - 20px)}
   .mobile-nav{height:calc(56px + env(safe-area-inset-bottom))}
   .nav-item{font-size:11px;gap:2px}
-  /* 슬림 2줄 일정 카드 */
+  /* 트리플식 타임라인 카드: 왼쪽 세로선 위 번호 원 + 흰 카드(장소명 / 카테고리 · 메모) */
   .timeline{padding:0 0 14px}
-  .swipe-row{margin-bottom:7px}
-  .place{min-height:64px;padding:8px 4px 8px 9px;align-items:center;border-radius:13px}
-  .place-main{display:grid;grid-template-columns:34px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;row-gap:1px;padding:0;min-width:0}
-  .place-type-icon{position:static;grid-row:1/3;align-self:center;width:34px;height:34px;flex:none;border-radius:10px}
-  .place-type-icon svg{width:19px;height:19px}
-  .place-main:before{left:25px;top:-4px;width:17px;height:17px;font-size:9.5px;border-width:2px}
-  .place-name{grid-column:2;grid-row:1;margin:0;font-size:15px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .place-note{grid-column:2;grid-row:2;margin:0;font-size:12px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .place-kind{display:none}
-  /* 영업시간·위치 확인은 실제로 알려 줄 것이 있을 때만 한 줄 더 (없으면 카드 64px 유지) */
-  .place-badges{display:none;grid-column:2;grid-row:3;flex-wrap:wrap;gap:3px;margin-top:3px}
+  .swipe-row{position:relative;margin:0 0 9px;padding-left:32px;border-radius:13px}
+  .swipe-row::before{content:counter(journey-stop);position:absolute;left:0;top:9px;z-index:2;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--cat,#3187ff);color:#fff;font-size:10.5px;font-weight:800;line-height:1;box-shadow:0 0 0 3px #fff;font-variant-numeric:tabular-nums}
+  .swipe-row::after{content:"";position:absolute;left:10px;top:-9px;bottom:-9px;z-index:1;width:2px;border-radius:2px;background:#e4e9f2}
+  .swipe-row:first-of-type::after{top:14px}
+  .swipe-row:last-of-type::after{display:none}
+  .place{min-height:0;padding:9px 4px 9px 14px;align-items:center;border-radius:13px}
+  .place-main{display:block;padding:0;min-width:0}
+  .place-type-icon{display:none}
+  .place-main:before{display:none}
+  .place-text{min-width:0}
+  .place-name{margin:0 0 2px;font-size:16px;line-height:1.28;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* DOM 순서(메모→분류)는 데스크톱 그대로 두고, 모바일에서만 '분류 · 메모'로 뒤집는다 */
+  .place-sub{display:flex;flex-direction:row-reverse;justify-content:flex-end;align-items:center;gap:5px;min-width:0;font-size:12px;line-height:1.3;color:#7b8494}
+  .place-kind{flex:0 0 auto;margin:0;padding:0;background:none;color:#8a94a3;font-size:12px;font-weight:650}
+  .place-kind::after{content:"·";margin-left:5px;color:#c3c9d3;font-weight:400}
+  .place-note{flex:1;min-width:0;margin:0;padding:0;font-size:12px;line-height:1.3;color:#7b8494;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* 영업시간·위치 확인은 실제로 알려 줄 것이 있을 때만 한 줄 더 */
+  .place-badges{display:none;flex-wrap:wrap;gap:3px;margin-top:4px}
   .place-badges:has(.place-status.warn,.place-status.danger){display:flex}
   .place-badges:has(.place-status.warn,.place-status.danger) .place-status.info,.place-badges:has(.place-status.warn,.place-status.danger) .place-status.safe{display:none}
   .place-status{font-size:9.5px;padding:2px 5px;border-radius:5px;margin:0}
