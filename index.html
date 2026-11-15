@@ -639,7 +639,13 @@
     }
     function scheduleDayHours(index){lastHoursRefresh=Date.now();const generation=++hoursGeneration;checkDayHours(index,generation)}
     function refreshOpeningHours(){if(!sharedReady||document.hidden||candidateMode||foodMode)return;hoursCache.clear();scheduleDayHours(dayIndex)}
-    function addBaseLayer(map){L.tileLayer(TILE_URL,{maxZoom:20,maxNativeZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>'}).addTo(map)}
+    function addBaseLayer(map){
+      const layer=L.tileLayer(TILE_URL,{maxZoom:20,maxNativeZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>'});
+      // 배경 타일을 받지 못하면 (오프라인이 아니어도) 그 사실을 지도 위에 적는다 — 마커만 보고 위치를 확신하지 않게.
+      layer.on('tileerror',()=>{if(mapTilesFailed)return;mapTilesFailed=true;try{paintProviderNotes()}catch(e){}});
+      layer.on('load',()=>{if(mapTilesFailed){mapTilesFailed=false;try{paintProviderNotes()}catch(e){}}});
+      layer.addTo(map)
+    }
     async function chooseMapProvider(){if(await loadGoogleMaps())return 'google';if(await loadLeaflet())return 'leaflet';throw Error('map_unavailable')}
     function googleBudgetDay(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}
     function createTravelMap(id,options){
@@ -653,8 +659,10 @@
     function providerLabel(value){return value.provider==='google'?'Google 지도':(['daily_limit','monthly_limit'].includes(value.reason)?'Google 무료 한도 도달 · OpenStreetMap':value.reason==='google_auth'?'Google 지도 연결 실패 · OpenStreetMap':'Google 지도 연결 대기 · OpenStreetMap')}
     // 오프라인에서는 지도 배경 타일을 받을 수 없다는 사실을 상태줄에 분명히 적는다. (마커만으로 위치를 정확히 알 수 있다고 안내하지 않는다)
     const OFFLINE_MAP_NOTE='오프라인 — 지도 배경은 표시되지 않아요. 저장된 일정·마커만 볼 수 있어요';
-    function offlineMapNote(base){return navigator.onLine===false?base+' · '+OFFLINE_MAP_NOTE:base}
-    function paintProviderNotes(){['#mapProviderNote','#quickMapProvider'].forEach(sel=>{const el=$(sel);if(!el)return;const base=el.dataset.base||el.textContent.split(' · 오프라인')[0];el.dataset.base=base;const text=offlineMapNote(base);if(el.textContent!==text)el.textContent=text})}
+    const TILE_FAIL_NOTE='지도 배경을 불러오지 못했어요 · 일정 위치만 표시돼요';
+    let mapTilesFailed=false;
+    function offlineMapNote(base){return base+(navigator.onLine===false?' · '+OFFLINE_MAP_NOTE:(mapTilesFailed?' · '+TILE_FAIL_NOTE:''))}
+    function paintProviderNotes(){['#mapProviderNote','#quickMapProvider'].forEach(sel=>{const el=$(sel);if(!el)return;const base=el.dataset.base||el.textContent.split(' · ')[0];el.dataset.base=base;const text=offlineMapNote(base);if(el.textContent!==text)el.textContent=text})}
     async function ensureMainMap(){const value=await createTravelMap('overviewMap',{center:{lat:35.1709,lng:136.9065},zoom:13,maxZoom:19,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});mapInstance=value.map;const el=$('#mapProviderNote');el.dataset.base=providerLabel(value);el.textContent=offlineMapNote(el.dataset.base);return value}
     async function ensureQuickMap(){const value=await createTravelMap('quickLeafletMap',{center:{lat:35.1709,lng:136.9065},zoom:13,maxZoom:18,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});quickMapInstance=value.map;$('#quickMap').dataset.provider=value.provider;const el=$('#quickMapProvider');el.dataset.base=providerLabel(value);el.textContent=offlineMapNote(el.dataset.base);return value}
     function markerIcon(label,color){return L.divIcon({className:'viago-map-marker',html:`<div class="number-marker" style="--marker:${color}">${label}</div>`,iconSize:[32,32],iconAnchor:[16,16]})}
