@@ -228,8 +228,8 @@ button:active:not([disabled]),.date-tab:active,.nav-item:active,.trip-option:act
 .candidate-delete{width:44px;height:44px}
 
 /* 3) 지도 위 겹침 제거 — 범례는 아래 왼쪽, 안내 문구는 그 위, 「전체 동선」은 오른쪽 아래 */
-.journey-day-preview .map-legend{bottom:10px;left:10px}
-.journey-day-preview .journey-preview-note{bottom:44px}
+.journey-day-preview .map-legend{bottom:26px;left:10px}   /* 지도 제공자 출처(Google/OSM) 표기 위로 올린다 */
+.journey-day-preview .journey-preview-note{bottom:52px}
 .map-frame .map-legend{bottom:64px}
 .journey-day-preview .leaflet-control-zoom{margin:8px 0 0 8px}
 
