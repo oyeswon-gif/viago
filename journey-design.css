@@ -261,3 +261,10 @@ button:active:not([disabled]),.date-tab:active,.nav-item:active,.trip-option:act
 /* 지도 출처 표기(Leaflet | © OpenStreetMap contributors)가 오른쪽에서 잘리지 않게 두 줄 허용 + 작은 글자 */
 .leaflet-container .leaflet-control-attribution{font-size:9px!important;line-height:1.25;white-space:normal;max-width:min(100%,340px);text-align:right;padding:1px 5px!important;background:rgba(255,255,255,.88)!important;border-radius:8px 0 0 0}
 @media(max-width:850px){.leaflet-container .leaflet-control-attribution{font-size:8.5px!important;max-width:calc(100% - 8px)}}
+
+/* 스와이프로 열기 전에는 뒤에 깔린 편집·삭제 패널을 보이지 않게 한다.
+   (카드 모서리가 둥글어 닫힌 상태에서도 오른쪽 위·아래에 빨간 조각이 비쳤다) */
+.swipe-row .row-actions{opacity:0;transition:opacity .12s ease}
+.swipe-row:has(.place[data-open="1"]) .row-actions,
+.swipe-row:has(.place[data-swiping="1"]) .row-actions{opacity:1}
+@media(prefers-reduced-motion:reduce){.swipe-row .row-actions{transition:none}}

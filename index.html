@@ -235,9 +235,9 @@
     </div>
   </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js?v=63"></script>
-  <script src="./viago-auth-client.js?v=63"></script>
-  <script src="./viago-auth-firebase.js?v=63"></script>
+  <script src="./journey-sync.js?v=64"></script>
+  <script src="./viago-auth-client.js?v=64"></script>
+  <script src="./viago-auth-firebase.js?v=64"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -965,7 +965,7 @@
       if(sharedReady&&(innerWidth>850||currentView==='map'))showOverview();if(sharedReady)scheduleDayHours(dayIndex)
     }
     function bindScheduleAddActions(){const direct=$('#placeAdd'),link=$('#scheduleLinkAdd');if(direct)direct.onclick=openAddDialog;if(link)link.onclick=()=>openLinkDialog('schedule')}
-    function bindSwipe(row){const card=row.querySelector('.place'),actions=row.querySelector('.row-actions'),max=Math.max(88,actions?.offsetWidth||88);let startX=0,startY=0,delta=0,horizontal=false;card.addEventListener('touchstart',e=>{closeSwipeRows(card);startX=e.touches[0].clientX;startY=e.touches[0].clientY;delta=0;horizontal=false;card.classList.add('dragging')},{passive:true});card.addEventListener('touchmove',e=>{const dx=e.touches[0].clientX-startX,dy=e.touches[0].clientY-startY;if(!horizontal&&Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy))horizontal=true;if(!horizontal)return;e.preventDefault();delta=Math.max(-max,Math.min(0,dx));card.style.transform=`translateX(${delta}px)`},{passive:false});card.addEventListener('touchend',()=>{card.classList.remove('dragging');const open=delta<-Math.min(46,max*.34);card.style.transform=open?`translateX(-${max}px)`:'translateX(0)';card.dataset.open=open?'1':'0';if(Math.abs(delta)>8)card.dataset.swiped='1'})}
+    function bindSwipe(row){const card=row.querySelector('.place'),actions=row.querySelector('.row-actions'),max=Math.max(88,actions?.offsetWidth||88);let startX=0,startY=0,delta=0,horizontal=false;card.addEventListener('touchstart',e=>{closeSwipeRows(card);startX=e.touches[0].clientX;startY=e.touches[0].clientY;delta=0;horizontal=false;card.classList.add('dragging')},{passive:true});card.addEventListener('touchmove',e=>{const dx=e.touches[0].clientX-startX,dy=e.touches[0].clientY-startY;if(!horizontal&&Math.abs(dx)>8&&Math.abs(dx)>Math.abs(dy))horizontal=true;if(!horizontal)return;e.preventDefault();card.dataset.swiping='1';delta=Math.max(-max,Math.min(0,dx));card.style.transform=`translateX(${delta}px)`},{passive:false});card.addEventListener('touchend',()=>{card.classList.remove('dragging');delete card.dataset.swiping;const open=delta<-Math.min(46,max*.34);card.style.transform=open?`translateX(-${max}px)`:'translateX(0)';card.dataset.open=open?'1':'0';if(Math.abs(delta)>8)card.dataset.swiped='1'})}
     function setupLongPressSort(){if(!window.Sortable||foodMode)return;sortable=Sortable.create(timeline,{animation:190,delay:360,delayOnTouchOnly:false,touchStartThreshold:5,draggable:'.swipe-row',filter:'button,.row-actions,.edit-action,.delete-action',preventOnFilter:false,chosenClass:'sort-chosen',ghostClass:'sort-ghost',dragClass:'sort-drag',onStart(){draggingSchedule=true;closeSwipeRows();navigator.vibrate?.(18)},onEnd(e){draggingSchedule=false;suppressPlaceClickUntil=Date.now()+450;/* 카드 사이 이동 pill 이 끼어 있어도 순서가 맞도록 드래그 가능한 항목 기준 인덱스를 쓴다 */const from=e.oldDraggableIndex??e.oldIndex,to=e.newDraggableIndex??e.newIndex;if(from==null||to==null||from===to)return;const list=days[dayIndex].places,[moved]=list.splice(from,1);list.splice(to,0,moved);save();render();toast('일정 순서를 변경했어요')}})}
     function deletePlace(index){const item=days[dayIndex].places[index];if(!item)return;lastDeleted={type:'day',day:dayIndex,index,item};days[dayIndex].places.splice(index,1);save();render();toast(`${item.name}을(를) 삭제했어요`,true)}
     function deleteFood(index){const item=restaurants[index];if(!item)return;lastDeleted={type:'food',index,item};restaurants.splice(index,1);save();render();toast(`${item.name}을(를) 삭제했어요`,true)}
@@ -1880,7 +1880,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
     // 서비스 워커: 새 버전을 조용히 갈아 끼우되, 화면에 짧게 알리고 필요하면 눈에 보이게 물어본다.
-    //   · 스크립트 주소에 ?v=63 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 스크립트 주소에 ?v=64 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
     //   · 새 워커가 활성화되면(controllerchange) 옛 코드가 남은 화면은 한 번 새로고침한다(코드 섞임 방지).
     //     입력 중이면 새로고침하지 않고 아래 안내 막대의 「새로고침」을 기다린다.
     if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
@@ -1912,12 +1912,12 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
         setTimeout(check,8000);
       };
-      navigator.serviceWorker.register('./service-worker.js?v=63',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=64',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
       markUpdated();
     }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js?v=63"></script>
+  <script src="./journey-preview.js?v=64"></script>
 </body>
 </html>

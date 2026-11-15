@@ -120,6 +120,26 @@ const srv = http.createServer((q, r) => {
   });
   rec('S7b 인라인 지도 위 스와이프가 카드·탭을 움직이지 않는다', swipe.before.transform === swipe.after.transform && swipe.before.open === swipe.after.open && swipe.before.view === swipe.after.view, JSON.stringify(swipe));
 
+  // 카드 스와이프 → 삭제·편집 패널이 드러난다(닫힘 상태에서는 보이지 않아야 한다)
+  const swipeCard = await page.evaluate(async () => {
+    const row = document.querySelectorAll('#timeline .swipe-row')[2];
+    const card = row.querySelector('.place');
+    const actions = row.querySelector('.row-actions');
+    const closed = getComputedStyle(actions).opacity;
+    const fire = (type, x, y) => {
+      const t = new Touch({ identifier: 2, target: card, clientX: x, clientY: y });
+      card.dispatchEvent(new TouchEvent(type, { bubbles: true, cancelable: true, touches: type === 'touchend' ? [] : [t], targetTouches: type === 'touchend' ? [] : [t], changedTouches: [t] }));
+    };
+    const r = card.getBoundingClientRect(), y = Math.round(r.top + r.height / 2);
+    fire('touchstart', Math.round(r.right - 60), y);
+    fire('touchmove', Math.round(r.right - 160), y - 1);
+    fire('touchmove', Math.round(r.right - 180), y - 1);
+    fire('touchend', Math.round(r.right - 180), y - 1);
+    await new Promise(res => setTimeout(res, 320));   // opacity 전환(.12s) 뒤에 읽는다
+    return { closed, open: card.dataset.open, transform: card.style.transform, opened: getComputedStyle(actions).opacity };
+  });
+  rec('S7c 카드 스와이프로 삭제·편집 패널이 드러난다', swipeCard.open === '1' && swipeCard.transform.indexOf('translateX(-') === 0 && Number(swipeCard.opened) > 0.5 && Number(swipeCard.closed) < 0.5, JSON.stringify(swipeCard));
+
   // 지도 카메라 가드: 사용자가 만진 뒤 자동 맞춤은 양보, 명시적 요청만 맞춘다
   const camera = await page.evaluate(() => {
     if (typeof viagoFrameMap !== 'function' || typeof viagoCameraTouch !== 'function') return { missing: true };
