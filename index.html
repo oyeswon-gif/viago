@@ -20,7 +20,7 @@
   <meta name="description" content="지인들과 함께 일정을 정리하고 Google 지도로 바로 길찾는 개인 여행 앱" />
   <title>viago</title>
   <link rel="preconnect" href="https://www.google.com" />
-  <script src="./journey-install.js?v=56"></script>
+  <script src="./journey-install.js?v=57"></script>
   <link rel="apple-touch-startup-image" href="/viago-start-390x844.jpg" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" />
   <link rel="apple-touch-startup-image" href="/viago-start-393x852.jpg" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
   <link rel="apple-touch-startup-image" href="/viago-start-430x932.jpg" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
@@ -159,14 +159,14 @@
         <div class="panel-head"><div><h2 id="dayTitle">12월 10일 목요일</h2><p id="daySummary">도착 후 사카에와 오스 산책</p></div><span class="sync-state" id="syncStatus">공유 연결 중</span></div>
         <div id="staleBanner" role="status"><strong>이 기기는 이 여행에 참여한 상태가 아니에요</strong><span>지금 보이는 일정은 <b>기기에 저장된 이전 사본</b>이라 서버의 최신 일정과 다를 수 있어요. 서버 일정은 그대로 있고, 이 기기에서만 연결이 안 된 상태예요.</span><div class="stale-actions"><button type="button" id="staleJoin">초대 코드 넣기</button></div><span class="stale-note" id="staleNote"></span></div>
         <section class="quick-map" id="quickMap" aria-live="polite"><div class="quick-map-head"><strong>이동 구간 미리보기</strong><button class="quick-map-close" id="quickMapClose" aria-label="지도 닫기">×</button></div><div id="quickMapProvider" class="free-map-note" aria-live="polite">Google 지도</div><div class="quick-map-frame"><div id="quickLeafletMap" class="quick-leaflet-map" aria-label="선택한 일정의 이동 구간 미리보기"></div></div><div class="quick-map-foot"><span id="quickMapStatus">이동 구간을 표시하고 있어요</span><button class="quick-route-btn" id="freeGooglePreview" hidden>Google 미리보기</button><button class="quick-route-btn" id="quickRouteBtn">Google 지도에서 열기</button></div></section>
-        <div class="journey-day-preview" id="journeyDayPreview" hidden><div class="journey-day-map" id="journeyDayMap" role="img" aria-label="선택한 날짜의 장소 위치와 번호 · 손가락으로 이동하고 확대할 수 있어요"></div><span class="journey-preview-note" id="journeyPreviewNote" hidden></span><button class="journey-preview-button" id="journeyPreviewOpen" aria-label="선택한 날짜의 전체 동선 지도 열기">전체 동선</button></div>
+        <div class="journey-day-preview" id="journeyDayPreview" hidden><div class="journey-day-map" id="journeyDayMap" role="img" aria-label="선택한 날짜의 장소 위치와 번호 · 손가락으로 이동하고 확대할 수 있어요"></div><span class="journey-preview-note" id="journeyPreviewNote" hidden></span><div class="map-legend" role="note" aria-label="지도 범례: 먹거리, 관광, 쇼핑, 숙소, 항공·교통"><b data-cat="food"><i></i>먹거리</b><b data-cat="sight"><i></i>관광</b><b data-cat="shop"><i></i>쇼핑</b><b data-cat="stay"><i></i>숙소</b><b data-cat="transit"><i></i>항공·교통</b></div><button class="journey-preview-button" id="journeyPreviewOpen" aria-label="선택한 날짜의 전체 동선 지도 열기">전체 동선</button></div>
         <div class="timeline" id="timeline"></div>
       </article>
 
       <article class="panel map-panel" id="mapPanel">
         <div class="panel-head"><div><h2 id="mapHeading">오늘 일정 지도</h2><p id="mapDescription">번호 순서대로 하루 동선을 볼 수 있어요</p></div><div class="map-head-actions"><button class="overview-btn" id="overviewBtn">전체 보기</button></div></div>
         <div class="search-wrap"><div class="search-box autocomplete"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="mapSearch" aria-label="장소 검색" placeholder="식당, 관광지, 주소 검색" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="mapSuggestions" /><div class="suggestion-list" id="mapSuggestions" role="listbox"></div></div><button class="search-go" id="mapSearchBtn">검색</button></div>
-        <div id="mapProviderNote" class="free-map-note" aria-live="polite">Google 지도</div><div class="map-frame"><div class="overview-map" id="overviewMap" aria-label="번호가 표시된 전체 일정 지도"></div><div class="map-overlay"><div class="map-status" id="mapStatus">번호 순서대로 일정을 표시하고 있어요</div></div></div>
+        <div id="mapProviderNote" class="free-map-note" aria-live="polite">Google 지도</div><div class="map-frame"><div class="overview-map" id="overviewMap" aria-label="번호가 표시된 전체 일정 지도"></div><div class="map-overlay"><div class="map-status" id="mapStatus">번호 순서대로 일정을 표시하고 있어요</div></div><div class="map-legend map-legend-main" role="note" aria-label="지도 범례: 먹거리, 관광, 쇼핑, 숙소, 항공·교통"><b data-cat="food"><i></i>먹거리</b><b data-cat="sight"><i></i>관광</b><b data-cat="shop"><i></i>쇼핑</b><b data-cat="stay"><i></i>숙소</b><b data-cat="transit"><i></i>항공·교통</b></div></div>
         <div class="route-bar"><div class="route-copy"><strong id="routeTitle">오늘 일정 전체 경로</strong><span id="routeSummary">9개 장소 · Google 지도에서 확인</span></div><button class="route-btn" id="routeBtn">전체 경로 보기</button></div>
       </article>
     </section>
@@ -223,9 +223,9 @@
     </div>
   </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js?v=56"></script>
-  <script src="./viago-auth-client.js?v=56"></script>
-  <script src="./viago-auth-firebase.js?v=56"></script>
+  <script src="./journey-sync.js?v=57"></script>
+  <script src="./viago-auth-client.js?v=57"></script>
+  <script src="./viago-auth-firebase.js?v=57"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -893,7 +893,7 @@
       const d=days[dayIndex];$('#dayTitle').textContent=d.title;$('#daySummary').textContent=d.summary;
       const addActions='<div class="schedule-add-actions" aria-label="일정 장소 추가"><button class="place-add" id="placeAdd">직접 장소 추가</button><button class="place-add schedule-link-add" id="scheduleLinkAdd">링크에서 장소 찾기</button></div>';
       if(!d.places.length){timeline.innerHTML='<div class="empty">아직 등록한 장소가 없어요.</div>'+addActions;bindScheduleAddActions();if(sharedReady&&(innerWidth>850||currentView==='map'))showOverview();return}
-      timeline.innerHTML=d.places.map((p,i)=>`<div class="swipe-row" data-i="${i}"><div class="row-actions"><button class="edit-action" aria-label="${esc(p.name)} 편집">편집</button><button class="delete-action" aria-label="${esc(p.name)} 삭제">삭제</button></div><div class="place" data-i="${i}" tabindex="0"><div class="place-main">${placeIcon(p)}<h3 class="place-name">${esc(p.name)}</h3><p class="place-note">${esc(p.note||'메모 없음')}</p><span class="place-kind">${esc(p.kind||'장소')}</span>${coordBadge(p)}<span class="place-status info" data-hours="${i}">영업시간 확인</span></div><button class="more" aria-label="${esc(p.name)} 지도에서 보기"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>`).join('')+addActions;
+      timeline.innerHTML=d.places.map((p,i)=>`<div class="swipe-row" data-i="${i}"><div class="row-actions"><button class="edit-action" aria-label="${esc(p.name)} 편집">편집</button><button class="delete-action" aria-label="${esc(p.name)} 삭제">삭제</button></div><div class="place" data-i="${i}" data-cat="${viagoCategory(p.kind,p.name)}" tabindex="0"><div class="place-main">${placeIcon(p)}<h3 class="place-name">${esc(p.name)}</h3><p class="place-note">${esc(p.note||'메모 없음')}</p><span class="place-kind">${esc(p.kind||'장소')}</span><span class="place-badges">${coordBadge(p)}<span class="place-status info" data-hours="${i}">영업시간 확인</span></span></div><button class="more" aria-label="${esc(p.name)} 지도에서 보기"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div></div>`).join('')+addActions;
       timeline.querySelectorAll('.swipe-row').forEach(row=>{bindSwipe(row);row.querySelector('.edit-action').onclick=e=>{e.stopPropagation();closeSwipeRows();openEditDialog(+row.dataset.i)};row.querySelector('.delete-action').onclick=e=>{e.stopPropagation();deletePlace(+row.dataset.i)}});
       timeline.querySelectorAll('.place').forEach(el=>{const open=()=>{if(Date.now()<suppressPlaceClickUntil)return;if(el.dataset.swiped==='1'){el.dataset.swiped='0';return}selectPlace(+el.dataset.i,el)};el.onclick=open;el.onkeydown=e=>{if(e.key==='Enter')open()}});
       bindScheduleAddActions();setupLongPressSort();if(sharedReady&&(innerWidth>850||currentView==='map'))showOverview();if(sharedReady)scheduleDayHours(dayIndex)
@@ -1217,7 +1217,24 @@
     function paintProviderNotes(){['#mapProviderNote','#quickMapProvider'].forEach(sel=>{const el=$(sel);if(!el)return;const base=el.dataset.base||el.textContent.split(' · ')[0];el.dataset.base=base;const text=offlineMapNote(base);if(el.textContent!==text)el.textContent=text})}
     async function ensureMainMap(){const value=await createTravelMap('overviewMap',{center:{lat:35.1709,lng:136.9065},zoom:13,maxZoom:19,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});mapInstance=value.map;const el=$('#mapProviderNote');el.dataset.base=providerLabel(value);el.textContent=offlineMapNote(el.dataset.base);return value}
     async function ensureQuickMap(){const value=await createTravelMap('quickLeafletMap',{center:{lat:35.1709,lng:136.9065},zoom:13,maxZoom:18,mapTypeControl:false,streetViewControl:false,fullscreenControl:false,gestureHandling:'greedy'});quickMapInstance=value.map;$('#quickMap').dataset.provider=value.provider;const el=$('#quickMapProvider');el.dataset.base=providerLabel(value);el.textContent=offlineMapNote(el.dataset.base);return value}
-    function markerIcon(label,color){return L.divIcon({className:'viago-map-marker',html:`<div class="number-marker" style="--marker:${color}">${label}</div>`,iconSize:[32,32],iconAnchor:[16,16]})}
+    /* 2026-11-15 시안 1(균형형): 카테고리 색 + 줌(축척)에 따라 함께 줄어드는 번호 핀 */
+    const VIAGO_CATS={food:'#f97316',sight:'#8b5cf6',shop:'#ec4899',stay:'#10b981',transit:'#2563eb',etc:'#3187ff'};
+    function viagoCategory(kind,name){const k=String(kind||''),n=String(name||'');
+      if(/먹거리|식당|맛집|음식|카페|주점|술집|분식|라멘|이자카야/.test(k))return 'food';
+      if(/관광|명소|투어|액티비티|체험/.test(k))return 'sight';
+      if(/쇼핑|마트|상점|백화점/.test(k))return 'shop';
+      if(/숙소|호텔|료칸|게하/.test(k))return 'stay';
+      if(/항공|공항|교통|이동|기차|버스|지하철/.test(k))return 'transit';
+      if(/공항|airport/i.test(n))return 'transit';
+      if(/호텔|hotel/i.test(n))return 'stay';
+      if(/카페|cafe|커피/i.test(n))return 'food';
+      return 'etc';
+    }
+    function viagoCategoryColor(kind,name){return VIAGO_CATS[viagoCategory(kind,name)]||VIAGO_CATS.etc}
+    // zoom ≤9 14px · 10~11 16px · 12~13 19px · 14~15 22px · 16+ 26px
+    const VIAGO_PIN_STEPS=[{max:9,d:14,gap:6,font:9,border:1.5},{max:11,d:16,gap:7,font:9.5,border:1.8},{max:13,d:19,gap:8,font:10.5,border:2},{max:15,d:22,gap:10,font:11,border:2.2},{max:99,d:26,gap:12,font:11.5,border:2.5}];
+    function viagoPinStyle(zoom){const z=Number.isFinite(zoom)?zoom:13;for(const step of VIAGO_PIN_STEPS)if(z<=step.max)return step;return VIAGO_PIN_STEPS[VIAGO_PIN_STEPS.length-1]}
+    function markerIcon(label,color,style){const st=style||viagoPinStyle(13);return L.divIcon({className:'viago-map-marker',html:`<div class="number-marker" style="--marker:${color};width:${st.d}px;height:${st.d}px;font-size:${st.font}px;border-width:${st.border}px">${label}</div>`,iconSize:[st.d,st.d],iconAnchor:[st.d/2,st.d/2]})}
     function clearMapLayer(which,provider){const current=which==='main'?mapLayer:quickMapLayer;if(!current)return;if(Array.isArray(current))current.forEach(x=>x.setMap?.(null));else current.remove();if(which==='main')mapLayer=null;else quickMapLayer=null}
     /* ===== 개별 순번 마커 · 화면 픽셀 펼치기(지시선) (2026-11-15) =====
        묶음 개수 마커를 없애고, 지도가 열릴 때부터 모든 일정 장소를 순번 마커로 그린다.
@@ -1275,14 +1292,15 @@ function viagoMarkerInfo(item,shown){
   return `<div class="marker-popup"><strong>${shown}. ${esc(p.name||'')}</strong><span>${viagoPlaceMeta(p)}</span><a href="${esc(gmapsPlace(p))}" target="_blank" rel="noopener">Google 지도에서 열기</a></div>`;
 }
 // 번호 마커 하나 (표시 위치 기준)
-function viagoNumberMarker(map,provider,at,shown,color,name,zIndex,labels,compact){
+function viagoNumberMarker(map,provider,at,shown,color,name,zIndex,labels,compact,pin){
+  const st=pin||viagoPinStyle(13);
   if(provider==='google'){
     const marker=new google.maps.Marker({map,position:{lat:at[0],lng:at[1]},title:name,zIndex,
-      label:{text:shown,color:'#fff',fontWeight:'800',fontSize:compact?'12px':'13px'},
-      icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:color,fillOpacity:1,strokeColor:'#fff',strokeWeight:compact?2.5:3,scale:compact?13:16}});
+      label:{text:shown,color:'#fff',fontWeight:'800',fontSize:st.font+'px'},
+      icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:color,fillOpacity:1,strokeColor:'#fff',strokeWeight:st.border,scale:st.d/2}});
     return marker;
   }
-  const marker=L.marker(at,{icon:markerIcon(shown,color),title:name,zIndexOffset:zIndex});
+  const marker=L.marker(at,{icon:markerIcon(shown,color,st),title:name,zIndexOffset:zIndex});
   if(labels)marker.bindTooltip(esc(name),{permanent:true,direction:'top',offset:[0,-16],className:'route-label'});
   return marker;
 }
@@ -1316,9 +1334,9 @@ function viagoDrawLocated(key,map,provider,located,color,options){
   const holder=opts.holder||(provider==='google'?[]:L.layerGroup().addTo(map));
   const state={map,provider,holder,opts,color,timer:0,listener:null,zoomHandler:null,zoom:-Infinity,info:null};
   viagoMarkerLayers.set(key,state);
-  const radius=opts.compact?13:16,gap=opts.compact?14:10,maxShift=150;
+  const maxShift=150;
   // 표시 위치가 지도 가장자리·버튼 영역으로 밀려 들어가지 않도록 (실제 위치가 화면 안에 있는 마커만)
-  const keepInView=rows=>{
+  const keepInView=(rows,zoom)=>{
     if(!opts.pad||!rows.length)return rows;
     let node=null;try{node=map.getDiv?map.getDiv():map.getContainer()}catch(e){node=null}
     if(!node||node.clientWidth<40||node.clientHeight<40)return rows;
@@ -1327,12 +1345,13 @@ function viagoDrawLocated(key,map,provider,located,color,options){
     const z=viagoCurrentZoom(map),w=node.clientWidth,h=node.clientHeight,
       lat=typeof c.lat==='function'?c.lat():c.lat,lng=typeof c.lng==='function'?c.lng():c.lng,
       origin=viagoWorldPx([lat,lng],z),ox=origin[0]-w/2,oy=origin[1]-h/2,
-      x0=opts.pad.left+radius*0.6,x1=w-opts.pad.right-radius*0.6,y0=opts.pad.top+radius*0.6,y1=h-opts.pad.bottom-radius*0.6,
+      rad=viagoPinStyle(z).d/2,
+      x0=opts.pad.left+rad*0.6,x1=w-opts.pad.right-rad*0.6,y0=opts.pad.top+rad*0.6,y1=h-opts.pad.bottom-rad*0.6,
       clamp=p=>[Math.max(x0,Math.min(x1,p[0])),Math.max(y0,Math.min(y1,p[1]))];
     const rowsIn=rows.map(row=>{const t=[row.truth[0]-ox,row.truth[1]-oy],inside=t[0]>=x0-2&&t[0]<=x1+2&&t[1]>=y0-2&&t[1]<=y1+2;
       return {row,inside,pos:inside?clamp([row.show[0]-ox,row.show[1]-oy]):[row.show[0]-ox,row.show[1]-oy]}});
     // 가장자리로 밀린 뒤 다시 가까워진 마커는 서로 조금 띄운다(영역은 넘지 않게).
-    const pool=rowsIn.filter(x=>x.inside),minSep=2*radius+12;
+    const pool=rowsIn.filter(x=>x.inside),minSep=2*rad+12;
     for(let round=0;round<40;round++){
       let hit=false;
       for(let a=0;a<pool.length;a++)for(let b=a+1;b<pool.length;b++){
@@ -1357,11 +1376,12 @@ function viagoDrawLocated(key,map,provider,located,color,options){
     reset();
     const zoom=viagoCurrentZoom(map),points=located.filter(x=>x&&x.c);
     state.zoom=zoom;
+    const pin=viagoPinStyle(zoom),radius=pin.d/2,gap=pin.gap,routeWeight=zoom<=10?2.5:zoom<=13?3:4;
     if(opts.connect&&points.length>1){
-      if(provider==='google')add(new google.maps.Polyline({map,path:points.map(x=>({lat:x.c[0],lng:x.c[1]})),strokeColor:color,strokeOpacity:.78,strokeWeight:4,zIndex:1}));
-      else add(L.polyline(points.map(x=>x.c),{color,weight:4,opacity:.76,dashArray:'8 7'}));
+      if(provider==='google')add(new google.maps.Polyline({map,path:points.map(x=>({lat:x.c[0],lng:x.c[1]})),strokeColor:color,strokeOpacity:.78,strokeWeight:routeWeight,zIndex:1}));
+      else add(L.polyline(points.map(x=>x.c),{color,weight:routeWeight,opacity:.76,dashArray:'8 7'}));
     }
-    const layout=keepInView(viagoDisplace(points,zoom,radius,gap,maxShift));
+    const layout=keepInView(viagoDisplace(points,zoom,radius,gap,maxShift),zoom);
     const rows=layout.map(row=>{
       const show=viagoLatLngAt(row.show[0],row.show[1],zoom),truth=viagoLatLngAt(row.truth[0],row.truth[1],zoom);
       const dx=row.show[0]-row.truth[0],dy=row.show[1]-row.truth[1],dist=Math.hypot(dx,dy);
@@ -1373,8 +1393,10 @@ function viagoDrawLocated(key,map,provider,located,color,options){
     }).sort((a,b)=>a.y-b.y);      // 화면 아래쪽 마커가 위로 오게
     rows.forEach((row,k)=>{
       const zIndex=200+k,shown=viagoShownOf(row.item),name=(row.item.p&&row.item.p.name)||'';
-      if(row.moved)viagoLeaderLine(map,provider,row.trueAt,row.edge,color,zIndex).forEach(add);
-      const marker=viagoNumberMarker(map,provider,row.at,shown,color,name,zIndex,opts.labels,opts.compact);
+      // 핀은 그 장소의 카테고리 색을 쓴다(같은 좌표라도 합치지 않고 각자 번호·색 유지)
+      const pinColor=viagoCategoryColor(row.item.p&&row.item.p.kind,name);
+      if(row.moved)viagoLeaderLine(map,provider,row.trueAt,row.edge,pinColor,zIndex).forEach(add);
+      const marker=viagoNumberMarker(map,provider,row.at,shown,pinColor,name,zIndex,opts.labels,opts.compact,pin);
       if(provider==='google'){
         // 마커마다 InfoWindow를 새로 만들면 확대·축소마다 객체가 쌓여 아이폰에서 느려지므로 하나를 돌려 쓴다.
         if(!state.info)state.info=new google.maps.InfoWindow({content:''});
@@ -1728,7 +1750,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
     // 서비스 워커: 새 버전이 설치되면 이 화면도 새 코드로 한 번 갈아 끼운다.
-    //   · 스크립트 주소에 ?v=56 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 스크립트 주소에 ?v=57 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
     //   · 예전 워커가 제어하던 화면에서 새 워커가 활성화되면(controllerchange) 한 번만 새로고침한다.
     if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
       const hadController=!!navigator.serviceWorker.controller;let swReloading=false;
@@ -1738,11 +1760,11 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         try{if(sessionStorage.getItem('viago-sw-reloaded'))return;sessionStorage.setItem('viago-sw-reloaded','1')}catch(e){}
         swReloading=true;location.reload();
       });
-      navigator.serviceWorker.register('./service-worker.js?v=56',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=57',{scope:'./'}).then(registration=>registration.update()).catch(()=>{});
     }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js?v=56"></script>
+  <script src="./journey-preview.js?v=57"></script>
 </body>
 </html>

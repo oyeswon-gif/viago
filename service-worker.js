@@ -12,7 +12,7 @@
 //    한 번은 그대로 실행돼 초대 참여가 실패했다(옛 코드 + 새 화면). 그 창을 없앤다.
 // 4) 새 워커는 skipWaiting + clients.claim 으로 바로 활성화된다. 화면(index.html)은
 //    controllerchange 를 받으면 한 번 새로고침해, 옛 코드가 남은 화면을 새 코드로 갈아 끼운다.
-const VERSION = 'v10';   // 2026-11-15 다회용 초대 링크 + 쿠키 세션 idToken 누락(401) 수정
+const VERSION = 'v11';   // 2026-11-15 균형형 UI(지도 확대·축척 핀·카테고리 색) 시안 1 적용
 const SHELL = `viago-shell-${VERSION}`;
 // 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
 const OUR_PREFIX = 'viago-';
