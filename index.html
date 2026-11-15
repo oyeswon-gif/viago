@@ -1500,8 +1500,10 @@ function viagoFramePad(node,pad){
   return {top:limit(pad.top,my),bottom:limit(pad.bottom,my),left:limit(pad.left,mx),right:limit(pad.right,mx)};
 }
 function viagoFrameMap(map,provider,located,options){
-  const opts=Object.assign({single:15,padding:48,maxZoom:15,attempt:0,key:null,context:'',force:false},options||{});
+  const opts=Object.assign({single:15,padding:48,maxZoom:15,attempt:0,key:null,context:'',force:false,requestAt:0},options||{});
   const cam=opts.key?viagoCamera(opts.key):null;
+  // 맞춤 요청이 있은 뒤에 사용자가 직접 지도를 만졌다면(늦게 도착한 맞춤·화면 크기 재시도) 그 조작을 양보한다.
+  if(cam&&opts.requestAt&&cam.touchedAt>opts.requestAt)return false;
   // 사용자가 지도를 만진 뒤, 같은 내용으로 다시 맞추라는 자동 요청이면 카메라를 건드리지 않는다.
   if(cam&&!opts.force&&cam.context===opts.context&&cam.touchedAt>cam.fittedAt)return false;
   let node=null;
@@ -1560,7 +1562,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       if(which==='main')mapLayer=holder;else quickMapLayer=holder;
       const points=(located||[]).filter(x=>x&&x.c);
       // 상세 지도는 아래 상태바를 피해 여백을 넉넉히 둔다.
-      const frame={single:15,padding:which==='quick'?42:{top:44,right:44,bottom:76,left:44},maxZoom:which==='quick'?16:15,key:which,force,context:viagoDrawContext(which,points)},pad=which==='quick'?null:{top:8,left:8,right:8,bottom:72};
+      const frame={single:15,padding:which==='quick'?42:{top:44,right:44,bottom:76,left:44},maxZoom:which==='quick'?16:15,key:which,force,requestAt:Date.now(),context:viagoDrawContext(which,points)},pad=which==='quick'?null:{top:8,left:8,right:8,bottom:72};
       // 맞춤은 한 번만 한다. (예전에는 70ms 뒤에 한 번 더 맞춰 사용자가 방금 확대한 지도를 덮어쓸 수 있었다)
       viagoFrameMap(map,provider,points,frame);
       viagoDrawLocated(which,map,provider,points,color,{connect,labels,holder,compact:which==='quick',pad});
