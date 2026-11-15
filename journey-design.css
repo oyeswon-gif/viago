@@ -230,7 +230,7 @@ button:active:not([disabled]),.date-tab:active,.nav-item:active,.trip-option:act
 /* 3) 지도 위 겹침 제거 — 범례는 아래 왼쪽, 안내 문구는 그 위, 「전체 동선」은 오른쪽 아래 */
 .journey-day-preview .map-legend{bottom:26px;left:10px}   /* 지도 제공자 출처(Google/OSM) 표기 위로 올린다 */
 .journey-day-preview .journey-preview-note{bottom:52px}
-.map-frame .map-legend{bottom:64px}
+.map-frame .map-legend{bottom:80px}
 .journey-day-preview .leaflet-control-zoom{margin:8px 0 0 8px}
 
 @media(max-width:850px){
@@ -268,3 +268,6 @@ button:active:not([disabled]),.date-tab:active,.nav-item:active,.trip-option:act
 .swipe-row:has(.place[data-open="1"]) .row-actions,
 .swipe-row:has(.place[data-swiping="1"]) .row-actions{opacity:1}
 @media(prefers-reduced-motion:reduce){.swipe-row .row-actions{transition:none}}
+
+/* 지도 하단: 지도 제공자 로고·저작권(Google/OSM)이 가려지지 않게 상태 칩을 그 위로 올린다 */
+.map-overlay{bottom:32px}
