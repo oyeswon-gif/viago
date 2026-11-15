@@ -1,6 +1,6 @@
 {
-  "version": "v20",
-  "assetQuery": "66",
-  "hash": "a247560bd94f844b",
+  "version": "v21",
+  "assetQuery": "67",
+  "hash": "04c4b9af9ea2e3f4",
   "note": "껍데기(HTML·JS·CSS·아이콘·manifest) 내용 지문. 코드를 고치면 node tools/ci/stamp.mjs --bump 로 VERSION·?v= 와 함께 갱신합니다."
 }

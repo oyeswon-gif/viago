@@ -81,5 +81,16 @@ check('R12 동적 뷰포트(dvh)', /dvh/.test(css) && /dvh/.test(html));
 check('R12 가로 넘침 차단', /overflow-x:\s*hidden/.test(html) || /overflow-x:\s*hidden/.test(css));
 check('R12 한 줄 말줄임 3종', /text-overflow:\s*ellipsis/.test(css) && /min-width:\s*0/.test(css));
 
+// R13 — 플랜 B 는 선택 필드: 편집 입력·카드 배지가 있고, 부팅이 기본값을 심지 않는다 (M17)
+check('R13 플랜 B 편집 입력란', /id="editPlanB"/.test(html));
+check('R13 플랜 B 카드 배지·펼침', /place-planb-btn/.test(html) && /class="place-planb"/.test(html));
+const ensureFeatures = section(html, 'function ensureTripFeatures', 'function inAppBrowserInfo');
+check('R13 기존 일정에 planB 기본값을 심지 않음', !!ensureFeatures && !/planB/.test(ensureFeatures));
+
+// R14 — 전날 브리핑은 저장된 데이터만 쓴다(외부 호출 없음), 진입 버튼은 상단 바 44px (M11·M17)
+const briefBlock = section(html, 'const BRIEF_WARNING_RULES', 'function renderToday');
+check('R14 브리핑 계산에 외부 호출 없음', !!briefBlock && !/fetch\(|placesRequest\(|googleMaps|createGoogleMap/.test(briefBlock), briefBlock ? `${briefBlock.length}자 구간` : '구간 없음');
+check('R14 브리핑 진입 버튼이 상단 바에 있고 44px', /id="briefBtn"/.test(html) && /\.brief-btn\{[^}]*height:\s*44px/.test(css));
+
 console.log(ok ? '\n모든 회귀 불변식 통과' : '\n실패한 불변식이 있습니다 — docs/REGRESSION-CHECKLIST.md 의 해당 M# 항목을 보세요.');
 process.exit(ok ? 0 : 1);

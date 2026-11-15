@@ -277,3 +277,71 @@ button:active:not([disabled]),.date-tab:active,.nav-item:active,.trip-option:act
 @media(max-width:850px){
   .map-frame .overview-map,.map-frame iframe{min-height:0}
 }
+
+/* ===== 2026-11-16 2순위: 일정별 플랜 B · 전날 브리핑 =====
+   기존 구조(배경색·지도 44%(clamp 300~370)·왼쪽 세로선 번호 카드·이동 pill·인라인 미리보기)는 그대로 두고,
+   플랜 B 는 카드 안 배지 + 펼침 한 줄, 브리핑은 상단 버튼 + 바텀 시트로만 얹는다. */
+.brief-btn{flex:0 0 auto;height:44px;padding:0 12px;border-radius:14px;background:#eaf2ff;color:var(--blue-deep);display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:750;white-space:nowrap}
+.brief-btn .icon{width:18px;height:18px}
+.brief-btn:active{background:#d9e9ff}
+@media(max-width:380px){.brief-btn{padding:0 9px;font-size:12px;gap:4px}}
+@media(max-width:340px){.brief-btn span{display:none}}
+
+/* 일정 카드의 플랜 B 배지 + 펼침 */
+.place-planb-btn{position:relative;display:inline-flex;align-items:center;gap:3px;margin:0;padding:5px 8px;border:0;border-radius:7px;background:#fff3df;color:#ad5a00;font-size:11px;font-weight:750;line-height:1.1}
+.place-planb-btn::after{content:"";position:absolute;inset:-12px -6px;border-radius:10px}
+.place-planb-btn[aria-expanded="true"]{background:#ffe7c2;color:#8c4400}
+.place-planb{display:none;margin:6px 0 0;padding:8px 10px;border-radius:10px;background:#fff8ec;color:#6b4a19;font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+.place-planb b{display:inline-block;margin-right:4px;color:#ad5a00;font-weight:780}
+.place.planb-open .place-planb{display:block}
+/* 모바일 카드의 배지 줄은 원래 '경고가 있을 때만' 보인다 — 플랜 B 가 있으면 함께 보이게 한다 */
+@media(max-width:850px){
+  .place-badges:has(.place-planb-btn){display:flex}
+  .place-badges:has(.place-planb-btn) .place-status.info,.place-badges:has(.place-planb-btn) .place-status.safe{display:none}
+  .place-planb{font-size:11.5px;padding:7px 9px}
+}
+
+/* 전날 브리핑 시트 (지도 높이·타임라인 공간을 차지하지 않는다) */
+#dayBrief{position:fixed;inset:0;z-index:1200;display:flex;align-items:flex-end;justify-content:center;background:rgba(15,23,32,.44)}
+#dayBrief[hidden]{display:none}
+.brief-card{outline:none;display:flex;flex-direction:column;width:100%;max-width:560px;max-height:min(86dvh,760px);background:#fff;border:1px solid #e5e8eb;border-bottom:0;border-radius:22px 22px 0 0;box-shadow:0 -14px 40px rgba(15,23,34,.28);overflow:hidden}
+.brief-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:16px 16px 10px}
+.brief-head strong{display:block;font-size:18px;font-weight:780;letter-spacing:-.4px;color:var(--ink)}
+.brief-head span{display:block;margin-top:4px;color:var(--sub);font-size:12.5px;line-height:1.4}
+.brief-head .brief-base{display:block;margin-top:2px;color:#8b95a3;font-size:11.5px;font-style:normal;line-height:1.4}
+.brief-close{flex:0 0 auto;width:44px;height:44px;border-radius:14px;background:#f2f4f6;color:#4e5968;font-size:22px;font-weight:400;line-height:1}
+.brief-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:2px 16px 8px}
+.brief-sec{padding:12px 0;border-top:1px solid #eef1f4}
+.brief-sec:first-child{border-top:0;padding-top:2px}
+.brief-sec h4{display:flex;align-items:center;gap:6px;margin:0 0 8px;font-size:12.5px;font-weight:780;color:#3d4757;letter-spacing:-.1px}
+.brief-sec h4 b{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#eaf2ff;color:#0647c6;font-size:11px;font-variant-numeric:tabular-nums}
+.brief-empty{margin:0;color:#8b95a3;font-size:12.5px;line-height:1.45;overflow-wrap:anywhere}
+.brief-row{display:flex;align-items:flex-start;gap:9px;padding:7px 0}
+.brief-row+.brief-row{border-top:1px dashed #eef1f4}
+.brief-time{flex:0 0 auto;min-width:50px;padding:4px 7px;border-radius:8px;background:#fff2e8;color:#c2410c;font-size:12px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.brief-time.muted{background:#f2f4f6;color:#6b7684}
+.brief-copy{min-width:0;flex:1}
+.brief-copy strong{display:block;font-size:13.5px;font-weight:750;color:var(--ink);overflow-wrap:anywhere}
+.brief-copy span{display:block;margin-top:3px;color:#7b8494;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
+.brief-leg{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin:0 0 9px;padding:6px 10px;border-radius:99px;background:#f4f6fa;color:#5b6472;font-size:12px;font-weight:650}
+.brief-leg .leg-icon{flex:0 0 13px;width:13px;height:13px;color:#8b95a3}
+.brief-order{list-style:none;margin:0;padding:0}
+.brief-order li{display:flex;align-items:flex-start;gap:9px;padding:6px 0}
+.brief-order li+li{border-top:1px dashed #eef1f4}
+.brief-num{flex:0 0 auto;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#0756e9;color:#fff;font-size:11px;font-weight:800;font-variant-numeric:tabular-nums}
+.brief-mark{flex:0 0 auto;align-self:center;padding:3px 6px;border-radius:6px;background:#fff3df;color:#ad5a00;font-size:10.5px;font-weight:750;white-space:nowrap}
+.brief-plan{border:1px solid #f3e0c2;border-radius:12px;background:#fffaf0;padding:9px 11px}
+.brief-plan+.brief-plan{margin-top:7px}
+.brief-plan .brief-copy span{color:#6b4a19}
+.brief-warn{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.brief-chip{padding:5px 9px;border-radius:99px;background:#fff0f1;color:#c0232f;font-size:11.5px;font-weight:750;overflow-wrap:anywhere}
+.brief-hint{margin:9px 0 0;color:#8b95a3;font-size:11.5px;line-height:1.45}
+.brief-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #eef1f4;background:#fff}
+.brief-actions button{min-height:48px;border-radius:14px;font-size:14px;font-weight:780}
+.brief-open-day{background:#eaf2ff;color:#0647c6}
+.brief-done{background:#0756e9;color:#fff}
+@media(min-width:851px){
+  #dayBrief{align-items:center}
+  .brief-card{max-width:520px;max-height:80vh;border-bottom:1px solid #e5e8eb;border-radius:22px}
+}
+@media(prefers-reduced-motion:reduce){#dayBrief,.brief-card{transition:none}}
