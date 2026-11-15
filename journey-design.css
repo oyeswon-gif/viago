@@ -271,3 +271,9 @@ button:active:not([disabled]),.date-tab:active,.nav-item:active,.trip-option:act
 
 /* 지도 하단: 지도 제공자 로고·저작권(Google/OSM)이 가려지지 않게 상태 칩을 그 위로 올린다 */
 .map-overlay{bottom:32px}
+
+/* 작은 화면에서 지도 캔버스(.overview-map)가 min-height 375px 때문에 프레임(300~330px)보다 커져
+   아래쪽(지도 제공자 로고·저작권, 남쪽 타일)이 잘리던 문제 — 프레임 높이에 맞춘다. */
+@media(max-width:850px){
+  .map-frame .overview-map,.map-frame iframe{min-height:0}
+}
