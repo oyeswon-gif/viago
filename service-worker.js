@@ -10,7 +10,7 @@
 //    오프라인일 때만 마지막으로 받은 화면을 보여준다.
 // 4) 새 워커는 skipWaiting 하지 않는다. 사용 중인 화면을 갑자기 갈아치우지 않고,
 //    앱을 완전히 닫았다 열 때 적용된다.
-const VERSION = 'v1';
+const VERSION = 'v2';   // 2026-11-15 이전 빌드: 인증 클라이언트 2개를 껍데기에 추가
 const SHELL = `viago-shell-${VERSION}`;
 // 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
 const OUR_PREFIX = 'viago-';
@@ -20,7 +20,9 @@ const SHELL_FILES = [
   './journey-design.css',
   './journey-preview.js',
   './journey-sync.js',
-  './viago-sync-v3.js',
+  './viago-auth-client.js',   // 이전 빌드의 인증·초대 클라이언트
+  './viago-auth-firebase.js', // 앱 저장 경로 어댑터
+  './viago-sync-v3.js',       // (구) 인증 없는 저장 구현 — 앱이 더 이상 부르지 않지만 남겨 둔다
   './journey-install.js',
   './manifest.webmanifest',
   './app-icon-192.png',

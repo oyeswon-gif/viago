@@ -78,6 +78,10 @@ def build(src_html, room, api_key, project='wedding-ring-app-810cd', emulator=Fa
     assert '  <script src="./journey-sync.js"></script>' in s
     s = s.replace('  <script src="./journey-sync.js"></script>', cfg_js + '  <script src="./journey-sync.js"></script>', 1)
 
+    # 7) 서비스 워커 버전 쿼리: 새 껍데기(인증 클라이언트 포함)를 받도록 갱신
+    assert 'service-worker.js?v=47' in s, '서비스 워커 등록부를 찾지 못했습니다'
+    s = s.replace('service-worker.js?v=47', 'service-worker.js?v=48', 1)
+
     # 빌드 표식
     marker = f'<!-- VIAGO migration build · room {room} · {"emulator" if emulator else "production"} · build-migration.py -->\n'
     s = marker + s
