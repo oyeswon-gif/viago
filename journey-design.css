@@ -611,7 +611,7 @@ select{background-image:none}
   .place-cat{background:none;color:#8a8a8e;font-weight:400}
   .place-cat::after{content:"·";margin-left:5px;color:#c7c7cc}
   .place-cat .place-type-icon{display:none}
-  .place-status.info,.place-status.safe{display:none}
+  .place-status.info{display:none}   /* 아직 확인 전인 자리표시자만 숨긴다 — 실제 영업시간(safe)은 남긴다 */
   .place-badges{margin-top:4px;gap:5px}
   .place-status{font-size:10.5px;padding:1px 6px;border-radius:5px;background:#f2f2f7;color:#6b6b70}
   .place-status.warn,.place-status.danger{background:#fff2e8;color:#a8663a}
