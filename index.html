@@ -257,6 +257,18 @@
     const sharedSync=createViagoSync({config:{roomCollection:SHARED_ROOM_COLLECTION,roomCode:SHARED_ROOM_CODE},mergeJourney:(b,l,r,p)=>mergeJourney(b,l,r,p)});
     const inviteInUrl=new URLSearchParams(location.hash.slice(1)).get('invite');if(inviteInUrl&&/^[a-f0-9]{64}$/.test(inviteInUrl)){localStorage.setItem('journey-note-invite',inviteInUrl)}
     const inviteToken=localStorage.getItem('journey-note-invite')||'',participantId=localStorage.getItem('journey-note-participant')||crypto.randomUUID();localStorage.setItem('journey-note-participant',participantId);
+    // 세션 쿠키 미러(HTML 계층): 아이폰 '홈 화면에 추가'는 **쿠키만** 복사한다(iOS 17.2+).
+    // 인증 클라이언트가 서비스 워커의 옛 캐시를 한 번 더 물고 있어도, 이미 참여한 기기는
+    // 다음 설치가 이어받을 수 있게 쿠키를 바로 심어 둔다(값은 클라이언트와 동일).
+    (function mirrorSessionCookie(){
+      try{
+        const raw=localStorage.getItem('viago.auth.v3');if(!raw)return;
+        const s=JSON.parse(raw);if(!s||!s.uid||!s.refreshToken||s.external)return;
+        const first=location.pathname.split('/').filter(Boolean)[0],path=first?'/'+first+'/':'/';
+        const secure=location.protocol==='https:'?'; Secure':'';
+        document.cookie='viago_session_v1='+encodeURIComponent(JSON.stringify({u:s.uid,r:s.refreshToken,e:s.expiresAt||0}))+'; path='+path+'; max-age='+(30*86400)+'; SameSite=Lax'+secure;
+      }catch(e){}
+    })();
     // Keep the invitation in the URL when handing off to Safari or installing the PWA.
     if(!inviteInUrl&&/^[a-f0-9]{64}$/.test(inviteToken)){const inviteUrl=new URL(location.href);inviteUrl.hash='invite='+inviteToken;history.replaceState(null,'',inviteUrl.pathname+inviteUrl.search+inviteUrl.hash)}
     // ── 인앱 브라우저(카카오톡·인스타그램 등) ──────────────────────────────────
