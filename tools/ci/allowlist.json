@@ -1,0 +1,11 @@
+[
+  {
+    "value": "AIzaSyCw9v6SvqcHkc3WCpKSocZwMS-wRxBGFJc",
+    "file": "index.html",
+    "reason": "브라우저용 Google Maps 키. 공개 정적 사이트에서 쓰이며 HTTP 리퍼러(oyeswon-gif.github.io/viago/*)로 제한됨. 서버 키·서비스 계정 키가 아니며, 이 키가 있어도 Places 일일 500 한도는 앱의 호출 제한으로 지킨다."
+  },
+  {
+    "value": "AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg",
+    "reason": "Firebase 웹(브라우저) API 키. Firebase 공식 문서상 공개되어도 되는 식별자이며, 실제 권한은 보안 규칙과 Auth 설정으로 제한된다(VIAGO_BUILD.projectId=wedding-ring-app-810cd)."
+  }
+]

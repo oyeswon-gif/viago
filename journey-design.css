@@ -201,3 +201,63 @@ body{background:#f4f8ff;color:var(--ink)}
   .quick-map-slot .quick-map-foot span{min-width:0;flex:1;font-size:11px;white-space:normal;line-height:1.3}
   .quick-map-slot .quick-route-btn{padding:8px 11px;border-radius:9px;font-size:11.5px;flex:0 0 auto}
 }
+
+/* ===== 2026-11-16 1순위 UI 폴리싱: 터치 44px · 눌림 피드백 · 겹침 제거 · 글자 리듬 =====
+   보존(절대 훼손 금지): 배경색(흰/연한 파랑), 지도 높이 44%(clamp 300~370), 왼쪽 세로선 번호 카드,
+   도보/지하철 이동 pill, 카드 아래 인라인 이동구간 미리보기, 카테고리 색, 비병합(번호) 핀. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+
+/* 1) 누를 때 바로 반응한다는 느낌 — 눌림 상태를 색으로 준다(카드 이동 transform 은 건드리지 않는다) */
+button:active:not([disabled]),.date-tab:active,.nav-item:active,.trip-option:active,.candidate-card:active{filter:brightness(.955)}
+.place:active{background:#f1f7ff}
+.nav-item:active{color:var(--blue)}
+.place:focus-visible,.nav-item:focus-visible,.date-tab:focus-visible{outline:3px solid #80acff;outline-offset:2px}
+
+/* 2) 터치 타겟 44px — 보이는 크기는 그대로 두고 히트 영역만 넓힌다 */
+.icon-btn{width:44px;height:44px}
+.trip-change{position:relative}
+.trip-change::after{content:"";position:absolute;inset:-9px -6px;border-radius:14px}
+.add-person{position:relative}
+.add-person::after{content:"";position:absolute;inset:-10px;border-radius:50%}
+.more{position:relative}
+.more::after{content:"";position:absolute;inset:-14px;border-radius:12px}
+.quick-map-close{position:relative}
+.quick-map-close::after{content:"";position:absolute;inset:-6px;border-radius:10px}
+.overview-btn,.journey-preview-button,.small-action{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+.exchange-refresh,.vote-btn,.confirm-candidate,.link-direct-search{min-height:44px}
+.candidate-delete{width:44px;height:44px}
+
+/* 3) 지도 위 겹침 제거 — 범례는 아래 왼쪽, 안내 문구는 그 위, 「전체 동선」은 오른쪽 아래 */
+.journey-day-preview .map-legend{bottom:10px;left:10px}
+.journey-day-preview .journey-preview-note{bottom:44px}
+.map-frame .map-legend{bottom:64px}
+.journey-day-preview .leaflet-control-zoom{margin:8px 0 0 8px}
+
+@media(max-width:850px){
+  /* 상단: 44px 버튼이 잘리지 않게 바를 조금 키운다 */
+  .topbar{height:44px}
+  .icon-btn{width:44px;height:44px}
+  .net-chip{height:26px;font-size:11px;padding:0 8px}
+
+  /* 카드·탭 글자 리듬: 장소명 16px, 분류/메모 12.5px, 숫자는 고정폭 */
+  .place-name{font-size:16px;line-height:1.3}
+  .place-cat{height:22px}
+  .place-note{font-size:12.5px;line-height:1.35}
+  .trip-leg-pill{font-size:12px}
+  .trip-leg-text b,.trip-leg-text i{font-variant-numeric:tabular-nums}
+  .date-tab{min-height:44px}
+  .nav-item{min-height:44px}
+  .trip-change{min-height:34px;display:inline-flex;align-items:center}
+
+  /* 인라인 미리보기: 지도 조작 버튼(＋/－)은 작은 미리보기에서 지도를 가리므로 숨긴다(손가락 확대는 그대로) */
+  .quick-map-slot .leaflet-control-zoom{display:none}
+  .quick-map-slot .leaflet-control-attribution{font-size:8px}
+  .quick-map-slot .quick-map-frame{height:176px}
+
+  /* 오늘 화면: 아이콘이 숨겨진 모바일에서는 메모를 장소명과 같은 줄에 맞춘다 */
+  .today-note{margin-left:0}
+}
+
+/* 지도 출처 표기(Leaflet | © OpenStreetMap contributors)가 오른쪽에서 잘리지 않게 두 줄 허용 + 작은 글자 */
+.leaflet-container .leaflet-control-attribution{font-size:9px!important;line-height:1.25;white-space:normal;max-width:min(100%,340px);text-align:right;padding:1px 5px!important;background:rgba(255,255,255,.88)!important;border-radius:8px 0 0 0}
+@media(max-width:850px){.leaflet-container .leaflet-control-attribution{font-size:8.5px!important;max-width:calc(100% - 8px)}}

@@ -1,0 +1,46 @@
+{
+  "trips": [
+    {
+      "id": "demo-trip",
+      "destination": "데모",
+      "name": "데모 여행",
+      "start": "2027-03-01",
+      "end": "2027-03-02",
+      "mode": "transit",
+      "scheduleVersion": 2,
+      "restaurants": [],
+      "candidates": [],
+      "todayProgress": {},
+      "weatherAlternatives": [],
+      "weatherBackups": [],
+      "completedPlaceIds": {},
+      "days": [
+        {
+          "date": "03.01",
+          "dow": "월",
+          "title": "3월 1일 월요일",
+          "summary": "도착 & 시내 산책",
+          "id": "demo-trip-day-0",
+          "places": [
+            { "id": "demo-1", "time": "09:00", "name": "중앙역", "note": "공항철도 도착 · 3번 출구", "kind": "교통", "lat": 35.1709, "lng": 136.8815 },
+            { "id": "demo-2", "time": "11:30", "name": "시장 골목", "note": "점심 · 조금 걷기", "kind": "식당", "lat": 35.1682, "lng": 136.8902 },
+            { "id": "demo-3", "time": "13:30", "name": "근처 미술관", "note": "📅 13:30 예약 · 성인 1,200엔", "kind": "관광", "lat": 35.1651, "lng": 136.9021 },
+            { "id": "demo-4", "time": "18:00", "name": "강변 숙소", "note": "체크인", "kind": "숙소", "lat": 35.1602, "lng": 136.8981 }
+          ]
+        },
+        {
+          "date": "03.02",
+          "dow": "화",
+          "title": "3월 2일 화요일",
+          "summary": "시내 쇼핑",
+          "id": "demo-trip-day-1",
+          "places": [
+            { "id": "demo-5", "time": "10:00", "name": "백화점", "note": "오픈 시간 확인", "kind": "쇼핑", "lat": 35.1699, "lng": 136.8855 },
+            { "id": "demo-6", "time": "12:00", "name": "국수집", "note": "웨이팅 있음", "kind": "식당", "lat": 35.1673, "lng": 136.8871 },
+            { "id": "demo-7", "time": "15:00", "name": "공원 전망대", "note": "일몰 시간", "kind": "관광", "lat": 35.1622, "lng": 136.8944 }
+          ]
+        }
+      ]
+    }
+  ]
+}

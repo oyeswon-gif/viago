@@ -1,0 +1,13 @@
+{
+  "name": "viago",
+  "version": "1.0.0",
+  "private": true,
+  "description": "여행 일정 PWA (정적 호스팅). CI: tools/ci, 모바일 스모크: tests/e2e",
+  "scripts": {
+    "ci": "node tools/ci/run.mjs",
+    "test:e2e": "node tests/e2e/smoke.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.49.0"
+  }
+}

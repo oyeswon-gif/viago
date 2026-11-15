@@ -6,3 +6,6 @@ current_schedule.json
 *.local.json
 .env
 .env.*
+node_modules/
+tests/e2e/shots/
+node_modules

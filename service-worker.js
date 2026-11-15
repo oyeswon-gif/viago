@@ -12,7 +12,10 @@
 //    한 번은 그대로 실행돼 초대 참여가 실패했다(옛 코드 + 새 화면). 그 창을 없앤다.
 // 4) 새 워커는 skipWaiting + clients.claim 으로 바로 활성화된다. 화면(index.html)은
 //    controllerchange 를 받으면 한 번 새로고침해, 옛 코드가 남은 화면을 새 코드로 갈아 끼운다.
-const VERSION = 'v14';   // 2026-11-16 지도 카메라 보호: 사용자가 확대한 배율을 재렌더·동기화가 덮어쓰지 않는다
+// 4) 새 워커는 skipWaiting + clients.claim 으로 바로 활성화된다. 화면(index.html)은
+//    controllerchange 를 받으면 새 코드로 갈아 끼우고, 입력 중이면 안내 막대(새로고침)를 띄운다.
+//    화면이 보내는 { type: 'SKIP_WAITING' } 메시지도 같은 동작을 한다(대기 중인 워커용).
+const VERSION = 'v15';   // 2026-11-16: 새 버전 안내(화면 막대) · 캐시 실패 기록 · SKIP_WAITING 메시지 · 지도 카메라 보호(v14)
 const SHELL = `viago-shell-${VERSION}`;
 // 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
 const OUR_PREFIX = 'viago-';
@@ -40,11 +43,21 @@ self.addEventListener('install', event => {
     try {
       const cache = await caches.open(SHELL);
       // HTTP 캐시를 거치지 않고 받아 둔다(설치 시점의 최신 파일).
-      await Promise.all(SHELL_FILES.map(file => cache.add(new Request(file, { cache: 'reload' })).catch(() => null)));
+      //   하나라도 빠지면 오프라인에서 그 파일만 비므로, 조용히 넘기지 않고 기록해 둔다(CI 가 파일 존재를 먼저 검사한다).
+      const results = await Promise.all(SHELL_FILES.map(file => cache.add(new Request(file, { cache: 'reload' })).then(() => null).catch(error => ({ file, error: String(error) }))));
+      const failed = results.filter(Boolean);
+      if (failed.length) console.warn('[viago sw] 캐시하지 못한 껍데기 파일', failed);
     } catch (e) {}
     // v10: 새 워커가 대기하지 않고 바로 활성화된다(옛 코드가 계속 도는 시간을 없앤다).
     try { await self.skipWaiting(); } catch (e) {}
   })());
+});
+
+// 화면의 「새로고침」이 대기 중인 워커를 바로 활성화하도록 한다.
+self.addEventListener('message', event => {
+  const data = event.data || {};
+  if (data.type === 'SKIP_WAITING') { self.skipWaiting().catch(() => {}); return; }
+  if (data.type === 'VERSION' && event.source) { event.source.postMessage({ type: 'VERSION', version: VERSION }); }
 });
 
 self.addEventListener('activate', event => {
