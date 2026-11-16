@@ -92,5 +92,14 @@ const briefBlock = section(html, 'const BRIEF_WARNING_RULES', 'function renderTo
 check('R14 브리핑 계산에 외부 호출 없음', !!briefBlock && !/fetch\(|placesRequest\(|googleMaps|createGoogleMap/.test(briefBlock), briefBlock ? `${briefBlock.length}자 구간` : '구간 없음');
 check('R14 브리핑 진입 버튼이 상단 바에 있고 44px', /id="briefBtn"/.test(html) && /\.brief-btn\{[^}]*height:\s*44px/.test(css));
 
+// R15 — 하루 지도 기본값(시안 C): 인라인 지도 제스처, 저장은 여행 문서 선택 필드, 역지오코딩 없음 (M19)
+const preview = read('journey-preview.js');
+check('R15 인라인 지도 제스처 활성화',
+  /L\.map\(id,\{zoomControl:id!=='journeyDayMap',dragging:true/.test(html) && /touchZoom:true/.test(html) && /scrollWheelZoom:true/.test(html));
+check('R15 기본값은 여행 문서 필드(mapView·dayMapViews)+localStorage 사본',
+  /mapView/.test(preview) && /dayMapViews/.test(preview) && /journey-note-map-views-/.test(preview));
+check('R15 역지오코딩·외부 호출 없음(중심 지역은 저장된 좌표로만)', !/geocode|reverseGeocode|placesRequest\(|fetch\(/.test(preview));
+check('R15 저장값이 없으면 ⌂ 는 그날 전체 동선', /function goHome\(\)[\s\S]{0,240}refitDay\('bounds'\)/.test(preview));
+
 console.log(ok ? '\n모든 회귀 불변식 통과' : '\n실패한 불변식이 있습니다 — docs/REGRESSION-CHECKLIST.md 의 해당 M# 항목을 보세요.');
 process.exit(ok ? 0 : 1);

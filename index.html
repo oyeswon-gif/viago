@@ -171,7 +171,7 @@
         <div class="panel-head"><div><h2 id="dayTitle">12월 10일 목요일</h2><p id="daySummary">도착 후 사카에와 오스 산책</p></div><span class="sync-state" id="syncStatus">공유 연결 중</span></div>
         <div id="staleBanner" role="status"><strong>이 기기는 이 여행에 참여한 상태가 아니에요</strong><span>지금 보이는 일정은 <b>기기에 저장된 이전 사본</b>이라 서버의 최신 일정과 다를 수 있어요. 서버 일정은 그대로 있고, 이 기기에서만 연결이 안 된 상태예요.</span><div class="stale-actions"><button type="button" id="staleJoin">초대 코드 넣기</button></div><span class="stale-note" id="staleNote"></span></div>
         <div class="quick-map-home" id="quickMapHome"><section class="quick-map" id="quickMap" aria-live="polite"><div class="quick-map-head"><strong>이동 구간 미리보기</strong><button class="quick-map-close" id="quickMapClose" aria-label="지도 닫기">×</button></div><div id="quickMapProvider" class="free-map-note" aria-live="polite">Google 지도</div><div class="quick-map-frame"><div id="quickLeafletMap" class="quick-leaflet-map" aria-label="선택한 일정의 이동 구간 미리보기"></div></div><div class="quick-map-foot"><span id="quickMapStatus">이동 구간을 표시하고 있어요</span><button class="quick-route-btn" id="freeGooglePreview" hidden>Google 미리보기</button><button class="quick-route-btn" id="quickRouteBtn">Google 지도에서 열기</button></div></section></div>
-        <div class="journey-day-preview" id="journeyDayPreview" hidden><div class="journey-day-map" id="journeyDayMap" role="img" aria-label="선택한 날짜의 장소 위치와 번호 · 손가락으로 이동하고 확대할 수 있어요"></div><span class="journey-preview-note" id="journeyPreviewNote" hidden></span><div class="map-legend" role="note" aria-label="지도 범례: 먹거리, 관광, 쇼핑, 숙소, 항공·교통"><b data-cat="food"><i></i>먹거리</b><b data-cat="sight"><i></i>관광</b><b data-cat="shop"><i></i>쇼핑</b><b data-cat="stay"><i></i>숙소</b><b data-cat="transit"><i></i>항공·교통</b></div><button class="journey-preview-button" id="journeyPreviewOpen" aria-label="선택한 날짜의 전체 동선 지도 열기">전체 동선</button></div>
+        <div class="journey-day-preview" id="journeyDayPreview" hidden><div class="journey-day-map" id="journeyDayMap" role="img" aria-label="선택한 날짜의 장소 위치와 번호 · 손가락으로 이동하고 확대할 수 있어요"></div><span class="journey-preview-note" id="journeyPreviewNote" hidden></span><button class="journey-map-home" id="journeyMapHome" type="button" aria-label="지도 기본값으로 돌아가기 · 길게 눌러 지금 화면을 기본값으로 저장"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 10.7 12 3.6l8.6 7.1"/><path d="M5.9 9.6V20h12.2V9.6"/></svg></button><span class="journey-map-hint" id="journeyMapHint" role="button" tabindex="0" hidden>길게 눌러 기본값 저장</span><div class="journey-map-zoom" role="group" aria-label="지도 확대·축소"><button type="button" id="journeyZoomIn" aria-label="지도 확대"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.2v11.6M6.2 12h11.6"/></svg></button><button type="button" id="journeyZoomOut" aria-label="지도 축소"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 12h11.6"/></svg></button></div><div class="map-legend" role="note" aria-label="지도 범례: 먹거리, 관광, 쇼핑, 숙소, 항공·교통"><b data-cat="food"><i></i>먹거리</b><b data-cat="sight"><i></i>관광</b><b data-cat="shop"><i></i>쇼핑</b><b data-cat="stay"><i></i>숙소</b><b data-cat="transit"><i></i>항공·교통</b></div><button class="journey-preview-button" id="journeyPreviewOpen" aria-label="선택한 날짜의 전체 동선 지도 열기">전체 동선</button></div>
         <div class="timeline" id="timeline"></div>
       </article>
 
@@ -246,10 +246,22 @@
       <div class="brief-actions"><button type="button" class="brief-open-day" id="briefOpenDay">일정 열기</button><button type="button" class="brief-done" id="briefDone">확인</button></div>
     </section>
   </div>
+
+  <div id="mapViewSheet" role="dialog" aria-modal="true" aria-labelledby="mapViewSheetTitle" aria-describedby="mapViewSheetDesc" hidden>
+    <div class="mvs-dim" id="mapViewDim"></div>
+    <div class="mvs-sheet">
+      <div class="mvs-group mvs-head"><strong id="mapViewSheetTitle">지도 기본값</strong><p id="mapViewSheetDesc">지금 화면을 기본값으로 저장할까요?</p></div>
+      <div class="mvs-group">
+        <button type="button" class="mvs-opt" id="mapViewSaveDay"><span><strong>이 일차에만</strong><em id="mapViewDaySub"></em></span></button>
+        <button type="button" class="mvs-opt" id="mapViewSaveTrip"><span><strong>여행 전체 공통</strong><em id="mapViewTripSub"></em></span></button>
+      </div>
+      <button type="button" class="mvs-cancel" id="mapViewCancel">취소</button>
+    </div>
+  </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js?v=71"></script>
-  <script src="./viago-auth-client.js?v=71"></script>
-  <script src="./viago-auth-firebase.js?v=71"></script>
+  <script src="./journey-sync.js?v=72"></script>
+  <script src="./viago-auth-client.js?v=72"></script>
+  <script src="./viago-auth-firebase.js?v=72"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -1290,7 +1302,7 @@
       if(travelMapCreations.has(id)){const existing=travelMapCreations.get(id);return existing.then(value=>{if(value.provider==='leaflet'&&['daily_limit','monthly_limit'].includes(value.reason)&&value.day!==googleBudgetDay()){value.map.remove();travelMapCreations.delete(id);googleMapCreations.delete(id);googleMapsReady=null;mapLoadIssue='';return createTravelMap(id,options)}return value})}
       const task=(async()=>{let provider=await chooseMapProvider(),map;
         if(provider==='google'){try{map=await createGoogleMap(id,options)}catch{provider='leaflet'}}
-        if(provider==='leaflet'){if(!await loadLeaflet())throw Error('free_map_unavailable');map=L.map(id,{zoomControl:id!=='journeyDayMap',dragging:id!=='journeyDayMap',scrollWheelZoom:id!=='journeyDayMap',touchZoom:id!=='journeyDayMap',doubleClickZoom:id!=='journeyDayMap',boxZoom:id!=='journeyDayMap',keyboard:id!=='journeyDayMap'});if(Number.isFinite(options?.maxZoom))map.setMaxZoom(options.maxZoom);addBaseLayer(map)}
+        if(provider==='leaflet'){if(!await loadLeaflet())throw Error('free_map_unavailable');map=L.map(id,{zoomControl:id!=='journeyDayMap',dragging:true,scrollWheelZoom:true,touchZoom:true,doubleClickZoom:true,boxZoom:id!=='journeyDayMap',keyboard:id!=='journeyDayMap'});if(Number.isFinite(options?.maxZoom))map.setMaxZoom(options.maxZoom);addBaseLayer(map)}
         return{map,provider,reason:provider==='leaflet'?mapLoadIssue:'',day:googleBudgetDay()}
       })();travelMapCreations.set(id,task);task.catch(()=>travelMapCreations.delete(id));return task
     }
@@ -1966,7 +1978,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
     registerTravelTools();
     // 서비스 워커: 새 버전을 조용히 갈아 끼우되, 화면에 짧게 알리고 필요하면 눈에 보이게 물어본다.
-    //   · 스크립트 주소에 ?v=71 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 스크립트 주소에 ?v=72 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
     //   · 새 워커가 활성화되면(controllerchange) 옛 코드가 남은 화면은 한 번 새로고침한다(코드 섞임 방지).
     //     입력 중이면 새로고침하지 않고 아래 안내 막대의 「새로고침」을 기다린다.
     if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
@@ -1998,12 +2010,12 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
         setTimeout(check,8000);
       };
-      navigator.serviceWorker.register('./service-worker.js?v=71',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=72',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
       markUpdated();
     }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js?v=71"></script>
+  <script src="./journey-preview.js?v=72"></script>
 </body>
 </html>
