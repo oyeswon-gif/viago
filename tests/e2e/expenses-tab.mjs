@@ -406,6 +406,31 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
   }));
   rec('E15g 모의 캡처 4건을 읽고 3건만 선택해 둔다', /4건 인식/.test(fixtureSheet.sub) && fixtureSheet.rows.length === 4 && fixtureSheet.rows.filter(r => !r.off).length === 3 && fixtureSheet.cta === '3건 일괄 추가', `${fixtureSheet.sub} / ${fixtureSheet.cta} / ${fixtureSheet.sum}`);
   rec('E15h 충전 1건만 지출 아님으로 빠지고 잔액이 읽힌다', fixtureSheet.rows.filter(r => r.off).length === 1 && /JPY/.test(fixtureSheet.rows.find(r => r.off)?.text || '') && /125,953/.test(fixtureSheet.note || '') && fixtureSheet.sum === '¥28,200', `${fixtureSheet.rows.find(r => r.off)?.text} / ${fixtureSheet.note} / ${fixtureSheet.sum}`);
+  // 카테고리 칩을 눌러 바꾸고, 체크를 풀면 선택 금액이 줄어드는지
+  const firstChip = page.locator('.capture-row:not(.off) [data-chip]').first();
+  const chipBefore = (await firstChip.textContent()).trim();
+  await firstChip.click();
+  await page.waitForTimeout(250);
+  const chipAfter = (await page.locator('.capture-row:not(.off) [data-chip]').first().textContent()).trim();
+  rec('E15j 카테고리 칩을 누르면 다음 카테고리로 바뀐다', chipBefore !== chipAfter, `${chipBefore} → ${chipAfter}`);
+  for (let i = 0; i < 3; i += 1) { await page.locator('.capture-row:not(.off) [data-chip]').first().click(); await page.waitForTimeout(150); }
+  await page.locator('.capture-row:not(.off) [data-check]').first().click();
+  await page.waitForTimeout(300);
+  const unchecked = await page.evaluate(() => ({
+    sum: document.querySelector('#captureSum')?.textContent,
+    cta: document.querySelector('#captureAdd')?.textContent,
+    off: document.querySelectorAll('.capture-row.off').length
+  }));
+  rec('E15k 체크를 풀면 선택 금액과 추가 건수가 줄어든다', unchecked.sum === '¥15,800' && unchecked.cta === '2건 일괄 추가' && unchecked.off === 2, JSON.stringify(unchecked));
+  await page.locator('.capture-row.off:not(:last-child) [data-check]').first().click().catch(() => {});
+  await page.waitForTimeout(200);
+  if ((await page.evaluate(() => document.querySelector('#captureSum')?.textContent)) !== '¥28,200') {
+    await page.evaluate(() => {
+      const row = [...document.querySelectorAll('.capture-row')].find(r => r.classList.contains('off') && !/충전/.test(r.textContent));
+      row?.querySelector('[data-check]')?.click();
+    });
+    await page.waitForTimeout(200);
+  }
   await page.locator('#captureAdd').click();
   await page.waitForTimeout(900);
   const fixtureApplied = await page.evaluate(() => ({
