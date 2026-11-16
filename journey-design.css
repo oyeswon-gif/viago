@@ -704,3 +704,62 @@ select{background-image:none}
   .trip-head{display:flex;flex-direction:column;justify-content:center;gap:10px;min-height:200px;margin:0 0 6px;padding:20px 26px 22px;border-radius:18px;background-position:100% 14%}
   .trip-head .eyebrow-row{margin:0}
 }
+
+/* ===== 2026-11-16 v29 : '내 여행 보관함'(여행 변경) 시트 — iOS 네이티브 =========
+   원칙: 카드 그림자·파란 테두리·상태 pill·이모지를 걷고, 헤어라인 구분선과
+         시스템 블루 포인트·44px 터치 타겟·큰 제목 한 줄로만 구분한다.
+   보존(절대 훼손 금지): 여행 전환·새 여행 만들기·여행 삭제·닫기, localStorage/Firestore
+         동기화, 초대 게이트. 이 시트는 화면 표시만 담당한다. */
+#tripDialog{width:min(460px,calc(100% - 32px));border-radius:20px;background:#fff;box-shadow:0 22px 70px rgba(15,23,34,.28);overflow:hidden}
+#tripDialog::backdrop{background:rgba(0,0,0,.3);backdrop-filter:none}
+#tripDialog .dialog-inner{padding:0;max-height:min(680px,calc(100dvh - 48px));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.trip-sheet-grab{display:none}
+.trip-sheet-head{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 12px 2px 20px;background:#fff}
+.trip-sheet-head h3{margin:0;font-size:21px;line-height:1.2;font-weight:700;letter-spacing:-.5px;color:var(--ink)}
+.trip-sheet-close{flex:0 0 auto;width:44px;height:44px;display:grid;place-items:center;background:none;border-radius:50%}
+.trip-sheet-close>span{width:30px;height:30px;border-radius:50%;background:#e9e9eb;color:#8a8a8e;display:grid;place-items:center;transition:background .12s}
+.trip-sheet-close .icon{width:14px;height:14px;stroke-width:2.6}
+.trip-sheet-close:active>span{background:#dcdce0}
+.trip-sheet-body{padding:0 16px calc(18px + env(safe-area-inset-bottom))}
+.trip-list{display:block;margin:0}
+.trip-section+.trip-section{margin-top:18px}
+.trip-sheet-body .trip-group-label{margin:10px 0 7px;padding:0 2px;font-size:13px;font-weight:500;letter-spacing:-.1px;color:var(--sub)}
+.trip-sheet-body h4.trip-group-label{margin:20px 0 7px}
+.trip-group{border-radius:12px;background:#fff;box-shadow:0 0 0 .5px rgba(60,60,67,.2);overflow:hidden}
+.trip-option{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:stretch;gap:0;width:100%;padding:0;background:#fff;border-radius:0}
+.trip-option.current{background:#fff;box-shadow:none}
+.trip-option+.trip-option{margin-top:0}
+.trip-option+.trip-option:before{content:"";position:absolute;z-index:1;left:16px;right:0;top:0;height:.5px;background:rgba(60,60,67,.2)}
+.trip-open{display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;width:100%;min-height:62px;padding:10px 4px 10px 16px;border-radius:0;background:none;color:var(--ink);text-align:left}
+.trip-open:active{background:#e9e9eb}
+.trip-option.current .trip-open{background:none;box-shadow:none}
+.trip-open-copy{min-width:0}
+.trip-open strong{display:block;font-size:16px;font-weight:500;letter-spacing:-.2px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trip-open span span{display:block;margin-top:2px;color:var(--sub);font-size:13px;font-variant-numeric:tabular-nums}
+.trip-check{flex:0 0 auto;width:18px;height:18px;color:var(--blue)}
+.trip-delete{align-self:stretch;width:44px;min-height:44px;display:grid;place-items:center;border-radius:0;background:none;color:#b4b4b9}
+.trip-delete:active{background:#e9e9eb;color:#ff3b30}
+.trip-delete .icon{width:19px;height:19px;stroke-width:1.7}
+.trip-empty{margin:0;padding:16px;border-radius:0;background:none;color:var(--sub);font-size:13px;text-align:left}
+.trip-field{position:relative;display:grid;grid-template-columns:62px minmax(0,1fr);align-items:center;gap:8px;min-height:52px;padding:0 14px 0 16px;margin:0}
+.trip-field+.trip-field:before{content:"";position:absolute;left:16px;right:0;top:0;height:.5px;background:rgba(60,60,67,.2)}
+.trip-field-label{font-size:15px;color:var(--ink);letter-spacing:-.2px}
+.trip-field input{width:100%;min-width:0;height:44px;padding:0;border:0;border-radius:0;background:none;color:var(--ink);font-size:16px;text-align:right;outline:none;-webkit-appearance:none;appearance:none}
+.trip-field input::placeholder{color:#c7c7cc;text-align:right;opacity:1}
+.trip-field input[type="date"]{color:var(--blue);font-variant-numeric:tabular-nums;text-align:right}
+.trip-field input[type="date"]::-webkit-date-and-time-value{text-align:right}
+.trip-field input[type="date"]::-webkit-calendar-picker-indicator{margin:0 0 0 4px;padding:0;width:16px;height:16px;opacity:.4}
+.trip-field:focus-within{background:#f7f7f9}
+.destination-chips{display:flex;gap:8px;margin:12px 0 0;padding:0 2px 2px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+.destination-chips::-webkit-scrollbar{display:none}
+.trip-sheet-body .destination-chip{position:relative;flex:0 0 auto;height:34px;padding:0 14px;border-radius:999px;background:#f2f2f7;color:var(--ink-2);font-size:13.5px;font-weight:500;letter-spacing:-.1px}
+.trip-sheet-body .destination-chip::after{content:"";position:absolute;inset:-6px -2px}
+.trip-sheet-body .destination-chip.active{background:rgba(10,132,255,.12);color:var(--blue)}
+.trip-create{display:block;width:100%;min-height:50px;margin:16px 0 0;border-radius:12px;background:var(--blue);color:#fff;font-size:16px;font-weight:600;letter-spacing:-.2px}
+.trip-create:active{background:var(--blue-deep)}
+@media(max-width:560px){
+  #tripDialog{width:100%;max-width:100%;margin:auto 0 0;border-radius:16px 16px 0 0;max-height:calc(100dvh - 24px)}
+  #tripDialog .dialog-inner{max-height:calc(100dvh - 24px)}
+  .trip-sheet-grab{display:block;width:36px;height:5px;margin:8px auto -3px;border-radius:3px;background:#d1d1d6}
+  .trip-sheet-head{padding:10px 12px 2px 20px}
+}

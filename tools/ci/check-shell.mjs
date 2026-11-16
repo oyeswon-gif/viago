@@ -53,7 +53,7 @@ if (mf) {
   const sizes = (mf.icons || []).map(i => i.sizes);
   if (!sizes.includes('192x192') || !sizes.includes('512x512')) fail('manifest 아이콘 192·512', sizes.join(','));
   else pass('manifest 아이콘 192·512');
-  const missingIcons = (mf.icons || []).map(i => i.src.replace(/^\.\//, '')).filter(f => !exists(f));
+  const missingIcons = (mf.icons || []).map(i => i.src.replace(/^\.\//, '').replace(/\?[^/]*$/, '')).filter(f => !exists(f));  // ?v= 캐시 버스트 쿼리는 파일 경로가 아니다
   if (missingIcons.length) fail('manifest 아이콘 파일 존재', missingIcons.join(', '));
   else pass('manifest 아이콘 파일 존재');
   if (!(mf.icons || []).some(i => /maskable/.test(i.purpose || ''))) fail('maskable 아이콘', 'purpose 에 maskable 없음');

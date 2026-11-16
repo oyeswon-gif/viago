@@ -102,5 +102,16 @@ check('R15 역지오코딩·외부 호출 없음(중심 지역은 저장된 좌�
 check('R15 저장값이 없으면 ⌂ 는 그날 전체 동선', /function goHome\(\)[\s\S]{0,240}refitDay\('bounds'\)/.test(preview));
 check('R15 moveend 처리기를 통째로 지우지 않음(타일 그리드)', !/map\.off\('moveend'\)\s*;/.test(preview) && /off\('moveend',previewMoveEnd\)/.test(preview));
 
+// R16 — 앱 아이콘(2번) 전 규격·'내 여행 보관함' iOS 시트 (M20)
+const manifest = read('manifest.webmanifest');
+check('R16 아이콘: 32·180·192·512 파일이 모두 있다', ['app-icon-32.png', 'app-icon-180.png', 'app-icon-192.png', 'app-icon-512.png', 'app-icon.svg'].every(f => exists(f)));
+check('R16 아이콘: head 가 ?v= 로 캐시를 끊는다', /apple-touch-icon[^>]*app-icon-180\.png\?v=/.test(html) && /rel="icon"[^>]*app-icon-3?2?\.png\?v=/.test(html));
+check('R16 아이콘: manifest 가 같은 아이콘을 가리킨다', /app-icon-192\.png\?v=/.test(manifest) && /app-icon-512\.png\?v=/.test(manifest));
+const tripDialog = section(html, '<dialog id="tripDialog"', '<div class="update-bar"');
+check('R16 시트: 닫기 버튼이 .cancel 로 기존 닫기 규칙에 걸린다', /class="trip-sheet-close cancel"/.test(tripDialog) && /dialog \.cancel/.test(html));
+check('R16 시트: 여행 전환·만들기 입력 id 가 그대로다', /id="destinationInput"/.test(tripDialog) && /id="tripStartInput"/.test(tripDialog) && /id="tripEndInput"/.test(tripDialog) && /id="newTripForm"/.test(tripDialog));
+check('R16 시트: iOS 토큰(헤어라인·시스템 블루·44px)', /\.trip-sheet-close\{[^}]*width:\s*44px/.test(css) && /\.trip-option\+\s*\.trip-option:before\{[^}]*rgba\(60,60,67/.test(css) && /\.trip-create\{[^}]*background:var\(--blue\)/.test(css));
+check('R16 시트: 목록 이름에서 이모지를 걷고 저장 값은 건드리지 않는다', /const tripLabel=/.test(html) && /esc\(label\)/.test(html));
+
 console.log(ok ? '\n모든 회귀 불변식 통과' : '\n실패한 불변식이 있습니다 — docs/REGRESSION-CHECKLIST.md 의 해당 M# 항목을 보세요.');
 process.exit(ok ? 0 : 1);
