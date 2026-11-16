@@ -141,6 +141,24 @@ const srv = http.createServer((q, r) => {
   const dragged = await view();
   rec('D2 손가락(마우스) 드래그로 지도 중심이 실제로 움직인다', !same(initial, dragged) && dragged.lat < initial.lat, `before ${JSON.stringify(initial)} → after ${JSON.stringify(dragged)}`);
 
+  // 드래그 뒤 새로 드러난 쪽 타일이 비지 않는다 (map.off('moveend') 로 타일 그리드 처리를 지우던 회귀)
+  const coverage = async () => {
+    const miss = await page.evaluate(() => {
+      const host = document.getElementById('journeyDayMap'), hb = host.getBoundingClientRect();
+      const tiles = [...host.querySelectorAll('img.leaflet-tile')].map(t => t.getBoundingClientRect());
+      let gap = 0;
+      for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) {
+        const x = hb.x + hb.width * (i + 0.5) / 6, y = hb.y + hb.height * (j + 0.5) / 6;
+        if (!tiles.some(r => x >= r.x && x <= r.right && y >= r.y && y <= r.bottom)) gap++;
+      }
+      return gap;
+    });
+    return miss;
+  };
+  await page.waitForTimeout(1200);
+  const gaps = await coverage();
+  rec('D2b 드래그한 지도에 타일이 빠진 회색 띠가 남지 않는다', gaps === 0, `빈 지점 ${gaps}/36`);
+
   // ② ＋/－ 캡슐 (44×88, 44px 터치 타겟)
   const zoomUi = await page.evaluate(() => {
     const box = document.querySelector('.journey-map-zoom').getBoundingClientRect();
@@ -167,6 +185,9 @@ const srv = http.createServer((q, r) => {
   await page.waitForTimeout(700);
   const z3 = (await view()).zoom;
   rec('D4 ＋/－ 가 한 단계씩 확대·축소한다(빠른 연속 탭 포함)', z1 === z0 + 1 && z2 === z0 - 1 && z3 === z2 + 2, `${z0} → ${z1} → ${z2} → ${z3}`);
+  await page.waitForTimeout(1500);
+  const zoomGaps = await coverage();
+  rec('D4b ＋/－ 로 배율을 바꾼 뒤에도 타일이 다 덮인다', zoomGaps === 0, `빈 지점 ${zoomGaps}/36`);
 
   // ③ 저장값이 없을 때 ⌂ = 그날 전체 동선 맞춤
   await page.click('#journeyMapHome');

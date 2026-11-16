@@ -100,6 +100,7 @@ check('R15 기본값은 여행 문서 필드(mapView·dayMapViews)+localStorage 
   /mapView/.test(preview) && /dayMapViews/.test(preview) && /journey-note-map-views-/.test(preview));
 check('R15 역지오코딩·외부 호출 없음(중심 지역은 저장된 좌표로만)', !/geocode|reverseGeocode|placesRequest\(|fetch\(/.test(preview));
 check('R15 저장값이 없으면 ⌂ 는 그날 전체 동선', /function goHome\(\)[\s\S]{0,240}refitDay\('bounds'\)/.test(preview));
+check('R15 moveend 처리기를 통째로 지우지 않음(타일 그리드)', !/map\.off\('moveend'\)\s*;/.test(preview) && /off\('moveend',previewMoveEnd\)/.test(preview));
 
 console.log(ok ? '\n모든 회귀 불변식 통과' : '\n실패한 불변식이 있습니다 — docs/REGRESSION-CHECKLIST.md 의 해당 M# 항목을 보세요.');
 process.exit(ok ? 0 : 1);

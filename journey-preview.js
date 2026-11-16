@@ -9,7 +9,7 @@
    sheet=document.getElementById('mapViewSheet'),sheetDesc=document.getElementById('mapViewSheetDesc'),
    sheetDaySub=document.getElementById('mapViewDaySub'),sheetTripSub=document.getElementById('mapViewTripSub'),
    VIEW_KEY_PREFIX='journey-note-map-views-',HINT_KEY_PREFIX='journey-note-map-hint-';
- let value,objects=[],layer,generation=0,signature='',frame,noteFrame=0,userMoved=false,fitContext='',lastTabDay=null,framingUntil=0,lastPaint=null,frameMode='auto';
+ let value,objects=[],layer,generation=0,signature='',frame,noteFrame=0,userMoved=false,fitContext='',lastTabDay=null,framingUntil=0,lastPaint=null,frameMode='auto',previewMoveEnd=null;
  // 지도 가장자리와 우측 하단 '전체 동선' 버튼·안내 문구가 차지하는 자리는 비워 둔다.
  const ZOOM_MAX=17,FIT_MAX=16,PAD_TOP=14,PAD_LEFT=14,PAD_RIGHT=98,PAD_BOTTOM=58;
  function visibility(){const entries=overviewEntries();preview.hidden=foodMode||!entries.length;if(preview.hidden||!sharedReady)return;const next=JSON.stringify([activeTrip.id,candidateMode,dayIndex,entries.map(x=>[x.p.id,x.p.name,x.c,x.label])]);if(next===signature)return;signature=next;cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>update().catch(()=>{signature='';container.textContent='지도를 연결하지 못했어요. Google 지도에서 길찾기는 계속 사용할 수 있어요.'}))}
@@ -94,7 +94,9 @@
  }else draw();
  paintHint();
  if(provider==='google'){google.maps.event.clearListeners(map,'idle');google.maps.event.addListener(map,'idle',()=>followView(map,provider,points,missing))}
- else{map.off('moveend');map.on('moveend',()=>followView(map,provider,points,missing))}
+ // 주의: map.off('moveend') 로 전부 지우면 Leaflet 타일 그리드의 moveend 처리까지 사라져
+ //       (드래그 후 새로 드러난 쪽 타일이 비는 원인) 우리 핸들러만 뗀다.
+ else{if(previewMoveEnd)map.off('moveend',previewMoveEnd);previewMoveEnd=()=>followView(map,provider,points,missing);map.on('moveend',previewMoveEnd)}
  const label=providerLabel(value)+' · '+points.length+'곳 표시 · 손가락으로 이동하고 확대할 수 있어요'+(missing.length?' · 위치 확인 필요 '+missing.length+'곳':'');container.setAttribute('aria-label',label);button.title=providerLabel(value);button.textContent=candidateMode?'후보 전체 지도':'전체 동선';
  }
  // 사용자가 지도를 만진 뒤에는 백그라운드 동기화·재렌더가 지도 위치를 되돌리지 않는다.
