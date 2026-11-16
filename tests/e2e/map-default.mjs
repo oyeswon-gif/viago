@@ -327,6 +327,8 @@ const srv = http.createServer((q, r) => {
   await second.page.goto(`http://127.0.0.1:${PORT}/index.html`, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await second.page.waitForSelector('#dateTabs button', { timeout: 45000 });
   await second.page.waitForTimeout(2000);
+  // 첫 1회 말풍선은 지도가 준비된 뒤에 뜬다 — 느린 기기에서 2초를 넘길 수 있어 따로 기다린다.
+  await second.page.waitForFunction(() => { const hint = document.getElementById('journeyMapHint'); return !!hint && !hint.hidden; }, { timeout: 8000 }).catch(() => {});
   const hintFirst = await second.page.evaluate(() => !document.getElementById('journeyMapHint').hidden);
   await second.page.locator('#journeyMapHint').tap();
   await second.page.waitForTimeout(300);
