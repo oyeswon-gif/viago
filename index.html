@@ -13,12 +13,12 @@
   <meta name="theme-color" content="#f4f6f8" />
   <meta name="color-scheme" content="light" />
   <meta name="format-detection" content="telephone=no,date=no,address=no" />
-  <!-- 2026-11-16 v29: 앱 아이콘 2번(구름 위 지구본·비행기) — iOS 홈 화면 아이콘·파비콘 전 규격 교체, ?v= 로 캐시 무력화 -->
-  <link rel="manifest" href="./manifest.webmanifest?v=75" />
-  <link rel="apple-touch-icon" sizes="180x180" href="./app-icon-180.png?v=75" />
-  <link rel="icon" href="./app-icon.svg?v=75" type="image/svg+xml" />
-  <link rel="icon" type="image/png" sizes="32x32" href="./app-icon-32.png?v=75" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./app-icon-192.png?v=75" />
+  <!-- 2026-11-16 v30: 하단 탭 '지도' → '정산' (정산·가계부 탭). 지도 패널·setView('map')은 그대로 두고 일정 탭의 전체 동선으로 들어간다 -->
+  <link rel="manifest" href="./manifest.webmanifest?v=76" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./app-icon-180.png?v=76" />
+  <link rel="icon" href="./app-icon.svg?v=76" type="image/svg+xml" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./app-icon-32.png?v=76" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./app-icon-192.png?v=76" />
 
   <meta name="description" content="지인들과 함께 일정을 정리하고 Google 지도로 바로 길찾는 개인 여행 앱" />
   <title>viago</title>
@@ -169,6 +169,22 @@
         </div>
         <p class="exchange-note">ExchangeRate-API 무료 공개 환율(1일 1회 갱신)을 <b>기기에서 직접</b> 받아요. 서버 공통 캐시가 없어 기기마다 따로 요청하며, 받은 시각과 제공사 기준 시각을 위에 함께 표시합니다. 실제 카드 결제·현금 환전 금액과는 차이가 날 수 있어요.<br><a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By ExchangeRate-API</a></p>
       </article>
+      <article class="panel expenses-panel" id="expensesPanel" aria-live="polite">
+        <div class="expenses-head"><div><h2>정산</h2><p id="expensesSub">2명 여행 경비 · 엔화로 적으면 원화로 바로</p></div><span class="expenses-rate" id="expensesRate">1엔 --원</span></div>
+        <div id="expensesTotal"></div>
+        <div id="expensesSettle"></div>
+        <div class="expense-cats" id="expensesCats" role="group" aria-label="카테고리별 합계"></div>
+        <div class="expense-list-head"><h3>최근 지출</h3><button type="button" class="expense-list-all" id="expensesListAll">전체</button></div>
+        <div class="expense-list" id="expensesList"></div>
+        <form class="expense-form" id="expenseForm" autocomplete="off">
+          <div class="expense-form-head"><strong>지출 추가</strong><span id="expenseFormHint">반씩 나눠 계산</span></div>
+          <div class="expense-amount"><span class="expense-amount-symbol" aria-hidden="true">¥</span><input class="expense-amount-input" id="expenseAmount" inputmode="numeric" autocomplete="off" placeholder="0" aria-label="엔화 금액" /><span class="expense-amount-won" id="expenseAmountWon">≈ ₩0</span></div>
+          <input class="expense-title-input" id="expenseTitle" type="text" autocomplete="off" maxlength="40" placeholder="내용 (예: 고토니 스시)" aria-label="지출 내용" />
+          <div class="expense-payers" id="expensePayers" role="group" aria-label="낸 사람"></div>
+          <div class="expense-chips" id="expenseChips" role="group" aria-label="카테고리"></div>
+          <button type="submit" class="expense-add" id="expenseAdd">+ 추가</button>
+        </form>
+      </article>
       <article class="panel itinerary-panel" id="itineraryPanel">
         <div class="panel-head"><div><h2 id="dayTitle">12월 10일 목요일</h2><p id="daySummary">도착 후 사카에와 오스 산책</p></div><span class="sync-state" id="syncStatus">공유 연결 중</span></div>
         <div id="staleBanner" role="status"><strong>이 기기는 이 여행에 참여한 상태가 아니에요</strong><span>지금 보이는 일정은 <b>기기에 저장된 이전 사본</b>이라 서버의 최신 일정과 다를 수 있어요. 서버 일정은 그대로 있고, 이 기기에서만 연결이 안 된 상태예요.</span><div class="stale-actions"><button type="button" id="staleJoin">초대 코드 넣기</button></div><span class="stale-note" id="staleNote"></span></div>
@@ -189,7 +205,7 @@
   <nav class="mobile-nav" aria-label="하단 메뉴">
     <button class="nav-item active" data-view="schedule"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>일정</button>
     <button class="nav-item" data-view="today"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7v5l3 2"/><path d="M17 3h4v4"/></svg>오늘</button>
-    <button class="nav-item" data-view="map"><svg class="icon" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15M15 6v15"/></svg>지도</button>
+    <button class="nav-item" data-view="expenses"><svg class="icon" viewBox="0 0 24 24"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6H18a2 2 0 0 1 2 2v8.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><path d="M4 8.5V7a1 1 0 0 1 1-1h12"/><path d="M20 11.2h-3.1a1.9 1.9 0 0 0 0 3.8H20"/></svg>정산</button>
     <button class="nav-item" data-view="exchange"><svg class="icon" viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/><path d="M18 7l-3 3M6 17l3-3"/></svg>환율</button>
   </nav>
 
@@ -282,9 +298,9 @@
     </div>
   </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js?v=75"></script>
-  <script src="./viago-auth-client.js?v=75"></script>
-  <script src="./viago-auth-firebase.js?v=75"></script>
+  <script src="./journey-sync.js?v=76"></script>
+  <script src="./viago-auth-client.js?v=76"></script>
+  <script src="./viago-auth-firebase.js?v=76"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -300,7 +316,7 @@
     // Preserve previously edited schedules; migration must never replace user data.
     let currentTripId=localStorage.getItem('journey-note-current-trip')||trips[0].id;
     let activeTrip=trips.find(t=>t.id===currentTripId)||trips[0];
-    function ensureTripFeatures(t,legacy=true){t.restaurants=t.restaurants||[];t.candidates=t.candidates||[];t.todayProgress=t.todayProgress||{};t.completedPlaceIds=t.completedPlaceIds||{};t.weatherAlternatives=t.weatherAlternatives||[];t.weatherBackups=t.weatherBackups||[];const hash=s=>{let n=2166136261;for(const c of s)n=Math.imul(n^c.charCodeAt(0),16777619);return(n>>>0).toString(36)};(t.days||[]).forEach((d,i)=>{d.id=d.id||t.id+'-day-'+i;d.places.forEach((p,j)=>{p.id=p.id||(legacy?'legacy-'+hash(t.id+'|'+d.id+'|'+j+'|'+p.name):crypto.randomUUID())});if(!t.completedPlaceIds[d.id])t.completedPlaceIds[d.id]=d.places.slice(0,Number(t.todayProgress[i]||0)).map(p=>p.id)});t.candidates.forEach((p,i)=>p.id=p.id||'candidate-'+hash(t.id+'|'+i+'|'+p.name))}
+    function ensureTripFeatures(t,legacy=true){t.restaurants=t.restaurants||[];t.candidates=t.candidates||[];t.todayProgress=t.todayProgress||{};t.completedPlaceIds=t.completedPlaceIds||{};t.weatherAlternatives=t.weatherAlternatives||[];t.weatherBackups=t.weatherBackups||[];t.expenses=Array.isArray(t.expenses)?t.expenses:[];t.expenseSettlement=t.expenseSettlement||null;const hash=s=>{let n=2166136261;for(const c of s)n=Math.imul(n^c.charCodeAt(0),16777619);return(n>>>0).toString(36)};(t.days||[]).forEach((d,i)=>{d.id=d.id||t.id+'-day-'+i;d.places.forEach((p,j)=>{p.id=p.id||(legacy?'legacy-'+hash(t.id+'|'+d.id+'|'+j+'|'+p.name):crypto.randomUUID())});if(!t.completedPlaceIds[d.id])t.completedPlaceIds[d.id]=d.places.slice(0,Number(t.todayProgress[i]||0)).map(p=>p.id)});t.candidates.forEach((p,i)=>p.id=p.id||'candidate-'+hash(t.id+'|'+i+'|'+p.name))}
     trips.forEach(t=>ensureTripFeatures(t));
     let days=activeTrip.days,restaurants=activeTrip.restaurants,tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};
     let dayIndex=0,foodMode=false,candidateMode=false,currentView='schedule',lastDeleted=null,pendingMode=tripInfo.mode,mapInstance=null,mapLayer=null,quickMapInstance=null,quickMapLayer=null,mapProvider=null,googleMapsReady=null,leafletReady=null,sortableReady=null,sortable=null,draggingSchedule=false,suppressPlaceClickUntil=0,overviewRequest=0;
@@ -671,7 +687,7 @@
       }
     }
     $('#syncLocal').onclick=()=>resolveSyncConflict(false);$('#syncRemote').onclick=()=>resolveSyncConflict(true);
-    function applySharedPayload(payload){if(!payload||!Array.isArray(payload.trips))return;normalizeShared(payload);applyingRemote=true;trips=payload.trips;activeTrip=trips.find(t=>t.id===currentTripId)||trips[0];if(!activeTrip){applyingRemote=false;return}currentTripId=activeTrip.id;ensureTripFeatures(activeTrip);days=activeTrip.days||[];restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=Math.min(dayIndex,Math.max(0,days.length-1));localStorage.setItem('journey-note-trips',JSON.stringify(trips));localStorage.setItem('journey-note-current-trip',currentTripId);applyingRemote=false;render();if(currentView==='today')renderToday();if(!$('#dayBrief').hidden)renderDayBrief()}
+    function applySharedPayload(payload){if(!payload||!Array.isArray(payload.trips))return;normalizeShared(payload);applyingRemote=true;trips=payload.trips;activeTrip=trips.find(t=>t.id===currentTripId)||trips[0];if(!activeTrip){applyingRemote=false;return}currentTripId=activeTrip.id;ensureTripFeatures(activeTrip);days=activeTrip.days||[];restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=Math.min(dayIndex,Math.max(0,days.length-1));localStorage.setItem('journey-note-trips',JSON.stringify(trips));localStorage.setItem('journey-note-current-trip',currentTripId);applyingRemote=false;render();if(currentView==='today')renderToday();if(currentView==='expenses')renderExpenses();if(!$('#dayBrief').hidden)renderDayBrief()}
     async function pollShared(){
       if(document.hidden||navigator.onLine===false||sharedPolling||!sharedReady||draggingSchedule||sharedSaving||syncConflictState)return;
       if(accessBlockedAt&&Date.now()-accessBlockedAt<60000)return;
@@ -1284,7 +1300,7 @@
     function destinationOptions(selected){return days.map((d,i)=>'<option value="'+i+'" '+(String(i)===selected?'selected':'')+'>'+(i+1)+'일차 · '+esc(d.date)+'</option>').join('')+'<option value="candidate" '+(selected==='candidate'?'selected':'')+'>후보</option>'}
     function moveEditedPlace(edit,updated,target){if(edit.trip!==activeTrip.id)return false;const list=edit.day==='candidate'?activeTrip.candidates:days[edit.day]?.places,index=list?.findIndex(p=>p.id===edit.id);if(index==null||index<0)return false;if(target!=='candidate'&&!days[Number(target)])return false;list.splice(index,1);if(target==='candidate'){updated.day=typeof edit.day==='number'?edit.day:(updated.day||0);updated.votes=updated.votes||[];updated.voteNames=updated.voteNames||{};activeTrip.candidates.push(updated);candidateMode=true}else{days[Number(target)].places.push(updated);dayIndex=Number(target);candidateMode=false}foodMode=false;return true}
     function openCandidateEdit(index){const item=activeTrip.candidates[index];if(!item)return;$('#editMapsUrl').value=item.mapsUrl||'';editingPlace={day:'candidate',index,id:item.id,trip:activeTrip.id};editPlaceSelection=item.placeId?item:null;$('#editPlaceName').value=item.name;$('#editPlaceNote').value=item.note||'';$('#editPlanB').value=item.planB||'';$('#editHoursText').value=item.hoursText||'';$('#editCoordinates').value=Number.isFinite(item.lat)&&Number.isFinite(item.lng)?item.lat+', '+item.lng:'';$('#editPlaceKind').value=[...$('#editPlaceKind').options].some(o=>o.value===item.kind)?item.kind:'장소';$('#editPlaceDay').innerHTML=destinationOptions('candidate');closeSuggestions($('#editPlaceName'),$('#editPlaceSuggestions'));$('#editDialog').showModal()}
-    function openEditDialog(index){const item=days[dayIndex]?.places[index];if(!item)return;$('#editMapsUrl').value=item.mapsUrl||'';editingPlace={day:dayIndex,index,id:item.id,trip:activeTrip.id};editPlaceSelection=item.placeId?{name:item.name,address:item.address||'',placeId:item.placeId,lat:item.lat,lng:item.lng}:null;$('#editPlaceName').value=item.name;$('#editPlaceNote').value=item.note||'';$('#editPlanB').value=item.planB||'';$('#editHoursText').value=item.hoursText||'';$('#editCoordinates').value=Number.isFinite(item.lat)&&Number.isFinite(item.lng)?item.lat+', '+item.lng:'';$('#editPlaceKind').value=[...$('#editPlaceKind').options].some(o=>o.value===(item.kind||'장소'))?(item.kind||'장소'):'장소';$('#editPlaceDay').innerHTML=destinationOptions(String(dayIndex));closeSuggestions($('#editPlaceName'),$('#editPlaceSuggestions'));$('#editDialog').showModal();setTimeout(()=>$('#editPlaceName').focus(),80)}
+    function openEditDialog(index){const item=days[dayIndex]?.places[index];if(!item)return;$('#editMapsUrl').value=item.mapsUrl||'';editingPlace={day:dayIndex,index,id:item.id,trip:activeTrip.id};editPlaceSelection=item.placeId?{name:item.name,address:item.address||'',placeId:item.placeId,lat:item.lat,lng:item.lng}:null;$('#editPlaceName').value=item.name;$('#editPlaceNote').value=item.note||'';$('#editPlanB').value=item.planB||'';$('#editHoursText').value=item.hoursText||'';$('#editCoordinates').value=Number.isFinite(item.lat)&&Number.isFinite(item.lng)?item.lat+', '+item.lng:'';$('#editPlaceKind').value=[...$('#editPlaceKind').options].some(o=>o.value===(item.kind||'장소'))?(item.kind||'장소'):'장소';$('#editPlaceDay').innerHTML=destinationOptions(String(dayIndex));closeSuggestions($('#editPlaceName'),$('#editPlaceSuggestions'));$('#editDialog').showModal();setTimeout(()=>{const active=document.activeElement;if(active&&active!==document.body&&$('#editDialog').contains(active)&&/^(INPUT|TEXTAREA|SELECT)$/.test(active.tagName))return;$('#editPlaceName').focus()},80)}
     function tripDateAt(index){const d=new Date(activeTrip.start+'T00:00:00');d.setDate(d.getDate()+index);return d}
     function timeMinutes(value){if(!/^\d{2}:\d{2}$/.test(value||''))return null;const [h,m]=value.split(':').map(Number);return h*60+m}
     function hoursPointMinutes(point){if(!point)return null;if(Number.isFinite(point.hour))return point.hour*60+Number(point.minute||0);if(/^\d{4}$/.test(point.time||''))return Number(point.time.slice(0,2))*60+Number(point.time.slice(2));return null}
@@ -1799,10 +1815,10 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       if(trips.length===1)return toast('여행은 최소 1개가 필요해요');
       if(!confirm(`“${trip.name}” 여행을 삭제할까요?\n일정과 후보 장소도 함께 삭제됩니다.`))return;
       const deletingActive=activeTrip.id===id;trips=trips.filter(t=>t.id!==id);
-      if(deletingActive){activeTrip=trips.slice().sort((a,b)=>a.start.localeCompare(b.start))[0];ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear()}
+      if(deletingActive){activeTrip=trips.slice().sort((a,b)=>a.start.localeCompare(b.start))[0];ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();expenseDraft.filter=null;expenseDraft.payer=null;if(currentView==='expenses')renderExpenses()}
       persistTrips();renderTripList();render();if(currentView==='today')renderToday();toast('여행을 삭제했어요')
     }
-    function switchTrip(id){persistTrips();activeTrip=trips.find(t=>t.id===id)||activeTrip;ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();localStorage.setItem('journey-note-current-trip',currentTripId);$('#tripDialog').close();resetInlineRoute();render();if(currentView==='today')renderToday();toast(activeTrip.destination+' 여행을 열었어요')}
+    function switchTrip(id){persistTrips();activeTrip=trips.find(t=>t.id===id)||activeTrip;ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();localStorage.setItem('journey-note-current-trip',currentTripId);$('#tripDialog').close();resetInlineRoute();expenseDraft.filter=null;expenseDraft.payer=null;render();if(currentView==='today')renderToday();if(currentView==='expenses')renderExpenses();toast(activeTrip.destination+' 여행을 열었어요')}
     $('#tripPickerBtn').onclick=()=>{renderTripList();const now=new Date(),later=new Date(Date.now()+3*86400000);$('#tripStartInput').value=localIso(now);$('#tripEndInput').value=localIso(later);$('#tripDialog').showModal()};
     document.querySelectorAll('.destination-chip').forEach(b=>b.onclick=()=>{$('#destinationInput').value=b.dataset.destination;document.querySelectorAll('.destination-chip').forEach(x=>x.classList.toggle('active',x===b))});
     $('#newTripForm').addEventListener('submit',e=>{e.preventDefault();const destination=$('#destinationInput').value.trim(),start=$('#tripStartInput').value,end=$('#tripEndInput').value;if(!destination||!start||!end||end<start)return toast('여행지와 날짜를 다시 확인해주세요');const newDays=makeEmptyDays(start,end);if(!newDays.length)return toast('여행 날짜를 다시 확인해주세요');persistTrips();const trip={id:'trip-'+Date.now(),destination,name:destination+' 여행',start,end,mode:'transit',days:newDays,restaurants:[],candidates:[],todayProgress:{},weatherAlternatives:[],weatherBackups:[]};trips.push(trip);activeTrip=trip;currentTripId=trip.id;days=trip.days;restaurants=trip.restaurants;tripInfo={name:trip.name,mode:trip.mode};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();persistTrips();$('#tripDialog').close();$('#newTripForm').reset();document.querySelectorAll('.destination-chip').forEach(x=>x.classList.remove('active'));resetInlineRoute();render();if(currentView==='today')renderToday();toast(destination+' 여행을 만들었어요')});
@@ -1902,12 +1918,169 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
           localStorage.setItem(EXCHANGE_CACHE_KEY,JSON.stringify(exchangeData));
           toast('저장된 최근 환율을 보여드려요');
         }else toast('환율을 불러오지 못했어요 · 인터넷 연결을 확인해주세요');
-      }finally{exchangeLoading=false;renderExchange()}
+      }finally{exchangeLoading=false;renderExchange();if(currentView==='expenses')renderExpenses()}
     }
-    const tabViews=['schedule','today','map','exchange'];
-    function panelForView(v){return{schedule:$('#itineraryPanel'),today:$('#todayPanel'),map:$('#mapPanel'),exchange:$('#exchangePanel')}[v]}
+    // ── 정산 · 가계부 (v30) ────────────────────────────────────────────────────────
+    //   · 지출은 엔화(amountJpy)로만 저장한다. 원화는 환율 탭이 받아 둔 exchangeData 로 그때그때 환산한다.
+    //   · 저장 경로는 기존 그대로 trips[].expenses[] → localStorage + v3 공유 저장(3-way 병합).
+    //     항목마다 id 가 있어 두 기기가 서로 다른 지출을 추가해도 합쳐진다.
+    //   · 새 API·새 컬렉션 없음. Google Places/Geocoding 호출 0건(환율은 exchangeData 재사용).
+    const EXPENSE_CATS=['식비','교통','쇼핑','관광'];
+    const EXPENSE_CAT_COLOR={식비:'#e2795a',교통:'#2e9a6a',쇼핑:'#8b6fd4',관광:'#e2a03f'};
+    const EXPENSE_PAYER_COLOR=['#0a84ff','#e2795a','#2e9a6a','#8b6fd4'];
+    const FALLBACK_YEN_KRW=8.37;   // 환율을 아직 못 받았을 때만 쓰는 표시용 기본값(계산은 항상 exchangeData 우선)
+    const expenseDraft={payer:null,category:'식비',filter:null};
+    const expenseNumber=value=>new Intl.NumberFormat('ko-KR').format(Math.round(Number(value)||0));
+    const expenseYen=value=>'¥'+expenseNumber(value);
+    function yenKrwRate(){const rate=exchangeValue(1,'JPY','KRW');return Number.isFinite(rate)&&rate>0?rate:FALLBACK_YEN_KRW}
+    const expenseWon=value=>'₩'+expenseNumber((Number(value)||0)*yenKrwRate());
+    const expenseKrw=value=>'≈ '+expenseWon(value);
+    // 낸 사람: 여행에 members 가 있으면 그것, 없으면 머리말 멤버(재원·주희), 그것도 없으면 일본 여행 기본 2인.
+    function expenseMembers(){
+      const declared=(Array.isArray(activeTrip?.members)?activeTrip.members:[]).map(x=>typeof x==='string'?x:(x&&x.name)||'').map(x=>String(x).trim()).filter(Boolean);
+      const topbar=[...document.querySelectorAll('.people .avatar:not(.add-person)')].map(el=>String(el.textContent||'').trim()).filter(Boolean);
+      const used=(Array.isArray(activeTrip?.expenses)?activeTrip.expenses:[]).map(e=>String(e&&e.payer||'').trim()).filter(Boolean);
+      const japanese=/나고야|도쿄|오사카|교토|후쿠오카|삿포로|일본/.test(String(activeTrip?.destination||''));
+      const base=declared.length>=2?declared:topbar.length>=2?topbar:(japanese?['재원','주희']:[currentVoter||'나','동행']);
+      return [...new Set([...base,...used])];
+    }
+    function expenseTally(){
+      const list=Array.isArray(activeTrip?.expenses)?activeTrip.expenses:[];
+      const byPayer=new Map(),byCategory=new Map();let total=0,count=0;
+      for(const item of list){
+        const amount=Math.round(Number(item&&item.amountJpy)||0);
+        if(!(amount>0))continue;
+        const payer=String(item.payer||'').trim()||'미지정',category=EXPENSE_CATS.includes(item.category)?item.category:'기타';
+        total+=amount;count+=1;byPayer.set(payer,(byPayer.get(payer)||0)+amount);byCategory.set(category,(byCategory.get(category)||0)+amount);
+      }
+      return {list,total,count,byPayer,byCategory};
+    }
+    // 2인 여행은 반씩, 멤버가 더 있으면 같은 금액씩 — 적게 낸 사람 → 많이 낸 사람으로 옮긴다.
+    function expensePlan(){
+      const {total,byPayer}=expenseTally(),members=expenseMembers(),heads=Math.max(2,members.length),transfers=[];
+      if(!total||members.length<2)return {transfers,total,heads,members};
+      const share=total/heads,balance=members.map(name=>({name,diff:(byPayer.get(name)||0)-share})).sort((a,b)=>b.diff-a.diff);
+      const debtors=balance.filter(x=>x.diff<0).map(x=>({name:x.name,need:-x.diff}));
+      for(const receiver of balance.filter(x=>x.diff>0)){
+        let left=receiver.diff;
+        for(const debtor of debtors){
+          if(left<1)break;
+          if(debtor.need<1)continue;
+          const amount=Math.min(left,debtor.need);
+          if(amount>=1){transfers.push({from:debtor.name,to:receiver.name,amount:Math.round(amount)});debtor.need-=amount;left-=amount}
+        }
+      }
+      return {transfers,total,heads,members};
+    }
+    const expenseSignature=plan=>plan.transfers.map(t=>`${t.from}>${t.to}:${t.amount}`).join('|')+'@'+(plan.total||0);
+    function expenseStamp(value){
+      const date=value instanceof Date?value:new Date(value);
+      if(Number.isNaN(date.getTime()))return '날짜 없음';
+      return `${date.getMonth()+1}.${date.getDate()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+    }
+    function renderExpenses(){
+      if(!$('#expensesPanel'))return;
+      const rate=yenKrwRate(),tally=expenseTally(),plan=expensePlan(),heads=Math.max(2,plan.members.length);
+      $('#expensesRate').textContent='1엔 '+rate.toFixed(2)+'원';
+      $('#expensesSub').textContent=`${heads}명 여행 경비 · 엔화로 적으면 원화로 바로`;
+      // 총 지출 카드 — 낸 사람 비율 바 + 각자 합계
+      const payers=[...tally.byPayer.keys()];
+      const segments=payers.map((name,index)=>`<i style="width:${tally.total?(tally.byPayer.get(name)/tally.total*100).toFixed(2):0}%;background:${EXPENSE_PAYER_COLOR[index%EXPENSE_PAYER_COLOR.length]}"></i>`).join('');
+      const legend=payers.map((name,index)=>`<span><i style="background:${EXPENSE_PAYER_COLOR[index%EXPENSE_PAYER_COLOR.length]}"></i>${esc(name)} ${expenseYen(tally.byPayer.get(name))}</span>`).join('');
+      $('#expensesTotal').innerHTML=`<section class="expense-total">
+        <div class="expense-total-top"><span>총 지출</span><span>${tally.count}건</span></div>
+        <div class="expense-total-line"><strong>${expenseYen(tally.total)}</strong><span>${expenseKrw(tally.total)}</span></div>
+        ${tally.total?`<div class="expense-bar" role="img" aria-label="낸 사람 비율">${segments}</div><div class="expense-bar-legend">${legend}</div>`:'<p class="expense-total-empty">아직 적은 지출이 없어요. 아래에서 첫 지출을 추가해 보세요.</p>'}
+      </section>`;
+      // 1/2 정산 카드 — 적게 낸 사람 → 더 낸 사람
+      const settled=activeTrip.expenseSettlement&&typeof activeTrip.expenseSettlement==='object'?activeTrip.expenseSettlement:null;
+      const signature=expenseSignature(plan),settledNow=!!(settled&&settled.signature===signature);
+      let settleHtml='';
+      if(plan.transfers.length){
+        const lines=plan.transfers.map(t=>`<span class="expense-settle-line">${esc(t.from)} → ${esc(t.to)} <b>${expenseYen(t.amount)}</b></span>`).join('');
+        if(settledNow){
+          settleHtml=`<section class="expense-settle settled"><div class="expense-settle-copy"><span class="expense-settle-label">정산 완료</span>${lines}<span class="expense-settle-sub">${expenseStamp(settled.at)}에 완료 표시했어요</span></div><button type="button" class="expense-settle-btn ghost" id="expenseSettleUndo">되돌리기</button></section>`;
+        }else{
+          const first=plan.transfers[0],sub=plan.transfers.length===1?`${expenseKrw(first.amount)} · ${esc(first.from)} 님이 조금 적게 냈어요`:`${heads}명 똑같이 나눈 기준 · ${plan.transfers.length}건`;
+          settleHtml=`<section class="expense-settle"><div class="expense-settle-copy"><span class="expense-settle-label">${settled?'지출이 바뀌었어요 · 다시 계산':'반씩 정산하면'}</span>${lines}<span class="expense-settle-sub">${sub}</span></div><button type="button" class="expense-settle-btn" id="expenseSettleDone">${settled?'다시 정산':'정산 완료'}</button></section>`;
+        }
+      }else if(tally.total){
+        settleHtml=`<section class="expense-settle flat"><div class="expense-settle-copy"><span class="expense-settle-label">반씩 정산</span><span class="expense-settle-line"><b>서로 똑같이 냈어요</b></span><span class="expense-settle-sub">지금은 정산할 금액이 없어요</span></div></section>`;
+      }
+      $('#expensesSettle').innerHTML=settleHtml;
+      if($('#expenseSettleDone'))$('#expenseSettleDone').onclick=settleExpenses;
+      if($('#expenseSettleUndo'))$('#expenseSettleUndo').onclick=unsettleExpenses;
+      // 카테고리 4칸 — 누르면 그 카테고리만 보기
+      $('#expensesCats').innerHTML=EXPENSE_CATS.map(category=>{
+        const active=expenseDraft.filter===category;
+        return `<button type="button" class="expense-cat${active?' active':''}" data-cat="${category}" aria-pressed="${active}"><span class="expense-cat-top"><i style="background:${EXPENSE_CAT_COLOR[category]}"></i>${category}</span><b>${expenseYen(tally.byCategory.get(category)||0)}</b></button>`;
+      }).join('');
+      $('#expensesCats').querySelectorAll('[data-cat]').forEach(button=>button.onclick=()=>{expenseDraft.filter=expenseDraft.filter===button.dataset.cat?null:button.dataset.cat;renderExpenses()});
+      // 최근 지출 — 날짜/시간 · 카테고리 · 금액(엔) · 결제자 · 삭제
+      const filter=expenseDraft.filter;
+      const rows=[...tally.list]
+        .filter(item=>!filter||(EXPENSE_CATS.includes(item.category)?item.category:'기타')===filter)
+        .sort((a,b)=>(Date.parse(b&&b.createdAt)||0)-(Date.parse(a&&a.createdAt)||0));
+      $('#expensesListAll').textContent=filter?filter+'만 보기 해제':'전체';
+      $('#expensesListAll').classList.toggle('active',!!filter);
+      $('#expensesList').innerHTML=rows.length?rows.map(item=>{
+        const title=esc(String(item.title||'지출')),category=EXPENSE_CATS.includes(item.category)?item.category:'기타';
+        return `<div class="expense-row" data-id="${esc(String(item.id||''))}">
+          <div class="expense-row-main"><strong>${title}</strong><span>${expenseStamp(item.createdAt)} · ${esc(category)}</span></div>
+          <div class="expense-row-side"><b>${expenseYen(item.amountJpy)}</b><span>${esc(String(item.payer||'미지정'))} 결제</span></div>
+          <button type="button" class="expense-del" data-del="${esc(String(item.id||''))}" aria-label="${title} 삭제"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg></button>
+        </div>`;
+      }).join(''):`<p class="expense-empty">${filter?esc(filter)+' 지출이 아직 없어요.':'지출을 추가하면 날짜 · 카테고리 · 결제자와 함께 여기에 쌓여요.'}</p>`;
+      $('#expensesList').querySelectorAll('[data-del]').forEach(button=>button.onclick=()=>deleteExpense(button.dataset.del));
+      // 입력 폼 — 낸 사람·카테고리 칩 (선택은 expenseDraft 에만 둔다: 입력 중 재렌더 없음)
+      const members=plan.members;
+      if(!members.includes(expenseDraft.payer))expenseDraft.payer=members[0]||'';
+      $('#expensePayers').innerHTML=members.map(name=>`<button type="button" class="expense-chip payer${expenseDraft.payer===name?' active':''}" data-payer="${esc(name)}" aria-pressed="${expenseDraft.payer===name}">${esc(name)}</button>`).join('');
+      $('#expensePayers').querySelectorAll('[data-payer]').forEach(button=>button.onclick=()=>{expenseDraft.payer=button.dataset.payer;renderExpenses()});
+      $('#expenseChips').innerHTML=EXPENSE_CATS.map(category=>`<button type="button" class="expense-chip${expenseDraft.category===category?' active':''}" data-pick="${category}" aria-pressed="${expenseDraft.category===category}">${category}</button>`).join('');
+      $('#expenseChips').querySelectorAll('[data-pick]').forEach(button=>button.onclick=()=>{expenseDraft.category=button.dataset.pick;renderExpenses()});
+      $('#expenseFormHint').textContent=heads>1?heads+'명 반씩 나눠 계산':'혼자 쓴 경비';
+      updateExpensePreview();
+    }
+    function updateExpensePreview(){
+      const field=$('#expenseAmount'),label=$('#expenseAmountWon');if(!field||!label)return;
+      const amount=Number(String(field.value||'').replace(/[^0-9]/g,''))||0;
+      label.textContent=amount?expenseKrw(amount):'≈ ₩0';
+    }
+    function addExpense(){
+      const amountField=$('#expenseAmount'),titleField=$('#expenseTitle');if(!amountField||!titleField)return;
+      const amount=Math.round(Number(String(amountField.value||'').replace(/[^0-9]/g,''))||0);
+      if(!(amount>0)){toast('엔화 금액을 숫자로 입력해 주세요');amountField.focus();return}
+      const category=EXPENSE_CATS.includes(expenseDraft.category)?expenseDraft.category:'식비',title=String(titleField.value||'').trim()||category+' 지출';
+      if(!Array.isArray(activeTrip.expenses))activeTrip.expenses=[];
+      activeTrip.expenses.push({id:'expense-'+crypto.randomUUID(),title,amountJpy:amount,payer:expenseDraft.payer||expenseMembers()[0]||'재원',category,createdAt:new Date().toISOString()});
+      save();
+      amountField.value='';titleField.value='';
+      renderExpenses();
+      toast(`${expenseYen(amount)} 지출을 추가했어요`);
+    }
+    function deleteExpense(id){
+      const list=Array.isArray(activeTrip.expenses)?activeTrip.expenses:[],index=list.findIndex(item=>String(item&&item.id)===String(id));
+      if(index<0)return;
+      const item=list[index];
+      if(!confirm(`“${item.title||'지출'}” ${expenseYen(item.amountJpy)} 기록을 삭제할까요?`))return;
+      list.splice(index,1);save();renderExpenses();toast('지출 기록을 삭제했어요');
+    }
+    function settleExpenses(){
+      const plan=expensePlan();if(!plan.transfers.length)return;
+      activeTrip.expenseSettlement={at:Date.now(),signature:expenseSignature(plan),totalJpy:plan.total,transfers:plan.transfers.map(t=>({...t}))};
+      save();renderExpenses();toast('정산 완료로 표시했어요');
+    }
+    function unsettleExpenses(){activeTrip.expenseSettlement=null;save();renderExpenses();toast('정산 표시를 되돌렸어요')}
+    function bindExpenseForm(){
+      $('#expenseForm')?.addEventListener('submit',event=>{event.preventDefault();addExpense()});
+      $('#expenseAmount')?.addEventListener('input',updateExpensePreview);
+      $('#expensesListAll')?.addEventListener('click',()=>{expenseDraft.filter=null;renderExpenses()});
+    }
+    const tabViews=['schedule','today','expenses','exchange'];
+    function panelForView(v){return{schedule:$('#itineraryPanel'),today:$('#todayPanel'),expenses:$('#expensesPanel'),map:$('#mapPanel'),exchange:$('#exchangePanel')}[v]}
     function animateTab(v,direction){if(!direction||innerWidth>850)return;const panel=panelForView(v);if(!panel)return;panel.classList.remove('tab-enter-forward','tab-enter-back');void panel.offsetWidth;panel.classList.add(direction>0?'tab-enter-forward':'tab-enter-back');setTimeout(()=>panel.classList.remove('tab-enter-forward','tab-enter-back'),350)}
-    function setView(v,swipeDirection=0){currentView=v;const map=v==='map',today=v==='today',exchange=v==='exchange';if(today){todayDayOverride=null;const automatic=automaticTodayDayIndex();if(automatic!=null){dayIndex=automatic;renderTabs()}resetInlineRoute();renderToday()}if(exchange)resetInlineRoute();$('#workspace').className=`workspace ${v}-view`;$('#mapPanel').classList.toggle('mobile-active',map);$('#todayPanel').classList.toggle('mobile-active',today);$('#exchangePanel').classList.toggle('mobile-active',exchange);$('#itineraryPanel').classList.toggle('map-hidden',map||today||exchange);document.querySelectorAll('.nav-item[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));if(map)setTimeout(()=>showOverview(),30);if(exchange)loadExchange();requestAnimationFrame(()=>animateTab(v,swipeDirection))}
+    function setView(v,swipeDirection=0){currentView=v;const map=v==='map',today=v==='today',exchange=v==='exchange',expenses=v==='expenses';if(today){todayDayOverride=null;const automatic=automaticTodayDayIndex();if(automatic!=null){dayIndex=automatic;renderTabs()}resetInlineRoute();renderToday()}if(exchange||expenses)resetInlineRoute();$('#workspace').className=`workspace ${v}-view`;$('#mapPanel').classList.toggle('mobile-active',map);$('#todayPanel').classList.toggle('mobile-active',today);$('#exchangePanel').classList.toggle('mobile-active',exchange);$('#expensesPanel').classList.toggle('mobile-active',expenses);$('#itineraryPanel').classList.toggle('map-hidden',map||today||exchange||expenses);document.querySelectorAll('.nav-item[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));if(map)setTimeout(()=>showOverview(),30);if(exchange)loadExchange();if(expenses){renderExpenses();loadExchange()}requestAnimationFrame(()=>animateTab(v,swipeDirection))}
     document.querySelectorAll('.nav-item[data-view]').forEach(x=>x.onclick=()=>setView(x.dataset.view));
     $('#briefBtn')?.addEventListener('click',openDayBrief);
     $('#briefClose')?.addEventListener('click',closeDayBrief);
@@ -1932,6 +2105,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     function registerTravelTools(){const context=document.modelContext;if(!context?.registerTool)return;const signal=new AbortController().signal;const report=()=>{};try{Promise.resolve(context.registerTool({name:'read_trip_schedule',title:'여행 일정 보기',description:'현재 나고야 여행의 날짜별 장소와 이동 순서를 확인합니다.',inputSchema:{type:'object',properties:{day:{type:'integer',minimum:1,maximum:31}},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute(input){const i=(input?.day??dayIndex+1)-1;if(!days[i])throw new Error('해당 일차가 없습니다.');return{day:i+1,date:days[i].date,places:days[i].places}}},{signal})).catch(report);Promise.resolve(context.registerTool({name:'add_trip_place',title:'여행 장소 추가',description:'지정한 일차의 마지막 이동 순서에 장소를 추가하고 화면과 저장된 일정을 함께 갱신합니다.',inputSchema:{type:'object',properties:{day:{type:'integer',minimum:1,maximum:31},name:{type:'string',minLength:1},note:{type:'string'}},required:['day','name'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:true},execute(input){const i=input.day-1;if(!days[i]||!input.name.trim())throw new Error('올바른 일차와 장소명을 입력해주세요.');days[i].places.push({name:input.name.trim(),note:(input.note||'').trim(),kind:'장소'});save();dayIndex=i;render();return{added:true,day:input.day,name:input.name.trim()}}},{signal})).catch(report)}catch(e){report(e)}}
     if(!inviteInUrl&&localStorage.getItem('journey-note-trips')&&localStorage.getItem('journey-note-last-access')===(inviteToken||'owner'))document.body.classList.remove('booting');
     performance.mark('journey-render-start');render();performance.mark('journey-render-end');
+    bindExpenseForm();renderExpenses();
     function hideLaunchCover(){const cover=$('#launchCover');if(cover)cover.remove()}
     // No fixed loading wait: paint first; decorative cover never blocks recovery.
     setTimeout(hideLaunchCover,1200);
@@ -2000,11 +2174,11 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     try{navigator.storage&&navigator.storage.persist&&navigator.storage.persisted&&navigator.storage.persisted().then(has=>{if(!has)navigator.storage.persist().catch(()=>{})})}catch(e){}
     startSharedSync();
     setInterval(refreshOpeningHours,3600000);
-    setInterval(()=>{if(currentView==='exchange')loadExchange()},60000);
-    document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if(currentView==='exchange'&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000))loadExchange()});
+    setInterval(()=>{if(currentView==='exchange'||currentView==='expenses')loadExchange()},60000);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if((currentView==='exchange'||currentView==='expenses')&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000)){loadExchange();if(currentView==='expenses')renderExpenses()}});
     registerTravelTools();
     // 서비스 워커: 새 버전을 조용히 갈아 끼우되, 화면에 짧게 알리고 필요하면 눈에 보이게 물어본다.
-    //   · 스크립트 주소에 ?v=75 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 스크립트 주소에 ?v=76 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
     //   · 새 워커가 활성화되면(controllerchange) 옛 코드가 남은 화면은 한 번 새로고침한다(코드 섞임 방지).
     //     입력 중이면 새로고침하지 않고 아래 안내 막대의 「새로고침」을 기다린다.
     if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
@@ -2036,12 +2210,12 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
         setTimeout(check,8000);
       };
-      navigator.serviceWorker.register('./service-worker.js?v=75',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=76',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
       markUpdated();
     }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js?v=75"></script>
+  <script src="./journey-preview.js?v=76"></script>
 </body>
 </html>

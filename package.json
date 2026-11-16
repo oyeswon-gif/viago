@@ -6,7 +6,8 @@
   "scripts": {
     "ci": "node tools/ci/run.mjs",
     "test:e2e": "node tests/e2e/smoke.mjs",
-    "test:features": "node tests/e2e/planb-brief.mjs"
+    "test:features": "node tests/e2e/planb-brief.mjs",
+    "test:expenses": "node tests/e2e/expenses-tab.mjs"
   },
   "devDependencies": {
     "playwright": "1.49.0"

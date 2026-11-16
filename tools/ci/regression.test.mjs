@@ -113,5 +113,15 @@ check('R16 시트: 여행 전환·만들기 입력 id 가 그대로다', /id="de
 check('R16 시트: iOS 토큰(헤어라인·시스템 블루·44px)', /\.trip-sheet-close\{[^}]*width:\s*44px/.test(css) && /\.trip-option\+\s*\.trip-option:before\{[^}]*rgba\(60,60,67/.test(css) && /\.trip-create\{[^}]*background:var\(--blue\)/.test(css));
 check('R16 시트: 목록 이름에서 이모지를 걷고 저장 값은 건드리지 않는다', /const tripLabel=/.test(html) && /esc\(label\)/.test(html));
 
+
+// R17 — 정산·가계부 탭: 하단 탭은 4개(지도 버튼 제거), 지도 패널·setView 는 그대로, 지출은 trips[].expenses (M21)
+const nav = section(html, '<nav class="mobile-nav"', '</nav>');
+check('R17 탭: 하단 탭 4개에 정산이 있고 지도 버튼은 없다', (nav.match(/data-view="/g) || []).length === 4 && /data-view="expenses"/.test(nav) && !/data-view="map"/.test(nav));
+check('R17 탭: 지도 패널과 setView(map) 진입이 살아 있다', /id="mapPanel"/.test(html) && /setView\('map'\)/.test(html) && /itineraryPanel'\)\.classList\.toggle\('map-hidden',map\|\|today\|\|exchange\|\|expenses\)/.test(html));
+const expenseFeatures = section(html, 'function ensureTripFeatures', 'trips.forEach(t=>ensureTripFeatures(t))');
+check('R17 정산: 지출은 trips[].expenses 로 동기화 경로에 실린다', /t\.expenses=Array\.isArray\(t\.expenses\)\?t\.expenses:\[\]/.test(ensureFeatures) && /amountJpy/.test(html) && /function renderExpenses\(/.test(html));
+check('R17 정산: 원화는 환율 탭 값만 쓰고 새 API 를 부르지 않는다', /function yenKrwRate\(\)\{const rate=exchangeValue\(1,'JPY','KRW'\)/.test(html) && !/expenses[\s\S]{0,2000}?fetch\(/.test(section(html, 'const EXPENSE_CATS', 'const tabViews=')));
+check('R17 정산: 화면 스타일이 iOS 토큰(헤어라인·시스템 블루·44px)을 쓴다', /\.expense-chip\{min-height:44px/.test(css) && /\.expense-settle-btn\{[^}]*min-height:44px[^}]*background:var\(--blue\)/.test(css) && /\.expense-row\{[^}]*border-top:\.5px solid var\(--hair\)/.test(css));
+
 console.log(ok ? '\n모든 회귀 불변식 통과' : '\n실패한 불변식이 있습니다 — docs/REGRESSION-CHECKLIST.md 의 해당 M# 항목을 보세요.');
 process.exit(ok ? 0 : 1);

@@ -15,7 +15,7 @@
 // 4) 새 워커는 skipWaiting + clients.claim 으로 바로 활성화된다. 화면(index.html)은
 //    controllerchange 를 받으면 새 코드로 갈아 끼우고, 입력 중이면 안내 막대(새로고침)를 띄운다.
 //    화면이 보내는 { type: 'SKIP_WAITING' } 메시지도 같은 동작을 한다(대기 중인 워커용).
-const VERSION = 'v29';   // 2026-11-16: 앱 아이콘 2번(지구본·비행기) 전 규격 교체 · '내 여행 보관함' iOS 시트 · v28 배너 유지
+const VERSION = 'v30';   // 2026-11-16 v30: 하단 탭 '지도' → '정산'(정산·가계부) · 지도 패널·setView('map') 유지 · v29 아이콘 유지
 const SHELL = `viago-shell-${VERSION}`;
 // 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
 const OUR_PREFIX = 'viago-';
