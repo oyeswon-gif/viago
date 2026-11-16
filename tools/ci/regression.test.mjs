@@ -146,10 +146,32 @@ check('R20 캡처: 충전은 지출에서 빼고 잔액만 후보로 남긴다',
 const captureSection = section(html, '// ── 거래내역 캡처', 'function bindExpenseForm');
 check('R20 캡처: 사진은 서버로 보내지 않는다', !!captureSection && !/FormData|apiFetch\(|authedFetch\(|fetch\(/.test(captureSection));
 
-// R21 — 실행 화면: 시작 화면(스플래시)·로딩 커버를 두지 않는다 (v32, 재원 님 요청)
+// R21 — 실행 화면: iOS 시작 화면 링크는 없고, 앱이 그리는 #launchCover(새 아이콘 + VIAGO)만 둔다 (v33)
 check('R21 실행 화면: iOS 시작 화면 링크가 없다', !/rel="apple-touch-startup-image"/.test(html), 'apple-touch-startup-image ' + (html.match(/apple-touch-startup-image/g) || []).length + '건');
-check('R21 실행 화면: 로딩 커버 마크업·CSS·스크립트가 없다',
-  !/id="launchCover"/.test(html) && !/launchCover|launch-mark|launch-logo/.test(html) && !/launchCover|launch-mark|launch-logo/.test(css) && !/hideLaunchCover/.test(html));
+check('R21 실행 화면: #launchCover 마크업·CSS·hideLaunchCover 가 살아 있다',
+  /id="launchCover"/.test(html) && /함께 떠나는 여행/.test(html) && /#launchCover\{/.test(css) && /#launchCover\.leaving\{/.test(css) && /function hideLaunchCover\(\)/.test(html));
+check('R21 실행 화면: 마크는 옛 파란 화살표가 아니라 새 지구본 앱 아이콘이다',
+  /class="launch-mark"[^>]*src="\.\/app-icon-180\.png\?v=\d+"/.test(html) &&
+  /\.launch-mark\{[^}]*width:72px[^}]*height:72px[^}]*border-radius:18px/.test(css), '72×72 · 둥근 모서리 18px');
+check('R21 실행 화면: 첫 화면이 준비되면 걷고, 어떤 경우에도 5초 뒤에는 걷는다',
+  (html.match(/hideLaunchCover\(\)/g) || []).length >= 4 && /setTimeout\(hideLaunchCover,\d+\)/.test(html));
+
+// R22 — 가계부 캡처: 충전 행도 체크할 수 있고, 작은 캡처 글씨를 살리는 해상도로 읽는다 (v33)
+check('R22 캡처: 충전(isTopup) 행을 체크박스에서 막지 않는다',
+  !/aria-disabled/.test(html) && !/item\.isTopup\)return/.test(html) && /function toggleCaptureCheck/.test(html) && /function cycleCaptureCategory/.test(html));
+check('R22 캡처: 충전 행도 카테고리 칩과 이름 입력을 그린다',
+  !/capture-title-text/.test(html) && /item\.isTopup\?'<span class="capture-tag">충전<\/span>'/.test(html));
+check('R22 캡처: 긴 캡처는 긴 변 2400px·가로 최소 1000px·고품질 보간',
+  /CAPTURE_LONG_EDGE=2400/.test(html) && /CAPTURE_MIN_WIDTH=1000/.test(html) && /imageSmoothingQuality='high'/.test(html));
+check('R22 캡처: 지출이 하나도 안 잡히면 더 크게 한 번 더 읽는다',
+  /function captureNeedsSharpRead/.test(html) && /CAPTURE_SHARP_LONG_EDGE=3200/.test(html) && /captureNeedsSharpRead\(chosen,parsedPrimary\)/.test(html));
+
+// R23 — 파서: 금액과 잔액이 한 줄에 뭉치거나 상호·금액이 줄로 떨어져도 거래를 놓치지 않는다 (v33)
+const ocr = exists('viago-expense-ocr.js') ? read('viago-expense-ocr.js') : '';
+check('R23 파서: 같은 줄에 금액과 잔액이 있어도 부호 있는 금액을 쓴다',
+  /function pickTransactionMoney/.test(ocr) && /pickTransactionMoney\(rightMoney\)/.test(ocr));
+check('R23 파서: 상호가 윗줄에 따로 잡혀도 그 상호로 거래를 만든다',
+  /if \(pendingTitle\) \{ record\(pendingTitle, pick, time, false\); return; \}/.test(ocr));
 
 console.log(ok ? '\n모든 회귀 불변식 통과' : '\n실패한 불변식이 있습니다 — docs/REGRESSION-CHECKLIST.md 의 해당 M# 항목을 보세요.');
 process.exit(ok ? 0 : 1);

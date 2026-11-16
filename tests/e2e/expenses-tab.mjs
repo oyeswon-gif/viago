@@ -1,4 +1,4 @@
-// tests/e2e/expenses-tab.mjs — 가계부 탭 (v32) 검증
+// tests/e2e/expenses-tab.mjs — 가계부 탭 (v33) 검증
 // 실행: node tests/e2e/expenses-tab.mjs   (로컬 서버 + Playwright, OCR 만 CDN 사용)
 // 확인: ① 하단 탭 일정·오늘·정산·환율(지도 버튼 제거, #mapPanel·setView('map') 유지)
 //       ② 헤더 '가계부'·여행 기간·환율 배지 ③ 총 지출·건수·충전 제외·잔액 한 줄
@@ -7,6 +7,8 @@
 //       ⑨ 실제 IMG_5310 캡처 OCR → 확인 시트(충전 자동 해제·잔액 후보)
 //       ⑨-2 실제 IMG_5312 '이용내역' 캡처(시각 없음·+/- 부호) OCR → 지출 4건 + 충전 3건
 //       ⑨-3 일본 종이 영수증(합성 픽스처) OCR → jpn 재인식·영수증 1건·합계 금액
+//       ⑨-4 v33: 충전 행도 체크박스로 직접 고르고 이름·카테고리를 고칠 수 있다(기본값만 꺼 둠)
+//       ⑨-5 v33: 금액+잔액이 한 줄에 뭉치거나 상호·금액이 줄로 떨어져도 거래를 놓치지 않는다
 //       ⑩ 44px 터치 타겟
 //       ⑪ 일정 탭 '전체 동선' → 지도 패널·복귀 ⑫ Google Places/Geocoding 0건
 import http from 'node:http';
@@ -379,6 +381,37 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
     bboxParse.titles.some(title => /KIX DFS/.test(title)) && bboxParse.titles.some(title => /일본 JPY/.test(title)),
     JSON.stringify(bboxParse));
 
+  // E14i — 행이 뭉쳐 금액과 잔액이 한 줄에 같이 잡혀도 부호(-)가 붙은 금액을 거래 금액으로 쓴다(v32 3건 누락)
+  const mergedRow = await page.evaluate(() => {
+    const api = window.ViagoExpenseCapture;
+    const words = [
+      { text: 'CADIAC', conf: 90, bbox: { x0: 36, y0: 448, x1: 147, y1: 464 } },
+      { text: '-', conf: 85, bbox: { x0: 801, y0: 459, x1: 811, y1: 463 } },
+      { text: '¥', conf: 85, bbox: { x0: 826, y0: 449, x1: 842, y1: 470 } },
+      { text: '190', conf: 94, bbox: { x0: 856, y0: 449, x1: 907, y1: 470 } },
+      { text: '결제', conf: 92, bbox: { x0: 36, y0: 462, x1: 90, y1: 478 } },
+      { text: '¥', conf: 88, bbox: { x0: 856, y0: 466, x1: 872, y1: 486 } },
+      { text: '0', conf: 88, bbox: { x0: 890, y0: 466, x1: 907, y1: 486 } }
+    ];
+    const parsed = api.parseCaptureText('CADIAC - ¥ 190 결제 ¥ 0', { rate: 8.36, trip: { start: '2026-12-10' }, words });
+    return parsed.items.map(item => `${item.title}:${item.amountJpy}:${item.isTopup ? '충전' : '지출'}`);
+  });
+  rec('E14i 금액과 잔액이 한 줄에 뭉쳐도 부호 있는 금액을 지출로 잡는다', mergedRow.length === 1 && /:190:지출$/.test(mergedRow[0]), JSON.stringify(mergedRow));
+
+  // E14j — 상호가 윗줄, 금액만 오른쪽 아래 줄에 남아도 상호로 거래를 만든다
+  const splitRow = await page.evaluate(() => {
+    const api = window.ViagoExpenseCapture;
+    const words = [
+      { text: 'KIX DFS', conf: 96, bbox: { x0: 36, y0: 400, x1: 145, y1: 422 } },
+      { text: '-', conf: 88, bbox: { x0: 770, y0: 440, x1: 779, y1: 443 } },
+      { text: '¥', conf: 88, bbox: { x0: 802, y0: 429, x1: 809, y1: 450 } },
+      { text: '6,500', conf: 93, bbox: { x0: 824, y0: 429, x1: 907, y1: 457 } }
+    ];
+    const parsed = api.parseCaptureText('KIX DFS\n- ¥ 6,500', { rate: 8.36, trip: { start: '2026-12-10' }, words });
+    return parsed.items.map(item => `${item.title}:${item.amountJpy}`);
+  });
+  rec('E14j 상호와 금액이 줄로 떨어져도 한 거래로 묶는다', splitRow.length === 1 && splitRow[0] === 'KIX DFS:6500', JSON.stringify(splitRow));
+
   // E15 — 실제 IMG_5310 캡처 OCR → 확인 시트
   const hasCapture = fs.existsSync(CAPTURE);
   if (hasCapture) {
@@ -390,6 +423,7 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
       sub: document.querySelector('#captureSub')?.textContent.replace(/\s+/g, ' ').trim(),
       rows: [...document.querySelectorAll('.capture-row')].map(row => ({
         text: row.textContent.replace(/\s+/g, ' ').trim(),
+        title: row.querySelector('[data-title]')?.value || '',
         off: row.classList.contains('off'),
         checked: row.querySelector('[data-check]')?.getAttribute('aria-checked'),
         amount: row.querySelector('[data-amount]')?.value
@@ -401,8 +435,8 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
     }));
     rec('E15 실제 IMG_5310 을 올리면 확인 시트에 1건이 인식된다', /1건 인식/.test(sheet.sub) && sheet.rows.length === 1 && sheet.thumb, `${sheet.sub} rows=${sheet.rows.length}`);
     rec('E15b 하나머니 → JPY 충전은 체크 해제 + 지출 아님으로 뜬다',
-      /하나머니 → JPY 충전/.test(sheet.rows[0]?.text || '') && sheet.rows[0]?.off === true && sheet.rows[0]?.checked === 'false' && /지출 아님/.test(sheet.rows[0]?.text || ''),
-      sheet.rows[0]?.text);
+      /하나머니 → JPY 충전/.test(sheet.rows[0]?.title || '') && sheet.rows[0]?.off === true && sheet.rows[0]?.checked === 'false' && /지출 아님/.test(sheet.rows[0]?.text || ''),
+      `${sheet.rows[0]?.title} / ${sheet.rows[0]?.text}`);
     rec('E15c 금액 11,660 과 잔액 125,953 이 읽힌다', sheet.rows[0]?.amount === '11,660' && /125,953/.test(sheet.note || ''), `${sheet.rows[0]?.amount} / ${sheet.note}`);
     rec('E15d 지출 0건이면 잔액만 저장 버튼이 활성화된다', sheet.cta === '잔액만 저장' && sheet.ctaDisabled === false, `${sheet.cta} disabled=${sheet.ctaDisabled}`);
     await page.screenshot({ path: path.join(SHOTS, 'expenses-capture-sheet-390x844.png') });
@@ -430,13 +464,13 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
   await page.waitForTimeout(700);
   const fixtureSheet = await page.evaluate(() => ({
     sub: document.querySelector('#captureSub')?.textContent.replace(/\s+/g, ' ').trim(),
-    rows: [...document.querySelectorAll('.capture-row')].map(row => ({ text: row.textContent.replace(/\s+/g, ' ').trim(), off: row.classList.contains('off'), amount: row.querySelector('[data-amount]')?.value })),
+    rows: [...document.querySelectorAll('.capture-row')].map(row => ({ text: row.textContent.replace(/\s+/g, ' ').trim(), title: row.querySelector('[data-title]')?.value || '', off: row.classList.contains('off'), amount: row.querySelector('[data-amount]')?.value })),
     note: document.querySelector('#captureNote')?.textContent.replace(/\s+/g, ' ').trim(),
     cta: document.querySelector('#captureAdd')?.textContent,
     sum: document.querySelector('#captureSum')?.textContent
   }));
   rec('E15g 모의 캡처 4건을 읽고 3건만 선택해 둔다', /4건 인식/.test(fixtureSheet.sub) && fixtureSheet.rows.length === 4 && fixtureSheet.rows.filter(r => !r.off).length === 3 && fixtureSheet.cta === '3건 일괄 추가', `${fixtureSheet.sub} / ${fixtureSheet.cta} / ${fixtureSheet.sum}`);
-  rec('E15h 충전 1건만 지출 아님으로 빠지고 잔액이 읽힌다', fixtureSheet.rows.filter(r => r.off).length === 1 && /JPY/.test(fixtureSheet.rows.find(r => r.off)?.text || '') && /125,953/.test(fixtureSheet.note || '') && fixtureSheet.sum === '¥28,200', `${fixtureSheet.rows.find(r => r.off)?.text} / ${fixtureSheet.note} / ${fixtureSheet.sum}`);
+  rec('E15h 충전 1건만 지출 아님으로 빠지고 잔액이 읽힌다', fixtureSheet.rows.filter(r => r.off).length === 1 && /JPY/.test(fixtureSheet.rows.find(r => r.off)?.title || '') && /125,953/.test(fixtureSheet.note || '') && fixtureSheet.sum === '¥28,200', `${fixtureSheet.rows.find(r => r.off)?.title} / ${fixtureSheet.note} / ${fixtureSheet.sum}`);
   // 카테고리 칩을 눌러 바꾸고, 체크를 풀면 선택 금액이 줄어드는지
   const firstChip = page.locator('.capture-row:not(.off) [data-chip]').first();
   const chipBefore = (await firstChip.textContent()).trim();
@@ -509,10 +543,50 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
       JSON.stringify(sheet5312.rows.map(row => `${row.off ? '충전' : '지출'}:${row.title}:${row.amount}`)));
     rec('E15m3 +/- 부호로 일본 JPY 충전 3건은 지출 아님으로 빠진다',
       topups5312.length === 3 && topups5312.map(row => row.amount).sort().join(',') === ['190', '400', '79'].join(',') &&
-      topups5312.every(row => /일본/.test(row.text) && /지출 아님/.test(row.text)),
+      topups5312.every(row => /일본/.test(row.title || '') && /지출 아님/.test(row.text)),
       JSON.stringify(topups5312.map(row => `${row.title}:${row.amount}`)));
     rec('E15m4 선택 금액은 지출 4건 합계 ¥7,694 이다', sheet5312.sum === '¥7,694' && sheet5312.cta === '4건 일괄 추가', `${sheet5312.sum} / ${sheet5312.cta}`);
     await page.screenshot({ path: path.join(SHOTS, 'expenses-capture-img5312-390x844.png') });
+    // E15m7 — 충전 행도 사용자가 동그라미를 눌러 직접 고를 수 있다(v32: aria-disabled 로 막혀 있었다)
+    const topupBefore = await page.evaluate(() => {
+      const row = document.querySelector('.capture-row.off');
+      return {
+        amount: Number(String(row?.querySelector('[data-amount]')?.value || '0').replace(/[^0-9]/g, '')),
+        disabled: row?.querySelector('[data-check]')?.getAttribute('aria-disabled'),
+        tabindex: row?.querySelector('[data-check]')?.getAttribute('tabindex')
+      };
+    });
+    await page.locator('.capture-row.off [data-check]').first().click();
+    await page.waitForTimeout(300);
+    const topupPicked = await page.evaluate(() => ({
+      sum: document.querySelector('#captureSum')?.textContent,
+      cta: document.querySelector('#captureAdd')?.textContent,
+      off: document.querySelectorAll('.capture-row.off').length,
+      picked: document.querySelectorAll('.capture-row:not(.off)').length,
+      pickedRowChecked: document.querySelectorAll('.capture-row')[4]?.querySelector('[data-check]')?.getAttribute('aria-checked'),
+      pickedRowOff: document.querySelectorAll('.capture-row')[4]?.classList.contains('off')
+    }));
+    rec('E15m7 충전 행도 체크박스를 눌러 선택할 수 있다(막힘 없음)',
+      topupBefore.disabled === null && topupBefore.tabindex === null && topupBefore.amount === 190 &&
+      topupPicked.off === 2 && topupPicked.picked === 5 && topupPicked.sum === '¥7,884' && topupPicked.cta === '5건 일괄 추가' &&
+      topupPicked.pickedRowChecked === 'true' && topupPicked.pickedRowOff === false,
+      `${JSON.stringify(topupBefore)} → ${JSON.stringify(topupPicked)}`);
+    // 체크한 충전 항목은 이름·카테고리도 고칠 수 있다
+    const pickedTopup = page.locator('.capture-row:not(.off)').last();
+    await pickedTopup.locator('[data-title]').fill('일본 JPY 충전(직접)');
+    await pickedTopup.locator('[data-chip]').click();
+    await page.waitForTimeout(300);
+    const topupEdited = await page.evaluate(() => {
+      const row = document.querySelectorAll('.capture-row')[4];
+      return { title: row?.querySelector('[data-title]')?.value || '', chip: row?.querySelector('[data-chip]')?.textContent.trim() || '', off: row?.classList.contains('off') };
+    });
+    rec('E15m8 체크한 충전 항목은 이름·카테고리를 고칠 수 있다',
+      /직접/.test(topupEdited.title) && topupEdited.off === false && /(식비|교통|쇼핑|관광)/.test(topupEdited.chip),
+      JSON.stringify(topupEdited));
+    await page.locator('.capture-row:not(.off) [data-check]').last().click();
+    await page.waitForTimeout(300);
+    const topupOff = await page.evaluate(() => ({ sum: document.querySelector('#captureSum')?.textContent, cta: document.querySelector('#captureAdd')?.textContent, off: document.querySelectorAll('.capture-row.off').length }));
+    rec('E15m9 체크를 다시 풀면 충전 항목이 선택에서 빠진다', topupOff.sum === '¥7,694' && topupOff.cta === '4건 일괄 추가' && topupOff.off === 3, JSON.stringify(topupOff));
     // 금액을 눌러 바로 고칠 수 있다(오탈자·다른 금액 보정용)
     const amountField = page.locator('.capture-row:not(.off) [data-amount]').last();
     await amountField.click();
@@ -640,7 +714,7 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
   rec('E19 페이지 오류 없음', errors.length === 0, errors.slice(0, 3).join(' | '));
 
   const passed = results.filter(r => r.ok).length;
-  console.log(`\n== 가계부 v32: ${passed}/${results.length} 통과 (OCR CDN 요청 ${state.ocrCdn}건) ==`);
+  console.log(`\n== 가계부 v33: ${passed}/${results.length} 통과 (OCR CDN 요청 ${state.ocrCdn}건) ==`);
   fs.writeFileSync(path.join(SHOTS, 'expenses-last-run.json'), JSON.stringify({ at: new Date().toISOString(), passed, total: results.length, results }, null, 1));
   await browser.close();
   srv.close();

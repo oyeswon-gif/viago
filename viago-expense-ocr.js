@@ -314,6 +314,16 @@
     return String(line).split(snippet).join(' ');
   }
 
+  // 한 줄에서 거래 금액을 고른다.
+  //   부호(+/-)가 붙은 후보가 있으면 그것이 거래 금액이다(같은 줄에 잔액이 같이 잡혀도 흔들리지 않는다).
+  //   부호가 없으면 왼쪽부터 첫 금액 — 오른쪽 끝 숫자는 잔액인 경우가 많다.
+  function pickTransactionMoney(list) {
+    if (!list || !list.length) return null;
+    var signed = list.filter(function (c) { return !!c.sign; });
+    if (signed.length) return signed[0];
+    return list[0];
+  }
+
   // 통화 충전(하나머니 → JPY, 외화 환전)만 '지출 아님'이다.
   //   스이카·교통카드 '충전'은 실제 지출이라 그대로 둔다(디자인 시트의 스이카 충전 ¥6,000 = 교통).
   function looksLikeTopup(title) {
@@ -335,6 +345,8 @@
   // OCR 이 상호 글자 사이에 끼워 넣은 기호·자모 조각(@, ㅁ, ㅜ, 1/ 같은)을 걷어낸다.
   function cleanTitle(raw) {
     var out = String(raw == null ? '' : raw)
+      // 낱말 사이의 '>'는 화살표(하나머니 > JPY)다. 앞뒤 글자가 있을 때만 → 로 살린다.
+      .replace(/([0-9A-Za-z가-힣ぁ-んァ-ヶ一-龠])\s*[>›»＞]\s*(?=[0-9A-Za-z가-힣ぁ-んァ-ヶ一-龠])/g, '$1 → ')
       .replace(/[<>]/g, ' ')
       .replace(/\|/g, ' ')
       .replace(/\s+/g, ' ')
@@ -761,13 +773,15 @@
       }
 
       // 3) 거래 줄 — 오른쪽 금액 열을 먼저 믿고, 없으면 줄 전체에서 찾는다.
-      var pick = rightMoney.length ? rightMoney[rightMoney.length - 1] : (leftMoney.length ? leftMoney[leftMoney.length - 1] : null);
+      var pick = rightMoney.length ? pickTransactionMoney(rightMoney) : (leftMoney.length ? pickTransactionMoney(leftMoney) : null);
       if (!pick) return;
       var titleText = cleanTitle(stripText(stripText(leftRaw, pick.snippet), time ? time.text : ''));
       if (leftMoney.length && !titleText) titleText = cleanTitle(stripText(leftRaw, leftMoney[leftMoney.length - 1].snippet));
       var titleMoney = findMoneyCandidates(maskMeta(titleText));
       if (titleMoney.length && !titleText.replace(/[0-9,\s¥￥₩￦+\-]/g, '')) titleText = '';
       if (!titleText) {
+        // 금액만 오른쪽 열에 남고 상호가 윗줄에 따로 잡힌 경우 — 그 상호로 거래를 만든다.
+        if (pendingTitle) { record(pendingTitle, pick, time, false); return; }
         attachToLast(right || left || '', pick, time);
         return;
       }
@@ -1008,6 +1022,7 @@
     parseOcrTsv: parseOcrTsv,
     buildRows: buildRows,
     findMoneyCandidates: findMoneyCandidates,
+    pickTransactionMoney: pickTransactionMoney,
     looksJapanese: looksJapanese,
     guessCategory: guessCategory,
     matchPlace: matchPlace,

@@ -55,6 +55,16 @@ body{background:#f4f8ff;color:var(--ink)}
 .trip-head{background:#eaf4ff url('./viago-travel-cover.webp') center/cover no-repeat;isolation:isolate}.trip-head:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(242,248,255,.98) 0%,rgba(239,247,255,.92) 52%,rgba(239,247,255,.25) 100%);pointer-events:none}.trip-head:after{display:none}.trip-head .eyebrow-row,.trip-head .trip-title-row{position:relative;z-index:1}
 .place-main{padding-left:55px;min-width:0}.place-main:before{left:31px;top:-4px;width:19px;height:19px;border:2px solid white;border-radius:50%;background:#0756e9;color:#fff;font-size:10px;z-index:1}.place-type-icon{display:inline-grid;place-items:center;flex:0 0 42px;width:42px;height:42px;color:#0756e9;background:#e8f2ff;border-radius:11px}.place-main>.place-type-icon{position:absolute;left:0;top:0}.place-type-icon svg{width:23px;height:23px}.today-place-row{display:flex;align-items:center;gap:11px}.today-place-row .today-place{min-width:0;overflow-wrap:anywhere}.today-note{margin-left:53px}
 @media(max-width:850px){.place-main{padding-left:54px}.trip-head{min-height:155px}.today-place-row .today-place{font-size:19px}}
+/* 실행 화면(v33): 새 지구본·비행기 아이콘 + VIAGO / 함께 떠나는 여행.
+   iOS 시작 화면 링크(apple-touch-startup-image)는 두지 않는다 — 옛 파란 화살표가 먼저 뜨지 않게. */
+#launchCover{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;pointer-events:none;
+  background:radial-gradient(120% 78% at 50% 30%,#ffffff 0%,#f5f9ff 56%,#e9f1fe 100%);transition:opacity .26s ease}
+#launchCover.leaving{opacity:0}
+.launch-logo{display:flex;flex-direction:column;align-items:center;gap:12px;color:#0756e9}
+.launch-logo strong{font-size:36px;font-weight:800;line-height:1;letter-spacing:4px}
+.launch-logo>span:last-child{margin-top:-2px;font-size:13.5px;font-weight:600;color:#617594;letter-spacing:.12em}
+.launch-mark{display:block;width:72px;height:72px;border-radius:18px;object-fit:cover;background:#fff;box-shadow:0 10px 24px rgba(17,53,112,.18)}
+@media(max-width:400px){.launch-logo strong{font-size:32px;letter-spacing:3px}.launch-mark{width:68px;height:68px;border-radius:17px}}
 .shell{transform:none;-webkit-transform:none;will-change:auto}
 
 /* 하루 미리보기 안내: 화면 밖 장소가 있을 때 눌러서 그날 전체로 돌아오기 / 오프라인 안내는 두 줄까지 */
@@ -925,12 +935,11 @@ select{background-image:none}
 .capture-check svg path{fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .capture-main{min-width:0}
 .capture-title{display:flex;align-items:center;gap:5px;min-width:0}
-.capture-title-text{flex:0 1 auto;min-width:0;font-size:13.5px;font-weight:600;letter-spacing:-.3px;color:#8e97a5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .capture-title-input{flex:1 1 auto;min-width:0;width:100%;height:24px;padding:0;border:0;background:none;color:var(--ink);
   font-size:13.5px;font-weight:600;letter-spacing:-.3px}
 .capture-title-input:focus{outline:2px solid rgba(7,86,233,.24);outline-offset:1px;border-radius:4px}
 .capture-tag{flex:0 0 auto;display:inline-flex;align-items:center;height:17px;padding:0 5px;border-radius:5px;background:#f1f3f7;color:#7c8595;font-size:9.5px;font-weight:700;letter-spacing:-.1px}
-.capture-rowmeta{display:flex;align-items:center;gap:6px;margin-top:2px;min-height:24px}
+.capture-rowmeta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;row-gap:3px;margin-top:2px;min-height:24px}
 .capture-rowmeta time{font-size:10.5px;color:#8b95a3;letter-spacing:-.1px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .capture-chip{position:relative;display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 7px;border-radius:7px;
   font-size:10.5px;font-weight:700;letter-spacing:-.1px;background:#f2f4f7;color:#7c8595;white-space:nowrap}
