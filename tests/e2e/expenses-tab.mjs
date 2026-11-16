@@ -1,10 +1,13 @@
-// tests/e2e/expenses-tab.mjs — 가계부 탭 (v31) 검증
+// tests/e2e/expenses-tab.mjs — 가계부 탭 (v32) 검증
 // 실행: node tests/e2e/expenses-tab.mjs   (로컬 서버 + Playwright, OCR 만 CDN 사용)
 // 확인: ① 하단 탭 일정·오늘·정산·환율(지도 버튼 제거, #mapPanel·setView('map') 유지)
 //       ② 헤더 '가계부'·여행 기간·환율 배지 ③ 총 지출·건수·충전 제외·잔액 한 줄
 //       ④ 사람별 비율·1/2 정산·결제자 표시가 없다 ⑤ 카테고리 누적/일별 SVG 와 토글·범례 강조
 //       ⑥ 최근 지출 접기/펼치기·삭제 ⑦ 빠른 입력(실시간 원화) ⑧ 캡처 파서 단위 테스트
-//       ⑨ 실제 IMG_5310 캡처 OCR → 확인 시트(충전 자동 해제·잔액 후보) ⑩ 44px 터치 타겟
+//       ⑨ 실제 IMG_5310 캡처 OCR → 확인 시트(충전 자동 해제·잔액 후보)
+//       ⑨-2 실제 IMG_5312 '이용내역' 캡처(시각 없음·+/- 부호) OCR → 지출 4건 + 충전 3건
+//       ⑨-3 일본 종이 영수증(합성 픽스처) OCR → jpn 재인식·영수증 1건·합계 금액
+//       ⑩ 44px 터치 타겟
 //       ⑪ 일정 탭 '전체 동선' → 지도 패널·복귀 ⑫ Google Places/Geocoding 0건
 import http from 'node:http';
 import fs from 'node:fs';
@@ -16,6 +19,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const SHOTS = path.join(ROOT, 'tests/e2e/shots');
 const PORT = Number(process.env.PORT || 8934);
 const CAPTURE = process.env.CAPTURE_IMG || '/workspace/attachments/2026-11-16/IMG_5310-176aed9888a844f2bc8fb21595c7e306.jpg';
+const CAPTURE_5312 = process.env.CAPTURE_IMG_5312 || '/workspace/attachments/2026-11-16/IMG_5312-fe74eb69fd9b425eacf460ab71ffb2fc.jpg';
+const RECEIPT_JP = path.join(ROOT, 'tests/fixtures/receipt-jp-donki.png');   // 합성 일본 영수증 픽스처(항상 존재)
 const FIXTURE = path.join(ROOT, 'tests/fixtures/hana-capture.png');   // 개인정보 없는 모의 하나머니 캡처(항상 존재)
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.json': 'application/json', '.webmanifest': 'application/manifest+json' };
 
@@ -347,6 +352,32 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
   rec('E14d 잔액·수수료는 금액으로 세지 않고 잔액만 후보로 남긴다', parser.balance === 125953 && parser.count === 6, `balance=${parser.balance} count=${parser.count}`);
   rec('E14e 일정 장소명으로 철자를 보정한다(이부시킨 → 이부시긴)', parser.corrected, JSON.stringify(parser.items?.slice(0, 2)));
   rec('E14f 내역이 없는 사진은 0건이다', parser.garbage === 0, String(parser.garbage));
+  // E14g — 구조화되지 않아도 금액 후보가 있으면 편집 가능한 1건 초안을 띄운다(0건으로 끝나지 않는다)
+  const draft = await page.evaluate(() => {
+    const api = window.ViagoExpenseCapture;
+    const parsed = api.parseCaptureText('결제 3,200\n승인', { rate: 8.36 });
+    return { kind: parsed.kind, count: parsed.count, amount: parsed.items[0]?.amountJpy, draft: !!parsed.items[0]?.draft, checked: parsed.items[0]?.checked, title: parsed.items[0]?.title };
+  });
+  rec('E14g 구조를 못 잡아도 금액이 있으면 1건 초안을 만든다', draft.kind === 'draft' && draft.count === 1 && draft.amount === 3200 && draft.draft === true && draft.checked === true && !!draft.title, JSON.stringify(draft));
+
+  // E14h — 실제 OCR 단어 좌표(IMG_5312)로 행·열 짝짓기를 고정 검증(OCR 없이 결정적으로)
+  const wordsFixture = JSON.parse(fs.readFileSync(path.join(ROOT, 'tests/fixtures/ocr-img5312-words.json'), 'utf8'));
+  const bboxParse = await page.evaluate(fixture => {
+    const api = window.ViagoExpenseCapture;
+    const parsed = api.parseCaptureText(fixture.text, { trip: { start: '2026-12-10' }, rate: 8.36, words: fixture.words });
+    return {
+      kind: parsed.kind,
+      count: parsed.count,
+      expenses: parsed.items.filter(item => !item.isTopup).map(item => item.amountJpy).sort((a, b) => a - b),
+      topups: parsed.items.filter(item => item.isTopup).map(item => item.amountJpy).sort((a, b) => a - b),
+      titles: parsed.items.map(item => item.title)
+    };
+  }, { text: wordsFixture.text, words: wordsFixture.words });
+  rec('E14h 실제 OCR 좌표 픽스처로 지출 4건·충전 3건을 고정 인식한다',
+    bboxParse.kind === 'list' && bboxParse.count === 7 &&
+    bboxParse.expenses.join(',') === '190,190,814,6500' && bboxParse.topups.join(',') === '79,190,400' &&
+    bboxParse.titles.some(title => /KIX DFS/.test(title)) && bboxParse.titles.some(title => /일본 JPY/.test(title)),
+    JSON.stringify(bboxParse));
 
   // E15 — 실제 IMG_5310 캡처 OCR → 확인 시트
   const hasCapture = fs.existsSync(CAPTURE);
@@ -361,7 +392,7 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
         text: row.textContent.replace(/\s+/g, ' ').trim(),
         off: row.classList.contains('off'),
         checked: row.querySelector('[data-check]')?.getAttribute('aria-checked'),
-        amount: row.querySelector('.capture-amount')?.textContent
+        amount: row.querySelector('[data-amount]')?.value
       })),
       note: document.querySelector('#captureNote')?.textContent.replace(/\s+/g, ' ').trim(),
       cta: document.querySelector('#captureAdd')?.textContent,
@@ -372,7 +403,7 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
     rec('E15b 하나머니 → JPY 충전은 체크 해제 + 지출 아님으로 뜬다',
       /하나머니 → JPY 충전/.test(sheet.rows[0]?.text || '') && sheet.rows[0]?.off === true && sheet.rows[0]?.checked === 'false' && /지출 아님/.test(sheet.rows[0]?.text || ''),
       sheet.rows[0]?.text);
-    rec('E15c 금액 ¥11,660 과 잔액 125,953 이 읽힌다', sheet.rows[0]?.amount === '¥11,660' && /125,953/.test(sheet.note || ''), `${sheet.rows[0]?.amount} / ${sheet.note}`);
+    rec('E15c 금액 11,660 과 잔액 125,953 이 읽힌다', sheet.rows[0]?.amount === '11,660' && /125,953/.test(sheet.note || ''), `${sheet.rows[0]?.amount} / ${sheet.note}`);
     rec('E15d 지출 0건이면 잔액만 저장 버튼이 활성화된다', sheet.cta === '잔액만 저장' && sheet.ctaDisabled === false, `${sheet.cta} disabled=${sheet.ctaDisabled}`);
     await page.screenshot({ path: path.join(SHOTS, 'expenses-capture-sheet-390x844.png') });
     await page.locator('#captureAdd').click();
@@ -399,7 +430,7 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
   await page.waitForTimeout(700);
   const fixtureSheet = await page.evaluate(() => ({
     sub: document.querySelector('#captureSub')?.textContent.replace(/\s+/g, ' ').trim(),
-    rows: [...document.querySelectorAll('.capture-row')].map(row => ({ text: row.textContent.replace(/\s+/g, ' ').trim(), off: row.classList.contains('off'), amount: row.querySelector('.capture-amount')?.textContent })),
+    rows: [...document.querySelectorAll('.capture-row')].map(row => ({ text: row.textContent.replace(/\s+/g, ' ').trim(), off: row.classList.contains('off'), amount: row.querySelector('[data-amount]')?.value })),
     note: document.querySelector('#captureNote')?.textContent.replace(/\s+/g, ' ').trim(),
     cta: document.querySelector('#captureAdd')?.textContent,
     sum: document.querySelector('#captureSum')?.textContent
@@ -445,6 +476,117 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
     fixtureApplied.stored.includes('로바타야키 이부시긴') && fixtureApplied.stored.includes('고토니 스시') && fixtureApplied.stored.includes('스이카 충전') &&
     !fixtureApplied.stored.some(title => /충전$/.test(title) && /JPY/.test(title)),
     `${fixtureApplied.total} ${fixtureApplied.count} / ${fixtureApplied.meta}`);
+
+  // E15m — 실제 IMG_5312 '이용내역' 캡처: 시각 없이 +/- 부호만 있는 다건 내역(토스뱅크 외화통장 스타일)
+  if (fs.existsSync(CAPTURE_5312)) {
+    await page.setInputFiles('#captureInput', CAPTURE_5312);
+    await page.waitForSelector('#captureSheet[open]', { timeout: 30000 });
+    await page.waitForSelector('#captureRows .capture-row', { timeout: 240000 });
+    await page.waitForTimeout(900);
+    const sheet5312 = await page.evaluate(() => ({
+      sub: document.querySelector('#captureSub')?.textContent.replace(/\s+/g, ' ').trim(),
+      rows: [...document.querySelectorAll('.capture-row')].map(row => ({
+        text: row.textContent.replace(/\s+/g, ' ').trim(),
+        title: row.querySelector('[data-title]')?.value ?? row.querySelector('.capture-title-text')?.textContent,
+        off: row.classList.contains('off'),
+        amount: row.querySelector('[data-amount]')?.value
+      })),
+      note: document.querySelector('#captureNote')?.textContent.replace(/\s+/g, ' ').trim(),
+      cta: document.querySelector('#captureAdd')?.textContent,
+      sum: document.querySelector('#captureSum')?.textContent,
+      raw: document.querySelector('#captureRawText')?.textContent || ''
+    }));
+    const expenses5312 = sheet5312.rows.filter(row => !row.off).map(row => row.amount).sort();
+    const topups5312 = sheet5312.rows.filter(row => row.off);
+    rec('E15m 실제 IMG_5312 를 올리면 7건(지출 4·충전 3)을 읽는다',
+      /7건 인식/.test(sheet5312.sub) && sheet5312.rows.length === 7 && expenses5312.length === 4,
+      `${sheet5312.sub} rows=${sheet5312.rows.length}`);
+    rec('E15m2 지출은 CADIAC · KIX TENANTS · KIX DFS 의 190·190·814·6,500 이다',
+      expenses5312.join(',') === ['190', '190', '6,500', '814'].join(',') &&
+      sheet5312.rows.some(row => !row.off && /CADIA[CG]/.test(row.title || '')) &&
+      sheet5312.rows.some(row => !row.off && /KIX TENANTS/.test(row.title || '')) &&
+      sheet5312.rows.some(row => !row.off && /KIX DFS/.test(row.title || '')),
+      JSON.stringify(sheet5312.rows.map(row => `${row.off ? '충전' : '지출'}:${row.title}:${row.amount}`)));
+    rec('E15m3 +/- 부호로 일본 JPY 충전 3건은 지출 아님으로 빠진다',
+      topups5312.length === 3 && topups5312.map(row => row.amount).sort().join(',') === ['190', '400', '79'].join(',') &&
+      topups5312.every(row => /일본/.test(row.text) && /지출 아님/.test(row.text)),
+      JSON.stringify(topups5312.map(row => `${row.title}:${row.amount}`)));
+    rec('E15m4 선택 금액은 지출 4건 합계 ¥7,694 이다', sheet5312.sum === '¥7,694' && sheet5312.cta === '4건 일괄 추가', `${sheet5312.sum} / ${sheet5312.cta}`);
+    await page.screenshot({ path: path.join(SHOTS, 'expenses-capture-img5312-390x844.png') });
+    // 금액을 눌러 바로 고칠 수 있다(오탈자·다른 금액 보정용)
+    const amountField = page.locator('.capture-row:not(.off) [data-amount]').last();
+    await amountField.click();
+    await amountField.fill('8000');
+    await page.waitForTimeout(250);
+    const amountEdited = await page.evaluate(() => document.querySelector('#captureSum')?.textContent);
+    await page.locator('#captureHint').click();
+    await page.waitForTimeout(250);
+    const amountFormatted = await page.locator('.capture-row:not(.off) [data-amount]').last().inputValue();
+    await page.locator('.capture-row:not(.off) [data-amount]').last().fill('6500');
+    await page.locator('#captureHint').click();
+    await page.waitForTimeout(250);
+    const amountRestored = await page.evaluate(() => document.querySelector('#captureSum')?.textContent);
+    rec('E15m6 금액 칸을 눌러 고치면 합계가 바로 따라오고 쉼표로 정리된다',
+      amountEdited === '¥9,194' && amountFormatted === '8,000' && amountRestored === '¥7,694',
+      `${amountEdited} / ${amountFormatted} / ${amountRestored}`);
+    await page.locator('#captureAdd').click();
+    await page.waitForTimeout(900);
+    const applied5312 = await page.evaluate(() => ({
+      open: document.querySelector('#captureSheet')?.open,
+      total: document.querySelector('.expense-total-line strong')?.textContent,
+      count: document.querySelector('.expense-total-top span:last-child')?.textContent,
+      stored: JSON.parse(localStorage.getItem('journey-note-trips'))[0].expenses.map(item => `${item.title}:${item.amountJpy}`)
+    }));
+    rec('E15m5 지출 4건이 저장되고 합계·건수가 늘어난다',
+      applied5312.open === false && num(applied5312.total) === 110744 && applied5312.count === '18건' &&
+      applied5312.stored.includes('KIX TENANTS:814') && applied5312.stored.includes('KIX DFS:6500') &&
+      !applied5312.stored.some(item => /일본 JPY/.test(item)),
+      `${applied5312.total} ${applied5312.count} / ${applied5312.stored.slice(-4).join(' ')}`);
+  } else {
+    console.log(`SKIP — 실제 IMG_5312 캡처가 없어 이 항목은 건너뜁니다 (${CAPTURE_5312})`);
+  }
+
+  // E15n — 일본 종이 영수증(합성 픽스처): kor+eng 1차 → jpn+eng 재인식 → 영수증 1건
+  if (fs.existsSync(RECEIPT_JP)) {
+    await page.setInputFiles('#captureInput', RECEIPT_JP);
+    await page.waitForSelector('#captureSheet[open]', { timeout: 30000 });
+    await page.waitForSelector('#captureRows .capture-row', { timeout: 240000 });
+    await page.waitForTimeout(900);
+    const receiptSheet = await page.evaluate(() => ({
+      sub: document.querySelector('#captureSub')?.textContent.replace(/\s+/g, ' ').trim(),
+      rows: [...document.querySelectorAll('.capture-row')].map(row => ({
+        text: row.textContent.replace(/\s+/g, ' ').trim(),
+        title: row.querySelector('[data-title]')?.value || '',
+        amount: row.querySelector('[data-amount]')?.value
+      })),
+      cta: document.querySelector('#captureAdd')?.textContent,
+      sum: document.querySelector('#captureSum')?.textContent,
+      raw: document.querySelector('#captureRawText')?.textContent || ''
+    }));
+    rec('E15n 일본 영수증은 1건으로 읽고 상호·합계를 잡는다',
+      /1건 인식/.test(receiptSheet.sub) && receiptSheet.rows.length === 1 &&
+      /ドン・キホーテ/.test(receiptSheet.rows[0]?.title || '') && receiptSheet.rows[0]?.amount === '1,670',
+      `${receiptSheet.sub} / ${receiptSheet.rows[0]?.title} / ${receiptSheet.rows[0]?.amount}`);
+    rec('E15n2 일본어 팩으로 다시 읽어 合計·小計 원문이 남는다', /合計/.test(receiptSheet.raw) && /お釣り/.test(receiptSheet.raw), receiptSheet.raw.slice(0, 80).replace(/\s+/g, ' '));
+    rec('E15n3 거스름돈·받은 돈·단품이 아니라 합계 1,670 만 지출로 뜬다',
+      receiptSheet.sum === '¥1,670' && receiptSheet.cta === '1건 일괄 추가' && /쇼핑/.test(receiptSheet.rows[0]?.text || '') && /영수증/.test(receiptSheet.rows[0]?.text || ''),
+      `${receiptSheet.sum} / ${receiptSheet.cta}`);
+    await page.screenshot({ path: path.join(SHOTS, 'expenses-receipt-jp-390x844.png') });
+    await page.locator('#captureAdd').click();
+    await page.waitForTimeout(900);
+    const appliedReceipt = await page.evaluate(() => ({
+      open: document.querySelector('#captureSheet')?.open,
+      total: document.querySelector('.expense-total-line strong')?.textContent,
+      count: document.querySelector('.expense-total-top span:last-child')?.textContent,
+      stored: JSON.parse(localStorage.getItem('journey-note-trips'))[0].expenses.map(item => `${item.title}:${item.amountJpy}`)
+    }));
+    rec('E15n4 영수증 1건이 1,670 으로 저장된다',
+      appliedReceipt.open === false && num(appliedReceipt.total) === 112414 && appliedReceipt.count === '19건' &&
+      appliedReceipt.stored.some(item => /ドン・キホーテ/.test(item) && /:1670$/.test(item)),
+      `${appliedReceipt.total} ${appliedReceipt.count} / ${appliedReceipt.stored.slice(-1)[0]}`);
+  } else {
+    console.log(`SKIP — 일본 영수증 픽스처가 없습니다 (${RECEIPT_JP})`);
+  }
 
   // E16 — 44px 터치 타겟(가계부 화면)
   const smallTargets = await page.evaluate(() => {
@@ -498,7 +640,7 @@ const yen = value => '¥' + new Intl.NumberFormat('ko-KR').format(Math.round(val
   rec('E19 페이지 오류 없음', errors.length === 0, errors.slice(0, 3).join(' | '));
 
   const passed = results.filter(r => r.ok).length;
-  console.log(`\n== 가계부 v31: ${passed}/${results.length} 통과 (OCR CDN 요청 ${state.ocrCdn}건) ==`);
+  console.log(`\n== 가계부 v32: ${passed}/${results.length} 통과 (OCR CDN 요청 ${state.ocrCdn}건) ==`);
   fs.writeFileSync(path.join(SHOTS, 'expenses-last-run.json'), JSON.stringify({ at: new Date().toISOString(), passed, total: results.length, results }, null, 1));
   await browser.close();
   srv.close();

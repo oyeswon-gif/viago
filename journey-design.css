@@ -52,14 +52,10 @@ body{background:#f4f8ff;color:var(--ink)}
 @media(max-width:850px){body{background:#fff}.shell{padding-left:16px;padding-right:16px}.topbar{height:64px}.trip-head{padding:20px;border-radius:18px}.trip-title h1{font-size:27px}.date-tabs{padding-top:14px;padding-bottom:14px}.date-tab{min-width:76px;padding:10px 12px}.panel{border:0;border-radius:0}.panel-head{padding:15px 2px}.timeline{padding:0 0 18px}.mobile-nav{left:0;right:0;bottom:0;height:calc(67px + env(safe-area-inset-bottom));padding:5px 10px env(safe-area-inset-bottom);border-radius:0;border-top:1px solid #e5ebf4;box-shadow:none;background:rgba(255,255,255,.97)}.nav-item.active{color:#0756e9}.today-panel,.exchange-panel{padding:20px 2px}.map-panel .panel-head{padding-left:2px;padding-right:2px}.journey-day-preview{margin-left:0;margin-right:0}}
 
 /* Travel cover and place categories */
-#launchCover{display:grid;place-items:center;background:#fff;pointer-events:none}
-.launch-logo{display:flex;flex-direction:column;align-items:center;gap:11px;color:#0756e9}.launch-logo strong{font-size:38px;font-weight:800;letter-spacing:3px}.launch-logo>span:last-child{font-size:14px;color:#617594;letter-spacing:.1em}.launch-mark{display:block;width:72px;height:72px;border-radius:17px;object-fit:cover;background:#0756e9;box-shadow:0 8px 20px rgba(17,53,112,.18)}.launch-mark svg{width:37px;height:37px}
 .trip-head{background:#eaf4ff url('./viago-travel-cover.webp') center/cover no-repeat;isolation:isolate}.trip-head:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(242,248,255,.98) 0%,rgba(239,247,255,.92) 52%,rgba(239,247,255,.25) 100%);pointer-events:none}.trip-head:after{display:none}.trip-head .eyebrow-row,.trip-head .trip-title-row{position:relative;z-index:1}
 .place-main{padding-left:55px;min-width:0}.place-main:before{left:31px;top:-4px;width:19px;height:19px;border:2px solid white;border-radius:50%;background:#0756e9;color:#fff;font-size:10px;z-index:1}.place-type-icon{display:inline-grid;place-items:center;flex:0 0 42px;width:42px;height:42px;color:#0756e9;background:#e8f2ff;border-radius:11px}.place-main>.place-type-icon{position:absolute;left:0;top:0}.place-type-icon svg{width:23px;height:23px}.today-place-row{display:flex;align-items:center;gap:11px}.today-place-row .today-place{min-width:0;overflow-wrap:anywhere}.today-note{margin-left:53px}
 @media(max-width:850px){.place-main{padding-left:54px}.trip-head{min-height:155px}.today-place-row .today-place{font-size:19px}}
-/* Keep the startup cover anchored to the viewport on iOS. */
 .shell{transform:none;-webkit-transform:none;will-change:auto}
-.launch-mark{font-size:30px}
 
 /* 하루 미리보기 안내: 화면 밖 장소가 있을 때 눌러서 그날 전체로 돌아오기 / 오프라인 안내는 두 줄까지 */
 .journey-preview-note[data-refit]{cursor:pointer;color:var(--blue-deep);font-weight:700}
@@ -941,7 +937,19 @@ select{background-image:none}
 .capture-chip::after{content:"";position:absolute;inset:-11px -2px}
 .capture-chip i{width:5px;height:5px;border-radius:50%;flex:0 0 auto}
 .capture-chip svg{width:7px;height:7px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;opacity:.6}
-.capture-amount{text-align:right;font-size:13.5px;font-weight:700;letter-spacing:-.4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.capture-amount{display:flex;align-items:center;justify-content:flex-end;gap:1px;text-align:right;font-size:13.5px;font-weight:700;letter-spacing:-.4px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.capture-amount>span{font-size:12px;font-weight:700;color:#8b95a3}
+.capture-amount-input{width:auto;min-width:46px;height:44px;padding:0 2px;border:0;border-radius:8px;background:none;color:inherit;
+  font:inherit;font-size:13.5px;font-weight:700;letter-spacing:-.4px;text-align:right;font-variant-numeric:tabular-nums}
+.capture-amount-input:focus{outline:2px solid rgba(7,86,233,.24);outline-offset:1px;background:#fff}
+.capture-raw{flex:0 0 auto;margin-top:6px;border-top:.5px solid var(--hair);padding-top:2px}
+.capture-raw[hidden]{display:none}
+.capture-raw summary{position:relative;display:flex;align-items:center;min-height:44px;font-size:11px;font-weight:600;color:#6b7484;letter-spacing:-.1px;list-style:none;cursor:pointer}
+.capture-raw summary::-webkit-details-marker{display:none}
+.capture-raw summary::before{content:"";width:5px;height:5px;margin-right:6px;border-right:1.4px solid currentColor;border-bottom:1.4px solid currentColor;transform:rotate(-45deg)}
+.capture-raw[open] summary::before{transform:rotate(45deg)}
+.capture-raw pre{margin:0 0 8px;max-height:132px;overflow:auto;padding:9px 10px;border-radius:10px;background:#f4f6fa;
+  font-size:10.5px;line-height:1.5;color:#48505e;letter-spacing:0;white-space:pre-wrap;word-break:break-word}
 .capture-row.off .capture-title-input{color:#8e97a5}
 .capture-row.off .capture-amount{color:#a7aeba}
 .capture-hint{margin:8px 0 0 2px;font-size:10.5px;font-weight:500;color:#98a2b3;letter-spacing:-.1px}

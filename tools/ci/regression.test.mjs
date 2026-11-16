@@ -146,11 +146,10 @@ check('R20 캡처: 충전은 지출에서 빼고 잔액만 후보로 남긴다',
 const captureSection = section(html, '// ── 거래내역 캡처', 'function bindExpenseForm');
 check('R20 캡처: 사진은 서버로 보내지 않는다', !!captureSection && !/FormData|apiFetch\(|authedFetch\(|fetch\(/.test(captureSection));
 
-// R21 — 실행 화면 아이콘: iOS 스플래시·웹 로딩 커버가 새 앱 아이콘을 쓴다 (v31)
-check('R21 스플래시: 7종 파일이 모두 있고 ?v= 로 캐시를 끊는다',
-  ['375x812', '390x844', '393x852', '402x874', '414x896', '430x932', '440x956'].every(name => new RegExp(`splash/${name}\\.png\\?v=`).test(html)) &&
-  ['375x812', '390x844', '393x852', '402x874', '414x896', '430x932', '440x956'].every(name => exists(`splash/${name}.png`)));
-check('R21 로딩 커버: ✈ 글자 대신 새 앱 아이콘 이미지', /class="launch-mark" src="\.\/app-icon-180\.png\?v=/.test(html) && !/>✈</.test(html) && /\.launch-mark\{[^}]*object-fit:cover/.test(css));
+// R21 — 실행 화면: 시작 화면(스플래시)·로딩 커버를 두지 않는다 (v32, 재원 님 요청)
+check('R21 실행 화면: iOS 시작 화면 링크가 없다', !/rel="apple-touch-startup-image"/.test(html), 'apple-touch-startup-image ' + (html.match(/apple-touch-startup-image/g) || []).length + '건');
+check('R21 실행 화면: 로딩 커버 마크업·CSS·스크립트가 없다',
+  !/id="launchCover"/.test(html) && !/launchCover|launch-mark|launch-logo/.test(html) && !/launchCover|launch-mark|launch-logo/.test(css) && !/hideLaunchCover/.test(html));
 
 console.log(ok ? '\n모든 회귀 불변식 통과' : '\n실패한 불변식이 있습니다 — docs/REGRESSION-CHECKLIST.md 의 해당 M# 항목을 보세요.');
 process.exit(ok ? 0 : 1);

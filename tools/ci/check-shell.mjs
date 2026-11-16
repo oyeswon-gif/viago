@@ -89,12 +89,11 @@ else pass('title');
 if (!/<meta\s+name="description"/i.test(head)) fail('meta description', '없음');
 else pass('meta description');
 
-// 스플래시(apple-touch-startup-image) 파일 존재 — 2026-11-16 404 수정 확인
+// 스플래시는 v32 에서 걷어냈다 — 링크가 남아 있으면 그 파일이 실제로 있는지만 확인한다(404 방지).
 const splash = [...head.matchAll(/<link\s+rel="apple-touch-startup-image"[^>]*href="([^"]+)"/g)].map(m => m[1]);
 const missingSplash = splash.map(h => h.replace(/^\//, '').replace(/\?[^/]*$/, '')).filter(f => !exists(f));  // ?v= 캐시 버스트 쿼리는 파일 경로가 아니다
-if (splash.length && missingSplash.length) fail('iOS 스플래시 파일 존재', `404 대상: ${missingSplash.join(', ')}`);
-else if (splash.length) pass('iOS 스플래시 파일 존재', `${splash.length}개`);
-else fail('iOS 스플래시', 'apple-touch-startup-image 없음(홈 화면 앱 시작 화면)');
+if (missingSplash.length) fail('iOS 스플래시 파일 존재', `404 대상: ${missingSplash.join(', ')}`);
+else pass('iOS 스플래시 없음', splash.length ? `${splash.length}개 링크(파일 확인됨)` : '시작 화면 링크 없음');
 
 // 8) 껍데기 지문 (코드만 고치고 SW 버전을 안 올린 경우를 막는다)
 const stampPath = 'tools/ci/shell-fingerprint.json';

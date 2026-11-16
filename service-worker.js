@@ -15,7 +15,7 @@
 // 4) 새 워커는 skipWaiting + clients.claim 으로 바로 활성화된다. 화면(index.html)은
 //    controllerchange 를 받으면 새 코드로 갈아 끼우고, 입력 중이면 안내 막대(새로고침)를 띄운다.
 //    화면이 보내는 { type: 'SKIP_WAITING' } 메시지도 같은 동작을 한다(대기 중인 워커용).
-const VERSION = 'v31';   // 2026-11-16 v30: 하단 탭 '지도' → '정산'(정산·가계부) · 지도 패널·setView('map') 유지 · v29 아이콘 유지
+const VERSION = 'v32';   // 2026-11-16 v30: 하단 탭 '지도' → '정산'(정산·가계부) · 지도 패널·setView('map') 유지 · v29 아이콘 유지
 const SHELL = `viago-shell-${VERSION}`;
 // 같은 출처(oyeswon-gif.github.io)의 다른 앱(/ring 등) 캐시는 건드리지 않는다.
 const OUR_PREFIX = 'viago-';
@@ -27,7 +27,7 @@ const SHELL_FILES = [
   './journey-sync.js',
   './viago-auth-client.js',   // 이전 빌드의 인증·초대 클라이언트
   './viago-auth-firebase.js', // 앱 저장 경로 어댑터
-  './viago-expense-ocr.js',   // 거래내역 캡처 글자 파서(v31) — OCR 자체는 필요할 때만 CDN 에서 받는다
+  './viago-expense-ocr.js',   // 거래내역 캡처·영수증 글자 파서(v32) — OCR 자체는 필요할 때만 CDN 에서 받는다
   './viago-sync-v3.js',       // (구) 인증 없는 저장 구현 — 앱이 더 이상 부르지 않지만 남겨 둔다
   './manifest.webmanifest',
   './app-icon-32.png',
