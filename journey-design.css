@@ -675,3 +675,32 @@ select{background-image:none}
 .mvs-cancel:active{background:rgba(242,242,247,.9)}
 @media(min-width:851px){#mapViewSheet{align-items:center}.mvs-sheet{max-width:400px}}
 @media(max-width:850px){.journey-map-zoom{bottom:60px}}
+
+/* ===== 2026-11-16 상단 여행 표지 배너 — 여행지 대표 관광지(나고야성 · 시안 1) =====
+   iOS 테마(v23~)에서 걷어 두었던 표지 사진을 다시 얹는다.
+   · 사진은 오른쪽에 두고, 왼쪽 글씨 자리는 흰색 그라데이션으로 덮어 가독성을 지킨다.
+   · 머리 높이만 늘리고 기존 기능·구조(일자 탭·지도 44%·카드)는 그대로 둔다. */
+.trip-head{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:#f4f9ff url('./viago-travel-cover.webp') right center/cover no-repeat;
+  border-radius:18px;
+}
+.trip-head:before{
+  content:"";display:block!important;position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,0) 58%,rgba(255,255,255,.55) 86%,rgba(255,255,255,.72) 100%),
+    linear-gradient(90deg,rgba(255,255,255,.98) 0%,rgba(255,255,255,.95) 34%,rgba(255,255,255,.74) 58%,rgba(255,255,255,.24) 81%,rgba(255,255,255,.04) 100%);
+}
+.trip-head:after{display:none!important}
+.trip-head>*{position:relative;z-index:1}
+@media(max-width:850px){
+  .trip-head{display:flex;flex-direction:column;justify-content:flex-start;gap:7px;min-height:150px;margin:6px 0 0;padding:12px 15px 13px;border-radius:16px}
+  .trip-head .eyebrow-row{margin:0}
+  .trip-head .trip-title-row{align-items:flex-end;gap:10px}
+  .trip-head .trip-title h1{font-size:19px;font-weight:650;letter-spacing:-.5px;margin:0 0 3px;color:#0d1a2b}
+  .trip-head .trip-meta{color:#45516a}
+}
+@media(min-width:851px){
+  .trip-head{display:flex;flex-direction:column;justify-content:center;gap:10px;min-height:200px;margin:0 0 6px;padding:20px 26px 22px;border-radius:18px;background-position:100% 14%}
+  .trip-head .eyebrow-row{margin:0}
+}
