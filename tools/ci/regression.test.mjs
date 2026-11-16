@@ -120,8 +120,37 @@ check('R17 탭: 하단 탭 4개에 정산이 있고 지도 버튼은 없다', (n
 check('R17 탭: 지도 패널과 setView(map) 진입이 살아 있다', /id="mapPanel"/.test(html) && /setView\('map'\)/.test(html) && /itineraryPanel'\)\.classList\.toggle\('map-hidden',map\|\|today\|\|exchange\|\|expenses\)/.test(html));
 const expenseFeatures = section(html, 'function ensureTripFeatures', 'trips.forEach(t=>ensureTripFeatures(t))');
 check('R17 정산: 지출은 trips[].expenses 로 동기화 경로에 실린다', /t\.expenses=Array\.isArray\(t\.expenses\)\?t\.expenses:\[\]/.test(ensureFeatures) && /amountJpy/.test(html) && /function renderExpenses\(/.test(html));
-check('R17 정산: 원화는 환율 탭 값만 쓰고 새 API 를 부르지 않는다', /function yenKrwRate\(\)\{const rate=exchangeValue\(1,'JPY','KRW'\)/.test(html) && !/expenses[\s\S]{0,2000}?fetch\(/.test(section(html, 'const EXPENSE_CATS', 'const tabViews=')));
-check('R17 정산: 화면 스타일이 iOS 토큰(헤어라인·시스템 블루·44px)을 쓴다', /\.expense-chip\{min-height:44px/.test(css) && /\.expense-settle-btn\{[^}]*min-height:44px[^}]*background:var\(--blue\)/.test(css) && /\.expense-row\{[^}]*border-top:\.5px solid var\(--hair\)/.test(css));
+check('R17 가계부: 원화는 환율 탭 값만 쓰고 새 API 를 부르지 않는다', /function yenKrwRate\(\)\{const rate=exchangeValue\(1,'JPY','KRW'\)/.test(html) && !/expenses[\s\S]{0,2000}?fetch\(/.test(section(html, 'const EXPENSE_CATS', 'const tabViews=')));
+check('R17 가계부: 화면 스타일이 iOS 토큰(헤어라인·시스템 블루·44px)을 쓴다', /\.expense-chip\{[^}]*min-width:44px/.test(css) && /\.expense-capture\{[^}]*min-height:52px/.test(css) && /\.capture-cta\{[^}]*min-height:46px[^}]*background:var\(--blue\)/.test(css) && /\.expense-row\{[^}]*border-top:\.5px solid var\(--hair\)/.test(css));
+
+// R18 — 가계부 v2: 사람별 구분·1/2 정산을 화면에서 완전히 걷어냈다 (v31)
+const expenseSection = section(html, '// ── 가계부 (v31)', 'const tabViews=');
+check('R18 사람 구분 제거: 납부자 선택·비율 바·정산 카드 코드가 없다',
+  !/expensePayers|expenseSettle(?!ment)|EXPENSE_PAYER_COLOR|expensePlan\(|expenseMembers\(/.test(html));
+check('R18 사람 구분 제거: 지출 행이 결제자를 그리지 않는다',
+  !!expenseSection && !/item\.payer|entry\.payer|payer\s*[:=]\s*['"]/.test(expenseSection) && !/결제자/.test(expenseSection));
+check('R18 헤더는 가계부, 총 지출은 합계·건수·잔액 한 줄', /<h2>가계부<\/h2>/.test(html) && /expense-total-meta/.test(html) && /cardBalanceJpy/.test(html));
+
+// R19 — 카테고리 누적/일별 꺾은선 그래프: SVG + 토글 + 범례 강조
+check('R19 그래프: 카테고리 4색 SVG 꺾은선을 직접 그린다',
+  /function expenseChartMarkup/.test(html) && /expense-chart-line/.test(html) && /EXPENSE_CAT_COLOR=\{식비:'#e2795a',교통:'#2e9a6a',쇼핑:'#8b6fd4',관광:'#e2a03f'\}/.test(html));
+check('R19 그래프: 누적/일별 토글과 여행 일차 축', /data-range="cumulative"/.test(html) && /data-range="daily"/.test(html) && /expenseDraft\.chartMode==='daily'/.test(html) && /일차/.test(html) && /function expenseDays\(/.test(html));
+check('R19 그래프: 범례 탭이 카테고리 강조·목록 필터로 이어진다', /expensesLegend/.test(html) && /expenseDraft\.chartFocus/.test(html) && /data-cat="\$\{category\}"/.test(html));
+check('R19 그래프: 외부 라이브러리 없이 계산만 한다', !/chart\.js|Chart\.min|d3\./.test(html));
+
+// R20 — 거래내역 캡처: 기기 안 OCR(필요할 때만 CDN) → 파서 → 확인 시트
+check('R20 캡처: OCR 은 누를 때만 CDN 에서 받는다', /TESSERACT_SRC='https:\/\/cdn\.jsdelivr\.net\/npm\/tesseract\.js@7\.0\.0\/dist\/tesseract\.min\.js'/.test(html) && !/<script[^>]*tesseract/.test(html) && /function loadTesseract\(/.test(html));
+check('R20 캡처: 파서가 껍데기에 실려 있고 SW 캐시 목록에 있다', /viago-expense-ocr\.js/.test(html) && /\.\/viago-expense-ocr\.js/.test(sw) && /parseCaptureText/.test(html));
+check('R20 캡처: 확인 시트(체크·카테고리 칩·일괄 추가)가 있다', /<dialog id="captureSheet"/.test(html) && /id="captureRows"/.test(html) && /id="captureAdd"/.test(html) && /applyCapture/.test(html));
+check('R20 캡처: 충전은 지출에서 빼고 잔액만 후보로 남긴다', /looksLikeTopup/.test(read('viago-expense-ocr.js')) && /isTopup/.test(html) && /cardBalanceJpy/.test(html) && /expenseTopupJpy/.test(html));
+const captureSection = section(html, '// ── 거래내역 캡처', 'function bindExpenseForm');
+check('R20 캡처: 사진은 서버로 보내지 않는다', !!captureSection && !/FormData|apiFetch\(|authedFetch\(|fetch\(/.test(captureSection));
+
+// R21 — 실행 화면 아이콘: iOS 스플래시·웹 로딩 커버가 새 앱 아이콘을 쓴다 (v31)
+check('R21 스플래시: 7종 파일이 모두 있고 ?v= 로 캐시를 끊는다',
+  ['375x812', '390x844', '393x852', '402x874', '414x896', '430x932', '440x956'].every(name => new RegExp(`splash/${name}\\.png\\?v=`).test(html)) &&
+  ['375x812', '390x844', '393x852', '402x874', '414x896', '430x932', '440x956'].every(name => exists(`splash/${name}.png`)));
+check('R21 로딩 커버: ✈ 글자 대신 새 앱 아이콘 이미지', /class="launch-mark" src="\.\/app-icon-180\.png\?v=/.test(html) && !/>✈</.test(html) && /\.launch-mark\{[^}]*object-fit:cover/.test(css));
 
 console.log(ok ? '\n모든 회귀 불변식 통과' : '\n실패한 불변식이 있습니다 — docs/REGRESSION-CHECKLIST.md 의 해당 M# 항목을 보세요.');
 process.exit(ok ? 0 : 1);

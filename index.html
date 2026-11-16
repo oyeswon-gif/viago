@@ -14,22 +14,22 @@
   <meta name="color-scheme" content="light" />
   <meta name="format-detection" content="telephone=no,date=no,address=no" />
   <!-- 2026-11-16 v30: 하단 탭 '지도' → '정산' (정산·가계부 탭). 지도 패널·setView('map')은 그대로 두고 일정 탭의 전체 동선으로 들어간다 -->
-  <link rel="manifest" href="./manifest.webmanifest?v=76" />
-  <link rel="apple-touch-icon" sizes="180x180" href="./app-icon-180.png?v=76" />
-  <link rel="icon" href="./app-icon.svg?v=76" type="image/svg+xml" />
-  <link rel="icon" type="image/png" sizes="32x32" href="./app-icon-32.png?v=76" />
-  <link rel="icon" type="image/png" sizes="192x192" href="./app-icon-192.png?v=76" />
+  <link rel="manifest" href="./manifest.webmanifest?v=77" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./app-icon-180.png?v=77" />
+  <link rel="icon" href="./app-icon.svg?v=77" type="image/svg+xml" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./app-icon-32.png?v=77" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./app-icon-192.png?v=77" />
 
   <meta name="description" content="지인들과 함께 일정을 정리하고 Google 지도로 바로 길찾는 개인 여행 앱" />
   <title>viago</title>
   <link rel="preconnect" href="https://www.google.com" />
-  <link rel="apple-touch-startup-image" href="./splash/375x812.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" />
-  <link rel="apple-touch-startup-image" href="./splash/390x844.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" />
-  <link rel="apple-touch-startup-image" href="./splash/393x852.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
-  <link rel="apple-touch-startup-image" href="./splash/402x874.png" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3)" />
-  <link rel="apple-touch-startup-image" href="./splash/414x896.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" />
-  <link rel="apple-touch-startup-image" href="./splash/430x932.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
-  <link rel="apple-touch-startup-image" href="./splash/440x956.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3)" />
+  <link rel="apple-touch-startup-image" href="./splash/375x812.png?v=77" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" />
+  <link rel="apple-touch-startup-image" href="./splash/390x844.png?v=77" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" />
+  <link rel="apple-touch-startup-image" href="./splash/393x852.png?v=77" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" />
+  <link rel="apple-touch-startup-image" href="./splash/402x874.png?v=77" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3)" />
+  <link rel="apple-touch-startup-image" href="./splash/414x896.png?v=77" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" />
+  <link rel="apple-touch-startup-image" href="./splash/430x932.png?v=77" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" />
+  <link rel="apple-touch-startup-image" href="./splash/440x956.png?v=77" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3)" />
   <style>
     :root{--blue:#3187ff;--blue-deep:#1b64da;--ink:#191f28;--sub:#6b7684;--line:#e5e8eb;--bg:#f4f6f8;--card:#fff;--shadow:0 12px 36px rgba(24,32,45,.07);font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo",sans-serif;color:var(--ink);background:var(--bg);font-synthesis:none}
     *{box-sizing:border-box}html,body{max-width:100%;overflow-x:hidden}body{margin:0;min-height:100vh}button,input{font:inherit}button{border:0;cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid rgba(49,135,255,.24);outline-offset:2px}.hidden{display:none!important}
@@ -140,7 +140,7 @@
       </div>
     </header>
 
-    <div id="launchCover" aria-hidden="true"><div class="launch-logo"><span class="launch-mark">✈</span><strong>VIAGO</strong><span>함께 떠나는 여행</span></div></div>
+    <div id="launchCover" aria-hidden="true"><div class="launch-logo"><img class="launch-mark" src="./app-icon-180.png?v=77" alt="" width="72" height="72" decoding="async" /><strong>VIAGO</strong><span>함께 떠나는 여행</span></div></div>
     <div id="bootState"><div id="bootMessage" role="status">저장된 여행을 확인하고 있어요.</div><form id="inviteRecovery" hidden><label for="recoveryLink">받은 전체 초대 링크</label><input id="recoveryLink" type="url" required autocomplete="off" placeholder="https://…/viago/#invite=…" style="width:100%;min-width:0;margin:12px 0;padding:14px;border:1px solid #dce2e8;border-radius:12px"><button class="confirm" style="width:100%" type="submit">초대 링크로 여행 열기</button><p id="recoveryError" role="alert"></p></form></div>
     <section class="trip-head">
       <div class="eyebrow-row"><div class="eyebrow" id="tripDday">D-86</div><button class="trip-change" id="tripPickerBtn">여행 변경</button></div>
@@ -170,19 +170,39 @@
         <p class="exchange-note">ExchangeRate-API 무료 공개 환율(1일 1회 갱신)을 <b>기기에서 직접</b> 받아요. 서버 공통 캐시가 없어 기기마다 따로 요청하며, 받은 시각과 제공사 기준 시각을 위에 함께 표시합니다. 실제 카드 결제·현금 환전 금액과는 차이가 날 수 있어요.<br><a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By ExchangeRate-API</a></p>
       </article>
       <article class="panel expenses-panel" id="expensesPanel" aria-live="polite">
-        <div class="expenses-head"><div><h2>정산</h2><p id="expensesSub">2명 여행 경비 · 엔화로 적으면 원화로 바로</p></div><span class="expenses-rate" id="expensesRate">1엔 --원</span></div>
+        <div class="expenses-head"><div><h2>가계부</h2><p id="expensesSub">여행 경비 · 엔화로 적으면 원화로 바로</p></div><span class="expenses-rate" id="expensesRate">1엔 --원</span></div>
+        <button type="button" class="expense-capture" id="expenseCapture" aria-label="내역 캡처 불러오기 — 카드·하나머니 거래내역 사진에서 자동 입력">
+          <span class="expense-capture-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.1-1.7h4.4L16.3 6h1.2A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.4" r="3.3"/></svg></span>
+          <span class="expense-capture-copy"><strong>내역 캡처 불러오기</strong><span>카드·하나머니 거래내역 사진에서 자동 입력</span></span>
+          <svg class="icon expense-capture-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <input type="file" id="captureInput" class="hidden" accept="image/*" multiple aria-label="거래내역 캡처 사진 선택" />
         <div id="expensesTotal"></div>
-        <div id="expensesSettle"></div>
-        <div class="expense-cats" id="expensesCats" role="group" aria-label="카테고리별 합계"></div>
+        <section class="expense-chart-card" aria-labelledby="expenseChartTitle">
+          <div class="expense-chart-head">
+            <h3 id="expenseChartTitle">카테고리별 누적</h3>
+            <div class="expense-chart-toggle" id="expensesChartToggle" role="group" aria-label="그래프 보기">
+              <button type="button" data-range="cumulative" aria-pressed="true">누적</button>
+              <button type="button" data-range="daily" aria-pressed="false">일별</button>
+            </div>
+          </div>
+          <div class="expense-chart" id="expensesChart"></div>
+          <div class="expense-legend" id="expensesLegend" role="group" aria-label="카테고리 합계 — 누르면 그 카테고리만 보기"></div>
+        </section>
         <div class="expense-list-head"><h3>최근 지출</h3><button type="button" class="expense-list-all" id="expensesListAll">전체</button></div>
         <div class="expense-list" id="expensesList"></div>
         <form class="expense-form" id="expenseForm" autocomplete="off">
-          <div class="expense-form-head"><strong>지출 추가</strong><span id="expenseFormHint">반씩 나눠 계산</span></div>
-          <div class="expense-amount"><span class="expense-amount-symbol" aria-hidden="true">¥</span><input class="expense-amount-input" id="expenseAmount" inputmode="numeric" autocomplete="off" placeholder="0" aria-label="엔화 금액" /><span class="expense-amount-won" id="expenseAmountWon">≈ ₩0</span></div>
-          <input class="expense-title-input" id="expenseTitle" type="text" autocomplete="off" maxlength="40" placeholder="내용 (예: 고토니 스시)" aria-label="지출 내용" />
-          <div class="expense-payers" id="expensePayers" role="group" aria-label="낸 사람"></div>
-          <div class="expense-chips" id="expenseChips" role="group" aria-label="카테고리"></div>
-          <button type="submit" class="expense-add" id="expenseAdd">+ 추가</button>
+          <div class="expense-line">
+            <span class="expense-amount-symbol" aria-hidden="true">¥</span>
+            <input class="expense-amount-input" id="expenseAmount" inputmode="numeric" autocomplete="off" placeholder="0" aria-label="엔화 금액" />
+            <span class="expense-line-divider" aria-hidden="true"></span>
+            <input class="expense-title-input" id="expenseTitle" type="text" autocomplete="off" maxlength="40" placeholder="무엇에 썼나요?" aria-label="지출 내용" />
+            <span class="expense-amount-won" id="expenseAmountWon">≈ ₩0</span>
+          </div>
+          <div class="expense-chips-row">
+            <div class="expense-chips" id="expenseChips" role="group" aria-label="카테고리"></div>
+            <button type="submit" class="expense-add" id="expenseAdd">+ 추가</button>
+          </div>
         </form>
       </article>
       <article class="panel itinerary-panel" id="itineraryPanel">
@@ -210,6 +230,23 @@
   </nav>
 
   <dialog id="syncConflict"><div class="dialog-inner"><h3>같은 일정이 함께 수정됐어요</h3><p>서로 다른 변경은 합쳤어요. 겹친 변경에 사용할 내용을 선택해주세요. 저장 전 내용은 휴대폰에 보관됩니다.</p><pre id="syncConflictDetails" style="white-space:pre-wrap;max-height:30vh;overflow:auto"></pre><div class="dialog-actions"><button type="button" id="syncRemote" class="cancel">공유된 변경 사용</button><button type="button" id="syncLocal" class="confirm">내 변경 유지</button></div></div></dialog>
+  <dialog id="captureSheet" class="capture-sheet" aria-labelledby="captureTitle">
+    <div class="capture-inner" tabindex="-1" autofocus>
+      <div class="capture-grab" aria-hidden="true"></div>
+      <div class="capture-head">
+        <div class="capture-head-copy"><h2 id="captureTitle">캡처에서 찾은 내역</h2><p id="captureSub">사진에서 글자를 읽는 중…</p></div>
+        <button type="button" class="capture-close" id="captureClose" aria-label="닫기"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="capture-thumbs" id="captureThumbs"></div>
+      <p class="capture-note" id="captureNote" hidden></p>
+      <div class="capture-rows" id="captureRows"></div>
+      <p class="capture-hint" id="captureHint">카테고리를 눌러 바꿀 수 있어요</p>
+      <div class="capture-foot">
+        <div class="capture-sum"><span>선택 금액</span><b id="captureSum">¥0</b></div>
+        <button type="button" class="capture-cta" id="captureAdd" disabled>0건 일괄 추가</button>
+      </div>
+    </div>
+  </dialog>
   <div id="inviteGate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
     <div class="gate-card" id="gateForm">
       <h3 id="gateTitle">이 여행에 연결되지 않았어요</h3>
@@ -298,9 +335,10 @@
     </div>
   </div>
 <script>window.VIAGO_BUILD={"projectId":"wedding-ring-app-810cd","firebaseApiKey":"AIzaSyAsuMM6ABQG8oGF06gSLj8-2w9NotH6Edg","roomCode":"v1-06e9cc03c400af45d41def7c87d05628"};</script>
-  <script src="./journey-sync.js?v=76"></script>
-  <script src="./viago-auth-client.js?v=76"></script>
-  <script src="./viago-auth-firebase.js?v=76"></script>
+  <script src="./journey-sync.js?v=77"></script>
+  <script src="./viago-auth-client.js?v=77"></script>
+  <script src="./viago-auth-firebase.js?v=77"></script>
+  <script src="./viago-expense-ocr.js?v=77"></script>
   <script>
     const initialDays=[
       {date:'',dow:'',title:'새 여행',summary:'',places:[]}
@@ -1815,10 +1853,10 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       if(trips.length===1)return toast('여행은 최소 1개가 필요해요');
       if(!confirm(`“${trip.name}” 여행을 삭제할까요?\n일정과 후보 장소도 함께 삭제됩니다.`))return;
       const deletingActive=activeTrip.id===id;trips=trips.filter(t=>t.id!==id);
-      if(deletingActive){activeTrip=trips.slice().sort((a,b)=>a.start.localeCompare(b.start))[0];ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();expenseDraft.filter=null;expenseDraft.payer=null;if(currentView==='expenses')renderExpenses()}
+      if(deletingActive){activeTrip=trips.slice().sort((a,b)=>a.start.localeCompare(b.start))[0];ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();expenseDraft.filter=null;expenseDraft.chartFocus=null;expenseDraft.listOpen=false;if(currentView==='expenses')renderExpenses()}
       persistTrips();renderTripList();render();if(currentView==='today')renderToday();toast('여행을 삭제했어요')
     }
-    function switchTrip(id){persistTrips();activeTrip=trips.find(t=>t.id===id)||activeTrip;ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();localStorage.setItem('journey-note-current-trip',currentTripId);$('#tripDialog').close();resetInlineRoute();expenseDraft.filter=null;expenseDraft.payer=null;render();if(currentView==='today')renderToday();if(currentView==='expenses')renderExpenses();toast(activeTrip.destination+' 여행을 열었어요')}
+    function switchTrip(id){persistTrips();activeTrip=trips.find(t=>t.id===id)||activeTrip;ensureTripFeatures(activeTrip);currentTripId=activeTrip.id;days=activeTrip.days;restaurants=activeTrip.restaurants;tripInfo={name:activeTrip.name,mode:activeTrip.mode||'transit'};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();localStorage.setItem('journey-note-current-trip',currentTripId);$('#tripDialog').close();resetInlineRoute();expenseDraft.filter=null;expenseDraft.chartFocus=null;expenseDraft.listOpen=false;render();if(currentView==='today')renderToday();if(currentView==='expenses')renderExpenses();toast(activeTrip.destination+' 여행을 열었어요')}
     $('#tripPickerBtn').onclick=()=>{renderTripList();const now=new Date(),later=new Date(Date.now()+3*86400000);$('#tripStartInput').value=localIso(now);$('#tripEndInput').value=localIso(later);$('#tripDialog').showModal()};
     document.querySelectorAll('.destination-chip').forEach(b=>b.onclick=()=>{$('#destinationInput').value=b.dataset.destination;document.querySelectorAll('.destination-chip').forEach(x=>x.classList.toggle('active',x===b))});
     $('#newTripForm').addEventListener('submit',e=>{e.preventDefault();const destination=$('#destinationInput').value.trim(),start=$('#tripStartInput').value,end=$('#tripEndInput').value;if(!destination||!start||!end||end<start)return toast('여행지와 날짜를 다시 확인해주세요');const newDays=makeEmptyDays(start,end);if(!newDays.length)return toast('여행 날짜를 다시 확인해주세요');persistTrips();const trip={id:'trip-'+Date.now(),destination,name:destination+' 여행',start,end,mode:'transit',days:newDays,restaurants:[],candidates:[],todayProgress:{},weatherAlternatives:[],weatherBackups:[]};trips.push(trip);activeTrip=trip;currentTripId=trip.id;days=trip.days;restaurants=trip.restaurants;tripInfo={name:trip.name,mode:trip.mode};pendingMode=tripInfo.mode;dayIndex=0;foodMode=false;candidateMode=false;weatherState=null;hoursCache.clear();persistTrips();$('#tripDialog').close();$('#newTripForm').reset();document.querySelectorAll('.destination-chip').forEach(x=>x.classList.remove('active'));resetInlineRoute();render();if(currentView==='today')renderToday();toast(destination+' 여행을 만들었어요')});
@@ -1920,59 +1958,154 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         }else toast('환율을 불러오지 못했어요 · 인터넷 연결을 확인해주세요');
       }finally{exchangeLoading=false;renderExchange();if(currentView==='expenses')renderExpenses()}
     }
-    // ── 정산 · 가계부 (v30) ────────────────────────────────────────────────────────
-    //   · 지출은 엔화(amountJpy)로만 저장한다. 원화는 환율 탭이 받아 둔 exchangeData 로 그때그때 환산한다.
-    //   · 저장 경로는 기존 그대로 trips[].expenses[] → localStorage + v3 공유 저장(3-way 병합).
-    //     항목마다 id 가 있어 두 기기가 서로 다른 지출을 추가해도 합쳐진다.
-    //   · 새 API·새 컬렉션 없음. Google Places/Geocoding 호출 0건(환율은 exchangeData 재사용).
+    // ── 가계부 (v31) ───────────────────────────────────────────────────────────────
+    //   · v31: 사람별 구분(재원/주희)·1/2 정산 카드를 없앴다. 저장된 payer 는 지우지 않고 표시도 하지 않는다.
+    //   · 지출은 엔화(amountJpy)로만 저장하고, 원화는 환율 탭이 받아 둔 exchangeData 로 그때그때 환산한다.
+    //   · 거래내역 캡처: 기기 안에서 OCR(tesseract.js, CDN·첫 1회만 내려받음) → viago-expense-ocr.js 파서 → 확인 시트.
+    //     사진은 어디로도 올리지 않는다(서버·Firestore·Google API 호출 0건). OCR 이 실패해도 수동 입력은 그대로 된다.
     const EXPENSE_CATS=['식비','교통','쇼핑','관광'];
     const EXPENSE_CAT_COLOR={식비:'#e2795a',교통:'#2e9a6a',쇼핑:'#8b6fd4',관광:'#e2a03f'};
-    const EXPENSE_PAYER_COLOR=['#0a84ff','#e2795a','#2e9a6a','#8b6fd4'];
+    const EXPENSE_CAT_INK={식비:'#b2542f',교통:'#1f7a52',쇼핑:'#6b4cbd',관광:'#94651a'};
     const FALLBACK_YEN_KRW=8.37;   // 환율을 아직 못 받았을 때만 쓰는 표시용 기본값(계산은 항상 exchangeData 우선)
-    const expenseDraft={payer:null,category:'식비',filter:null};
+    const TESSERACT_SRC='https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js';
+    const TESSERACT_LANG_PATH='https://tessdata.projectnaptha.com/4.0.0_fast';
+    const expenseDraft={category:'식비',filter:null,chartMode:'cumulative',chartFocus:null,listOpen:false};
+    const captureState={token:0,files:[],thumbs:[],texts:[],items:[],balanceJpy:null,topupJpy:0,busy:false,error:'',phase:''};
     const expenseNumber=value=>new Intl.NumberFormat('ko-KR').format(Math.round(Number(value)||0));
     const expenseYen=value=>'¥'+expenseNumber(value);
     function yenKrwRate(){const rate=exchangeValue(1,'JPY','KRW');return Number.isFinite(rate)&&rate>0?rate:FALLBACK_YEN_KRW}
     const expenseWon=value=>'₩'+expenseNumber((Number(value)||0)*yenKrwRate());
     const expenseKrw=value=>'≈ '+expenseWon(value);
-    // 낸 사람: 여행에 members 가 있으면 그것, 없으면 머리말 멤버(재원·주희), 그것도 없으면 일본 여행 기본 2인.
-    function expenseMembers(){
-      const declared=(Array.isArray(activeTrip?.members)?activeTrip.members:[]).map(x=>typeof x==='string'?x:(x&&x.name)||'').map(x=>String(x).trim()).filter(Boolean);
-      const topbar=[...document.querySelectorAll('.people .avatar:not(.add-person)')].map(el=>String(el.textContent||'').trim()).filter(Boolean);
-      const used=(Array.isArray(activeTrip?.expenses)?activeTrip.expenses:[]).map(e=>String(e&&e.payer||'').trim()).filter(Boolean);
-      const japanese=/나고야|도쿄|오사카|교토|후쿠오카|삿포로|일본/.test(String(activeTrip?.destination||''));
-      const base=declared.length>=2?declared:topbar.length>=2?topbar:(japanese?['재원','주희']:[currentVoter||'나','동행']);
-      return [...new Set([...base,...used])];
-    }
     function expenseTally(){
       const list=Array.isArray(activeTrip?.expenses)?activeTrip.expenses:[];
-      const byPayer=new Map(),byCategory=new Map();let total=0,count=0;
+      const byCategory=new Map();let total=0,count=0;
       for(const item of list){
         const amount=Math.round(Number(item&&item.amountJpy)||0);
         if(!(amount>0))continue;
-        const payer=String(item.payer||'').trim()||'미지정',category=EXPENSE_CATS.includes(item.category)?item.category:'기타';
-        total+=amount;count+=1;byPayer.set(payer,(byPayer.get(payer)||0)+amount);byCategory.set(category,(byCategory.get(category)||0)+amount);
+        const category=EXPENSE_CATS.includes(item.category)?item.category:'기타';
+        total+=amount;count+=1;byCategory.set(category,(byCategory.get(category)||0)+amount);
       }
-      return {list,total,count,byPayer,byCategory};
+      return {list,total,count,byCategory};
     }
-    // 2인 여행은 반씩, 멤버가 더 있으면 같은 금액씩 — 적게 낸 사람 → 많이 낸 사람으로 옮긴다.
-    function expensePlan(){
-      const {total,byPayer}=expenseTally(),members=expenseMembers(),heads=Math.max(2,members.length),transfers=[];
-      if(!total||members.length<2)return {transfers,total,heads,members};
-      const share=total/heads,balance=members.map(name=>({name,diff:(byPayer.get(name)||0)-share})).sort((a,b)=>b.diff-a.diff);
-      const debtors=balance.filter(x=>x.diff<0).map(x=>({name:x.name,need:-x.diff}));
-      for(const receiver of balance.filter(x=>x.diff>0)){
-        let left=receiver.diff;
-        for(const debtor of debtors){
-          if(left<1)break;
-          if(debtor.need<1)continue;
-          const amount=Math.min(left,debtor.need);
-          if(amount>=1){transfers.push({from:debtor.name,to:receiver.name,amount:Math.round(amount)});debtor.need-=amount;left-=amount}
+    // 여행 일차 → 날짜. days[].date 는 '12.10' 형식이고, 연도는 여행 시작일에서 가져온다(연말→연초도 넘어간다).
+    function expenseDays(){
+      const list=Array.isArray(activeTrip?.days)?activeTrip.days:[];
+      const start=activeTrip?.start?new Date(activeTrip.start+'T00:00:00'):null;
+      let year=start&&!Number.isNaN(start.getTime())?start.getFullYear():new Date().getFullYear();
+      let previousMonth=null;
+      return list.map((day,index)=>{
+        const matched=/^(\d{1,2})\.(\d{1,2})$/.exec(String(day&&day.date||''));
+        let month=matched?Number(matched[1]):0,dateNumber=matched?Number(matched[2]):0;
+        if(!month&&start&&!Number.isNaN(start.getTime())){
+          const shifted=new Date(start.getTime());shifted.setDate(shifted.getDate()+index);
+          year=shifted.getFullYear();month=shifted.getMonth()+1;dateNumber=shifted.getDate();
         }
-      }
-      return {transfers,total,heads,members};
+        if(!month)return {index,label:(index+1)+'일차',short:'',iso:''};
+        if(previousMonth!=null&&month<previousMonth-6)year+=1;
+        previousMonth=month;
+        return {index,label:(index+1)+'일차',short:month+'.'+String(dateNumber).padStart(2,'0'),iso:year+'-'+String(month).padStart(2,'0')+'-'+String(dateNumber).padStart(2,'0')};
+      });
     }
-    const expenseSignature=plan=>plan.transfers.map(t=>`${t.from}>${t.to}:${t.amount}`).join('|')+'@'+(plan.total||0);
+    // 지출 시각의 '기기 기준' 날짜(UTC 문자열을 그대로 자르면 하루가 밀린다).
+    function expenseLocalIso(value){
+      const date=value instanceof Date?value:new Date(value);
+      if(Number.isNaN(date.getTime()))return '';
+      return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+    }
+    function expenseDayIndex(iso,days){
+      if(!iso||!days.length)return -1;
+      const exact=days.findIndex(day=>day.iso===iso);
+      if(exact>=0)return exact;
+      const first=days[0].iso,last=days[days.length-1].iso;
+      if(first&&iso<first)return 0;
+      if(last&&iso>last)return days.length-1;
+      let nearest=0;
+      days.forEach((day,index)=>{if(day.iso&&day.iso<=iso)nearest=index});
+      return nearest;
+    }
+    // 그래프 값: 카테고리별로 일차에 나눠 담고(일별), 누적 모드면 앞에서부터 더한다.
+    function expenseSeries(){
+      const days=expenseDays(),daily={};
+      EXPENSE_CATS.forEach(category=>{daily[category]=days.map(()=>0)});
+      for(const item of expenseTally().list){
+        const amount=Math.round(Number(item&&item.amountJpy)||0);
+        if(!(amount>0))continue;
+        const category=EXPENSE_CATS.includes(item.category)?item.category:null;
+        if(!category)continue;
+        const index=expenseDayIndex(expenseLocalIso(item.createdAt),days);
+        if(index<0)continue;
+        daily[category][index]+=amount;
+      }
+      const series={};
+      EXPENSE_CATS.forEach(category=>{
+        let running=0;
+        series[category]=daily[category].map(value=>{
+          running+=value;
+          return expenseDraft.chartMode==='daily'?value:running;
+        });
+      });
+      return {days,daily,series};
+    }
+    function expenseAxisStep(value){
+      const target=Math.max(1,Number(value)||0);
+      const power=Math.pow(10,Math.floor(Math.log10(target)));
+      for(const candidate of [1,2,2.5,5,10]){
+        const step=candidate*power;
+        if(step>=target)return step;
+      }
+      return 10*power;
+    }
+    function expenseAxisLabel(value){
+      const number=Number(value)||0;
+      if(!number)return '0';
+      if(number>=10000)return String(Math.round(number/1000)/10).replace(/\.0$/,'')+'만';
+      if(number>=1000)return String(Math.round(number/100)/10).replace(/\.0$/,'')+'천';
+      return String(Math.round(number));
+    }
+    function expenseChartMarkup(series,days){
+      if(!days.length)return '<p class="expense-chart-empty">여행 일차가 없어 그래프를 그릴 수 없어요.</p>';
+      const W=340,H=134,L=30,R=10,T=8,PH=82,count=days.length;
+      let peak=0;
+      EXPENSE_CATS.forEach(category=>series[category].forEach(value=>{if(value>peak)peak=value}));
+      const step=expenseAxisStep(peak/4),top=step*4;
+      const xAt=index=>count===1?L+(W-L-R)/2:L+index*(W-L-R)/(count-1);
+      const yAt=value=>T+PH*(1-(top?Math.min(1,value/top):0));
+      const focus=expenseDraft.chartFocus;
+      const grid=[0,1,2,3,4].map(k=>{
+        const value=step*k,y=yAt(value);
+        return `<line x1="${L-4}" y1="${y.toFixed(1)}" x2="${W-R}" y2="${y.toFixed(1)}" class="expense-chart-grid${k===0?' base':''}"/>`+
+          `<text x="${L-8}" y="${(y+3.4).toFixed(1)}" class="expense-chart-axis" text-anchor="end">${expenseAxisLabel(value)}</text>`;
+      }).join('');
+      const labelStep=count>6?Math.ceil(count/5):1;
+      const xLabels=days.map((day,index)=>{
+        if(index%labelStep&&index!==count-1)return '';
+        const anchor=index===0?'start':index===count-1?'end':'middle';
+        return `<text x="${xAt(index).toFixed(1)}" y="${T+PH+15}" class="expense-chart-xlabel" text-anchor="${anchor}">${esc(day.label)}</text>`+
+          `<text x="${xAt(index).toFixed(1)}" y="${T+PH+26}" class="expense-chart-xdate" text-anchor="${anchor}">${esc(day.short)}</text>`;
+      }).join('');
+      const lines=EXPENSE_CATS.map(category=>{
+        const values=series[category],color=EXPENSE_CAT_COLOR[category],dim=focus&&focus!==category;
+        const points=values.map((value,index)=>`${xAt(index).toFixed(1)},${yAt(value).toFixed(1)}`).join(' ');
+        const dots=dim?'':values.map((value,index)=>value>0?`<circle cx="${xAt(index).toFixed(1)}" cy="${yAt(value).toFixed(1)}" r="${index===count-1?3.2:2.4}" fill="${color}" stroke="#fff" stroke-width="${index===count-1?1.6:0}"/>`:'').join('');
+        return `<polyline class="expense-chart-line" data-cat="${category}" points="${points}" fill="none" stroke="${color}" stroke-width="${focus===category?2.8:2.2}" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="${dim?'0.14':'1'}"/>${dots}`;
+      }).join('');
+      const aria=`${days[0].label}부터 ${days[count-1].label}까지 카테고리별 ${expenseDraft.chartMode==='daily'?'일별':'누적'} 지출 그래프`;
+      return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="${esc(aria)}">${grid}${xLabels}${lines}</svg>`;
+    }
+    function expenseMetaSegments(){
+      const segments=[];
+      if(Number(activeTrip?.expenseTopupJpy)>0)segments.push(`충전 ${expenseYen(activeTrip.expenseTopupJpy)}은 지출에서 제외`);
+      if(Number(activeTrip?.cardBalanceJpy)>0)segments.push(`트래블로그 잔액 ${expenseYen(activeTrip.cardBalanceJpy)}`);
+      return segments;
+    }
+    function expenseTripRange(){
+      const days=expenseDays().filter(day=>day.short);
+      if(days.length>=2)return days[0].short+' – '+days[days.length-1].short;
+      const start=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(activeTrip?.start||''));
+      const end=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(activeTrip?.end||''));
+      const short=matched=>matched?Number(matched[2])+'.'+matched[3]:'';
+      return [short(start),short(end)].filter(Boolean).join(' – ');
+    }
     function expenseStamp(value){
       const date=value instanceof Date?value:new Date(value);
       if(Number.isNaN(date.getTime()))return '날짜 없음';
@@ -1980,66 +2113,54 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     }
     function renderExpenses(){
       if(!$('#expensesPanel'))return;
-      const rate=yenKrwRate(),tally=expenseTally(),plan=expensePlan(),heads=Math.max(2,plan.members.length);
-      $('#expensesRate').textContent='1엔 '+rate.toFixed(2)+'원';
-      $('#expensesSub').textContent=`${heads}명 여행 경비 · 엔화로 적으면 원화로 바로`;
-      // 총 지출 카드 — 낸 사람 비율 바 + 각자 합계
-      const payers=[...tally.byPayer.keys()];
-      const segments=payers.map((name,index)=>`<i style="width:${tally.total?(tally.byPayer.get(name)/tally.total*100).toFixed(2):0}%;background:${EXPENSE_PAYER_COLOR[index%EXPENSE_PAYER_COLOR.length]}"></i>`).join('');
-      const legend=payers.map((name,index)=>`<span><i style="background:${EXPENSE_PAYER_COLOR[index%EXPENSE_PAYER_COLOR.length]}"></i>${esc(name)} ${expenseYen(tally.byPayer.get(name))}</span>`).join('');
+      const tally=expenseTally();
+      $('#expensesRate').textContent='1엔 '+yenKrwRate().toFixed(2)+'원';
+      const range=expenseTripRange();
+      $('#expensesSub').textContent=[activeTrip?.name||'여행',range].filter(Boolean).join(' · ');
+      // 총 지출 — 사람별 비율 없이 합계·건수·(있으면) 잔액 한 줄만
+      const meta=expenseMetaSegments();
       $('#expensesTotal').innerHTML=`<section class="expense-total">
         <div class="expense-total-top"><span>총 지출</span><span>${tally.count}건</span></div>
         <div class="expense-total-line"><strong>${expenseYen(tally.total)}</strong><span>${expenseKrw(tally.total)}</span></div>
-        ${tally.total?`<div class="expense-bar" role="img" aria-label="낸 사람 비율">${segments}</div><div class="expense-bar-legend">${legend}</div>`:'<p class="expense-total-empty">아직 적은 지출이 없어요. 아래에서 첫 지출을 추가해 보세요.</p>'}
+        ${meta.length?`<div class="expense-total-meta">${meta.map(segment=>`<span>${esc(segment)}</span>`).join('<i class="dot" aria-hidden="true"></i>')}</div>`:''}
+        ${tally.total?'':'<p class="expense-total-empty">캡처를 불러오거나 아래에서 직접 적어 보세요.</p>'}
       </section>`;
-      // 1/2 정산 카드 — 적게 낸 사람 → 더 낸 사람
-      const settled=activeTrip.expenseSettlement&&typeof activeTrip.expenseSettlement==='object'?activeTrip.expenseSettlement:null;
-      const signature=expenseSignature(plan),settledNow=!!(settled&&settled.signature===signature);
-      let settleHtml='';
-      if(plan.transfers.length){
-        const lines=plan.transfers.map(t=>`<span class="expense-settle-line">${esc(t.from)} → ${esc(t.to)} <b>${expenseYen(t.amount)}</b></span>`).join('');
-        if(settledNow){
-          settleHtml=`<section class="expense-settle settled"><div class="expense-settle-copy"><span class="expense-settle-label">정산 완료</span>${lines}<span class="expense-settle-sub">${expenseStamp(settled.at)}에 완료 표시했어요</span></div><button type="button" class="expense-settle-btn ghost" id="expenseSettleUndo">되돌리기</button></section>`;
-        }else{
-          const first=plan.transfers[0],sub=plan.transfers.length===1?`${expenseKrw(first.amount)} · ${esc(first.from)} 님이 조금 적게 냈어요`:`${heads}명 똑같이 나눈 기준 · ${plan.transfers.length}건`;
-          settleHtml=`<section class="expense-settle"><div class="expense-settle-copy"><span class="expense-settle-label">${settled?'지출이 바뀌었어요 · 다시 계산':'반씩 정산하면'}</span>${lines}<span class="expense-settle-sub">${sub}</span></div><button type="button" class="expense-settle-btn" id="expenseSettleDone">${settled?'다시 정산':'정산 완료'}</button></section>`;
-        }
-      }else if(tally.total){
-        settleHtml=`<section class="expense-settle flat"><div class="expense-settle-copy"><span class="expense-settle-label">반씩 정산</span><span class="expense-settle-line"><b>서로 똑같이 냈어요</b></span><span class="expense-settle-sub">지금은 정산할 금액이 없어요</span></div></section>`;
-      }
-      $('#expensesSettle').innerHTML=settleHtml;
-      if($('#expenseSettleDone'))$('#expenseSettleDone').onclick=settleExpenses;
-      if($('#expenseSettleUndo'))$('#expenseSettleUndo').onclick=unsettleExpenses;
-      // 카테고리 4칸 — 누르면 그 카테고리만 보기
-      $('#expensesCats').innerHTML=EXPENSE_CATS.map(category=>{
-        const active=expenseDraft.filter===category;
-        return `<button type="button" class="expense-cat${active?' active':''}" data-cat="${category}" aria-pressed="${active}"><span class="expense-cat-top"><i style="background:${EXPENSE_CAT_COLOR[category]}"></i>${category}</span><b>${expenseYen(tally.byCategory.get(category)||0)}</b></button>`;
+      // 카테고리별 누적/일별 그래프
+      const series=expenseSeries();
+      $('#expensesChart').innerHTML=expenseChartMarkup(series.series,series.days);
+      $('#expensesChartToggle')?.querySelectorAll('[data-range]').forEach(button=>{
+        const active=button.dataset.range===expenseDraft.chartMode;
+        button.setAttribute('aria-pressed',String(active));
+        button.classList.toggle('active',active);
+      });
+      $('#expensesLegend').innerHTML=EXPENSE_CATS.map(category=>{
+        const active=expenseDraft.chartFocus===category;
+        return `<button type="button" class="expense-legend-item${active?' active':''}" data-cat="${category}" aria-pressed="${active}"><i style="background:${EXPENSE_CAT_COLOR[category]}" aria-hidden="true"></i><em>${category}</em><b>${expenseYen(tally.byCategory.get(category)||0)}</b></button>`;
       }).join('');
-      $('#expensesCats').querySelectorAll('[data-cat]').forEach(button=>button.onclick=()=>{expenseDraft.filter=expenseDraft.filter===button.dataset.cat?null:button.dataset.cat;renderExpenses()});
-      // 최근 지출 — 날짜/시간 · 카테고리 · 금액(엔) · 결제자 · 삭제
+      // 최근 지출 — 필터(범례 탭)와 접기/펼치기
       const filter=expenseDraft.filter;
       const rows=[...tally.list]
         .filter(item=>!filter||(EXPENSE_CATS.includes(item.category)?item.category:'기타')===filter)
         .sort((a,b)=>(Date.parse(b&&b.createdAt)||0)-(Date.parse(a&&a.createdAt)||0));
-      $('#expensesListAll').textContent=filter?filter+'만 보기 해제':'전체';
-      $('#expensesListAll').classList.toggle('active',!!filter);
-      $('#expensesList').innerHTML=rows.length?rows.map(item=>{
+      const shown=expenseDraft.listOpen?rows:rows.slice(0,3);
+      const listToggle=$('#expensesListAll');
+      if(listToggle){
+        if(filter){listToggle.textContent=filter+'만 보기 해제';listToggle.hidden=false}
+        else if(rows.length>3){listToggle.textContent=expenseDraft.listOpen?'접기':'전체 '+rows.length+'건';listToggle.hidden=false}
+        else{listToggle.hidden=true}
+        listToggle.classList.toggle('active',!!filter);
+      }
+      $('#expensesList').innerHTML=shown.length?shown.map(item=>{
         const title=esc(String(item.title||'지출')),category=EXPENSE_CATS.includes(item.category)?item.category:'기타';
         return `<div class="expense-row" data-id="${esc(String(item.id||''))}">
           <div class="expense-row-main"><strong>${title}</strong><span>${expenseStamp(item.createdAt)} · ${esc(category)}</span></div>
-          <div class="expense-row-side"><b>${expenseYen(item.amountJpy)}</b><span>${esc(String(item.payer||'미지정'))} 결제</span></div>
+          <div class="expense-row-side"><b>${expenseYen(item.amountJpy)}</b></div>
           <button type="button" class="expense-del" data-del="${esc(String(item.id||''))}" aria-label="${title} 삭제"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg></button>
         </div>`;
-      }).join(''):`<p class="expense-empty">${filter?esc(filter)+' 지출이 아직 없어요.':'지출을 추가하면 날짜 · 카테고리 · 결제자와 함께 여기에 쌓여요.'}</p>`;
+      }).join(''):`<p class="expense-empty">${filter?esc(filter)+' 지출이 아직 없어요.':tally.count?'이 카테고리에는 아직 지출이 없어요.':'지출을 추가하면 날짜 · 카테고리와 함께 여기에 쌓여요.'}</p>`;
       $('#expensesList').querySelectorAll('[data-del]').forEach(button=>button.onclick=()=>deleteExpense(button.dataset.del));
-      // 입력 폼 — 낸 사람·카테고리 칩 (선택은 expenseDraft 에만 둔다: 입력 중 재렌더 없음)
-      const members=plan.members;
-      if(!members.includes(expenseDraft.payer))expenseDraft.payer=members[0]||'';
-      $('#expensePayers').innerHTML=members.map(name=>`<button type="button" class="expense-chip payer${expenseDraft.payer===name?' active':''}" data-payer="${esc(name)}" aria-pressed="${expenseDraft.payer===name}">${esc(name)}</button>`).join('');
-      $('#expensePayers').querySelectorAll('[data-payer]').forEach(button=>button.onclick=()=>{expenseDraft.payer=button.dataset.payer;renderExpenses()});
+      // 빠른 입력 — 사람 선택 없이 카테고리 4칩
       $('#expenseChips').innerHTML=EXPENSE_CATS.map(category=>`<button type="button" class="expense-chip${expenseDraft.category===category?' active':''}" data-pick="${category}" aria-pressed="${expenseDraft.category===category}">${category}</button>`).join('');
-      $('#expenseChips').querySelectorAll('[data-pick]').forEach(button=>button.onclick=()=>{expenseDraft.category=button.dataset.pick;renderExpenses()});
-      $('#expenseFormHint').textContent=heads>1?heads+'명 반씩 나눠 계산':'혼자 쓴 경비';
       updateExpensePreview();
     }
     function updateExpensePreview(){
@@ -2053,7 +2174,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       if(!(amount>0)){toast('엔화 금액을 숫자로 입력해 주세요');amountField.focus();return}
       const category=EXPENSE_CATS.includes(expenseDraft.category)?expenseDraft.category:'식비',title=String(titleField.value||'').trim()||category+' 지출';
       if(!Array.isArray(activeTrip.expenses))activeTrip.expenses=[];
-      activeTrip.expenses.push({id:'expense-'+crypto.randomUUID(),title,amountJpy:amount,payer:expenseDraft.payer||expenseMembers()[0]||'재원',category,createdAt:new Date().toISOString()});
+      activeTrip.expenses.push({id:'expense-'+crypto.randomUUID(),title,amountJpy:amount,category,createdAt:new Date().toISOString()});
       save();
       amountField.value='';titleField.value='';
       renderExpenses();
@@ -2066,16 +2187,299 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
       if(!confirm(`“${item.title||'지출'}” ${expenseYen(item.amountJpy)} 기록을 삭제할까요?`))return;
       list.splice(index,1);save();renderExpenses();toast('지출 기록을 삭제했어요');
     }
-    function settleExpenses(){
-      const plan=expensePlan();if(!plan.transfers.length)return;
-      activeTrip.expenseSettlement={at:Date.now(),signature:expenseSignature(plan),totalJpy:plan.total,transfers:plan.transfers.map(t=>({...t}))};
-      save();renderExpenses();toast('정산 완료로 표시했어요');
+    // ── 거래내역 캡처 → OCR → 확인 시트 ──────────────────────────────────────────
+    let tesseractScriptPromise=null,tesseractWorker=null;
+    function loadTesseract(){
+      if(window.Tesseract)return Promise.resolve(window.Tesseract);
+      if(tesseractScriptPromise)return tesseractScriptPromise;
+      tesseractScriptPromise=new Promise((resolve,reject)=>{
+        let settled=false;
+        const finish=(ok,error)=>{
+          if(settled)return;settled=true;clearTimeout(timer);
+          if(ok&&window.Tesseract)resolve(window.Tesseract);
+          else reject(error||new Error('OCR 을 불러오지 못했어요'));
+        };
+        const timer=setTimeout(()=>finish(!!window.Tesseract,new Error('OCR 을 불러오는 데 오래 걸려요')),25000);
+        let script=document.getElementById('tesseractScript');
+        if(script){script.addEventListener('load',()=>finish(!!window.Tesseract));script.addEventListener('error',()=>finish(false));return}
+        script=document.createElement('script');
+        script.id='tesseractScript';script.src=TESSERACT_SRC;script.async=true;script.crossOrigin='anonymous';
+        script.addEventListener('load',()=>finish(!!window.Tesseract));
+        script.addEventListener('error',()=>finish(false,new Error('OCR 을 내려받지 못했어요')));
+        document.head.appendChild(script);
+      }).catch(error=>{tesseractScriptPromise=null;throw error});
+      return tesseractScriptPromise;
     }
-    function unsettleExpenses(){activeTrip.expenseSettlement=null;save();renderExpenses();toast('정산 표시를 되돌렸어요')}
+    async function captureWorker(){
+      if(tesseractWorker)return tesseractWorker;
+      const Tesseract=await loadTesseract();
+      tesseractWorker=await Tesseract.createWorker('kor+eng',1,{langPath:TESSERACT_LANG_PATH});
+      return tesseractWorker;
+    }
+    function terminateCaptureWorker(){
+      const worker=tesseractWorker;tesseractWorker=null;
+      try{worker&&worker.terminate().catch(()=>{})}catch(e){}
+    }
+    // 사진은 기기 안에서만 쓴다. 긴 변 1400px 로 줄여 OCR 속도와 정확도를 함께 잡는다.
+    function captureImageSource(file){
+      return new Promise((resolve,reject)=>{
+        const url=URL.createObjectURL(file),image=new Image();
+        image.onload=()=>{
+          try{
+            const naturalWidth=image.naturalWidth||1400,naturalHeight=image.naturalHeight||1400;
+            const scale=Math.min(1,1400/naturalWidth);
+            const width=Math.max(1,Math.round(naturalWidth*scale)),height=Math.max(1,Math.round(naturalHeight*scale));
+            const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+            const context=canvas.getContext('2d');context.fillStyle='#fff';context.fillRect(0,0,width,height);
+            context.drawImage(image,0,0,width,height);
+            resolve(canvas.toDataURL('image/jpeg',0.92));
+          }catch(error){reject(error)}
+        };
+        image.onerror=()=>reject(new Error('사진을 열지 못했어요'));
+        image.src=url;
+      });
+    }
+    function captureSubText(){
+      const count=captureState.files.length;
+      if(captureState.busy)return `거래내역 캡처 ${count}장 · ${captureState.phase||'사진에서 내역 읽는 중…'}`;
+      if(captureState.error)return `거래내역 캡처 ${count}장 · 사진에서 글자를 읽지 못했어요`;
+      return `거래내역 캡처 ${count}장 · <b>${captureState.items.length}건</b> 인식`;
+    }
+    function captureRowStamp(item){
+      const matched=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(item.date||''));
+      if(!matched)return '날짜 없음';
+      return Number(matched[2])+'.'+matched[3]+(item.time?' '+item.time:'');
+    }
+    function renderCaptureSheet(){
+      if(!$('#captureSheet'))return;
+      $('#captureSub').innerHTML=captureSubText();
+      const thumbs=$('#captureThumbs');
+      if(thumbs){
+        const first=captureState.files[0];
+        const firstName=first?String(first.name||'캡처').replace(/\.[^.]+$/,'').replace(/[-_][0-9a-f]{8,}$/i,''):'캡처';
+        const shortName=firstName.length>16?firstName.slice(0,16)+'…':firstName;
+        const labelText=first?`${esc(shortName)}${captureState.files.length>1?' 외 '+(captureState.files.length-1)+'장':''}`:'';
+        thumbs.innerHTML=captureState.thumbs.slice(0,3).map(url=>`<span class="capture-thumb">${url?`<img src="${url}" alt="">`:''}</span>`).join('')+
+          `<button type="button" class="capture-thumb-add" id="captureAddMore" aria-label="사진 더 고르기"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg></button>`+
+          (labelText?`<span class="capture-thumb-copy"><b>${labelText}</b>${captureState.busy?'읽는 중…':'하나머니 · 트래블로그'}</span>`:'');
+      }
+      const note=$('#captureNote');
+      if(note){
+        const lines=[];
+        if(Number(captureState.topupJpy)>0)lines.push('충전 내역은 지출에서 빼고');
+        if(Number(captureState.balanceJpy)>0)lines.push(`잔액(${expenseYen(captureState.balanceJpy)})만 맞춰 둘게요`);
+        note.hidden=!lines.length;
+        note.innerHTML=lines.length?`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.2"/></svg><span>${esc(lines.join(' '))}</span>`:'';
+      }
+      const rows=$('#captureRows');
+      if(rows){
+        if(captureState.busy&&!captureState.items.length){
+          rows.innerHTML='<div class="capture-loading"><span class="capture-spinner" aria-hidden="true"></span><span>사진에서 내역 읽는 중…</span></div>';
+        }else if(!captureState.items.length){
+          rows.innerHTML=`<p class="capture-empty">${captureState.error?'사진에서 글자를 읽지 못했어요. 아래 빠른 입력에서 직접 적어 주세요.':'내역을 찾지 못했어요. 사진을 다시 고르거나 직접 적어 주세요.'}</p>`;
+        }else{
+          rows.innerHTML=captureState.items.map(item=>{
+            const category=EXPENSE_CATS.includes(item.category)?item.category:'식비';
+            const color=EXPENSE_CAT_COLOR[category]||'#9aa5b5';
+            const tint=color+'22',ink=EXPENSE_CAT_INK[category]||'#5a6779';
+            return `<div class="capture-row${item.checked?'':' off'}" data-row="${esc(item.id)}">
+              <button type="button" class="capture-check${item.checked?' on':''}" data-check="${esc(item.id)}" role="checkbox" aria-checked="${item.checked}" ${item.isTopup?'aria-disabled="true" tabindex="-1"':''} aria-label="${esc(item.title)} ${item.checked?'선택 해제':'선택'}">
+                ${item.checked?'<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.4 6.3l2.3 2.3L9.4 3.4"/></svg>':''}
+              </button>
+              <div class="capture-main">
+                <div class="capture-title">${item.isTopup?`<span class="capture-title-text">${esc(item.title)}</span><span class="capture-tag">충전</span>`:`<input class="capture-title-input" data-title="${esc(item.id)}" value="${esc(item.title)}" maxlength="40" aria-label="내역명 수정" />`}</div>
+                <div class="capture-rowmeta"><time>${esc(captureRowStamp(item))}</time>
+                  ${item.isTopup?'<span class="capture-chip muted">지출 아님</span>':`<button type="button" class="capture-chip" data-chip="${esc(item.id)}" style="background:${tint};color:${ink}" aria-label="${category} — 눌러서 카테고리 바꾸기"><i style="background:${color}" aria-hidden="true"></i>${category}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>`}
+                </div>
+              </div>
+              <div class="capture-amount">${expenseYen(item.amountJpy)}</div>
+            </div>`;
+          }).join('');
+        }
+      }
+      const hint=$('#captureHint');
+      if(hint)hint.hidden=!captureState.items.some(item=>!item.isTopup);
+      const selected=captureState.items.filter(item=>item.checked);
+      const sum=selected.reduce((total,item)=>total+(Number(item.amountJpy)||0),0);
+      const sumLabel=$('#captureSum');if(sumLabel)sumLabel.textContent=expenseYen(sum);
+      const cta=$('#captureAdd');
+      if(cta){
+        if(captureState.busy){cta.textContent='사진 읽는 중…';cta.disabled=true}
+        else if(selected.length){cta.textContent=`${selected.length}건 일괄 추가`;cta.disabled=false}
+        else if(Number(captureState.balanceJpy)>0){cta.textContent='잔액만 저장';cta.disabled=false}
+        else{cta.textContent='0건 일괄 추가';cta.disabled=true}
+      }
+    }
+    function openCaptureSheet(){
+      const sheet=$('#captureSheet');if(!sheet)return;
+      renderCaptureSheet();
+      if(!sheet.open)sheet.showModal();
+    }
+    function resetCaptureState(){
+      captureState.token+=1;
+      captureState.thumbs.forEach(url=>{if(url){try{URL.revokeObjectURL(url)}catch(e){}}});
+      Object.assign(captureState,{files:[],thumbs:[],texts:[],items:[],balanceJpy:null,topupJpy:0,busy:false,error:'',phase:''});
+      terminateCaptureWorker();
+    }
+    function closeCaptureSheet(){
+      const sheet=$('#captureSheet');
+      if(sheet&&sheet.open)sheet.close();
+      else resetCaptureState();
+    }
+    function mergeCaptureTexts(texts){
+      const parser=window.ViagoExpenseCapture;
+      const merged=[];let balance=null,topup=0;
+      texts.forEach(text=>{
+        if(!parser||!String(text||'').trim())return;
+        const parsed=parser.parseCaptureText(text,{trip:activeTrip,rate:yenKrwRate()});
+        parsed.items.forEach(item=>{
+          const key=[item.date,item.time,item.title,item.amountJpy].join('|');
+          if(merged.some(existing=>existing.key===key))return;
+          merged.push(Object.assign({},item,{key,checked:!item.isTopup}));
+        });
+        if(!balance&&Number(parsed.balanceJpy)>0)balance=parsed.balanceJpy;
+        topup+=Number(parsed.topupJpy)||0;
+      });
+      merged.sort((a,b)=>{
+        if(a.isTopup!==b.isTopup)return a.isTopup?1:-1;
+        return ((a.date||'')+' '+(a.time||'')).localeCompare((b.date||'')+' '+(b.time||''));
+      });
+      merged.forEach((item,index)=>{item.id='cap-'+index});
+      captureState.items=merged.slice(0,60);
+      captureState.balanceJpy=balance;
+      captureState.topupJpy=topup;
+    }
+    async function runCaptureOcr(){
+      const token=(captureState.token+=1);
+      captureState.busy=true;captureState.error='';captureState.phase='';
+      renderCaptureSheet();
+      let worker=null;
+      try{
+        worker=await captureWorker();
+        const texts=captureState.texts.slice();
+        for(let index=0;index<captureState.files.length;index+=1){
+          if(token!==captureState.token||!captureState.files[index])return;
+          if(!texts[index]){
+            captureState.phase=`사진에서 내역 읽는 중… (${index+1}/${captureState.files.length})`;
+            renderCaptureSheet();
+            const source=await captureImageSource(captureState.files[index]);
+            if(token!==captureState.token)return;
+            const result=await worker.recognize(source);
+            if(token!==captureState.token)return;
+            texts[index]=String(result&&result.data&&result.data.text||'');
+          }
+        }
+        if(token!==captureState.token)return;
+        captureState.texts=texts;
+        mergeCaptureTexts(texts);
+        captureState.busy=false;
+        renderCaptureSheet();
+      }catch(error){
+        if(token!==captureState.token)return;
+        captureState.busy=false;
+        captureState.error=String(error&&error.message||'사진에서 글자를 읽지 못했어요');
+        terminateCaptureWorker();
+        renderCaptureSheet();
+        toast('사진에서 글자를 읽지 못했어요. 직접 입력해 주세요');
+      }
+    }
+    async function handleCaptureFiles(fileList){
+      const files=[...fileList].filter(file=>/^image\//.test(String(file&&file.type||''))).slice(0,6);
+      if(!files.length){toast('사진 파일을 골라 주세요');return}
+      files.forEach(file=>{
+        captureState.files.push(file);
+        try{captureState.thumbs.push(URL.createObjectURL(file))}catch(e){captureState.thumbs.push('')}
+      });
+      openCaptureSheet();
+      await runCaptureOcr();
+    }
+    function toggleCaptureCheck(id){
+      const item=captureState.items.find(entry=>entry.id===id);
+      if(!item||item.isTopup)return;
+      item.checked=!item.checked;
+      renderCaptureSheet();
+    }
+    function cycleCaptureCategory(id){
+      const item=captureState.items.find(entry=>entry.id===id);
+      if(!item||item.isTopup)return;
+      const index=EXPENSE_CATS.indexOf(item.category);
+      item.category=EXPENSE_CATS[(index+1)%EXPENSE_CATS.length];
+      item.checked=true;
+      renderCaptureSheet();
+    }
+    function captureCreatedAt(item){
+      const date=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(item.date||''));
+      if(!date)return new Date().toISOString();
+      const time=/^(\d{2}):(\d{2})$/.exec(String(item.time||''));
+      const built=new Date(Number(date[1]),Number(date[2])-1,Number(date[3]),time?Number(time[1]):12,time?Number(time[2]):0,0);
+      return Number.isNaN(built.getTime())?new Date().toISOString():built.toISOString();
+    }
+    function applyCapture(){
+      const selected=captureState.items.filter(item=>item.checked&&Number(item.amountJpy)>0);
+      const balance=Number(captureState.balanceJpy)>0?Math.round(captureState.balanceJpy):0;
+      if(!selected.length&&!balance)return;
+      if(!Array.isArray(activeTrip.expenses))activeTrip.expenses=[];
+      selected.forEach(item=>{
+        const category=EXPENSE_CATS.includes(item.category)?item.category:'식비';
+        activeTrip.expenses.push({id:'expense-'+crypto.randomUUID(),title:String(item.title||'').trim()||category+' 지출',amountJpy:Math.round(item.amountJpy),category,createdAt:captureCreatedAt(item)});
+      });
+      if(balance)activeTrip.cardBalanceJpy=balance;
+      if(Number(captureState.topupJpy)>0)activeTrip.expenseTopupJpy=Math.round(captureState.topupJpy);
+      save();
+      if(selected.length)toast(`${selected.length}건 지출을 추가했어요`);
+      else toast('트래블로그 잔액을 저장했어요');
+      closeCaptureSheet();
+      renderExpenses();
+    }
     function bindExpenseForm(){
       $('#expenseForm')?.addEventListener('submit',event=>{event.preventDefault();addExpense()});
       $('#expenseAmount')?.addEventListener('input',updateExpensePreview);
-      $('#expensesListAll')?.addEventListener('click',()=>{expenseDraft.filter=null;renderExpenses()});
+      $('#expensesListAll')?.addEventListener('click',()=>{
+        if(expenseDraft.filter){expenseDraft.filter=null;expenseDraft.chartFocus=null}
+        else expenseDraft.listOpen=!expenseDraft.listOpen;
+        renderExpenses();
+      });
+      $('#expensesChartToggle')?.addEventListener('click',event=>{
+        const button=event.target.closest('[data-range]');if(!button)return;
+        expenseDraft.chartMode=button.dataset.range==='daily'?'daily':'cumulative';
+        renderExpenses();
+      });
+      $('#expensesLegend')?.addEventListener('click',event=>{
+        const button=event.target.closest('[data-cat]');if(!button)return;
+        const category=button.dataset.cat,on=expenseDraft.chartFocus!==category;
+        expenseDraft.chartFocus=on?category:null;
+        expenseDraft.filter=on?category:null;
+        expenseDraft.listOpen=false;
+        renderExpenses();
+      });
+      $('#expenseChips')?.addEventListener('click',event=>{
+        const button=event.target.closest('[data-pick]');if(!button)return;
+        expenseDraft.category=button.dataset.pick;renderExpenses();
+      });
+      $('#expenseCapture')?.addEventListener('click',()=>$('#captureInput')?.click());
+      $('#captureInput')?.addEventListener('change',event=>{
+        const files=[...(event.target.files||[])];
+        event.target.value='';
+        if(files.length)handleCaptureFiles(files);
+      });
+      $('#captureClose')?.addEventListener('click',closeCaptureSheet);
+      $('#captureSheet')?.addEventListener('close',resetCaptureState);
+      $('#captureSheet')?.addEventListener('click',event=>{if(event.target&&event.target.id==='captureSheet')closeCaptureSheet()});
+      $('#captureAdd')?.addEventListener('click',applyCapture);
+      $('#captureRows')?.addEventListener('click',event=>{
+        const check=event.target.closest('[data-check]');
+        if(check){toggleCaptureCheck(check.dataset.check);return}
+        const chip=event.target.closest('[data-chip]');
+        if(chip)cycleCaptureCategory(chip.dataset.chip);
+      });
+      $('#captureRows')?.addEventListener('input',event=>{
+        const field=event.target.closest('[data-title]');if(!field)return;
+        const item=captureState.items.find(entry=>entry.id===field.dataset.title);
+        if(item)item.title=field.value;
+      });
+      $('#captureThumbs')?.addEventListener('click',event=>{
+        if(event.target.closest('#captureAddMore'))$('#captureInput')?.click();
+      });
     }
     const tabViews=['schedule','today','expenses','exchange'];
     function panelForView(v){return{schedule:$('#itineraryPanel'),today:$('#todayPanel'),expenses:$('#expensesPanel'),map:$('#mapPanel'),exchange:$('#exchangePanel')}[v]}
@@ -2178,7 +2582,7 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
     document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(Date.now()-lastHoursRefresh>=3600000)refreshOpeningHours();if((currentView==='exchange'||currentView==='expenses')&&(!exchangeData?.fetchedAt||Date.now()-exchangeData.fetchedAt>=3600000)){loadExchange();if(currentView==='expenses')renderExpenses()}});
     registerTravelTools();
     // 서비스 워커: 새 버전을 조용히 갈아 끼우되, 화면에 짧게 알리고 필요하면 눈에 보이게 물어본다.
-    //   · 스크립트 주소에 ?v=76 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
+    //   · 스크립트 주소에 ?v=77 을 붙여, 예전 워커의 캐시(옛 auth-client)가 계속 쓰이지 않게 한다.
     //   · 새 워커가 활성화되면(controllerchange) 옛 코드가 남은 화면은 한 번 새로고침한다(코드 섞임 방지).
     //     입력 중이면 새로고침하지 않고 아래 안내 막대의 「새로고침」을 기다린다.
     if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
@@ -2210,12 +2614,12 @@ document.getElementById('markerSheet')?.addEventListener('click',event=>{if(even
         document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
         setTimeout(check,8000);
       };
-      navigator.serviceWorker.register('./service-worker.js?v=76',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
+      navigator.serviceWorker.register('./service-worker.js?v=77',{scope:'./'}).then(reg=>{adopt(reg);reg.update().catch(()=>{})}).catch(()=>{});
       markUpdated();
     }
     const prepareReorder=()=>loadSortable().then(ok=>{if(ok&&!foodMode&&!sortable)setupLongPressSort()});
     if('requestIdleCallback' in window)requestIdleCallback(prepareReorder,{timeout:1200});else setTimeout(prepareReorder,250);
   </script>
-  <script src="./journey-preview.js?v=76"></script>
+  <script src="./journey-preview.js?v=77"></script>
 </body>
 </html>

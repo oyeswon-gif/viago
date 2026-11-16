@@ -91,7 +91,7 @@ else pass('meta description');
 
 // 스플래시(apple-touch-startup-image) 파일 존재 — 2026-11-16 404 수정 확인
 const splash = [...head.matchAll(/<link\s+rel="apple-touch-startup-image"[^>]*href="([^"]+)"/g)].map(m => m[1]);
-const missingSplash = splash.map(h => h.replace(/^\//, '')).filter(f => !exists(f));
+const missingSplash = splash.map(h => h.replace(/^\//, '').replace(/\?[^/]*$/, '')).filter(f => !exists(f));  // ?v= 캐시 버스트 쿼리는 파일 경로가 아니다
 if (splash.length && missingSplash.length) fail('iOS 스플래시 파일 존재', `404 대상: ${missingSplash.join(', ')}`);
 else if (splash.length) pass('iOS 스플래시 파일 존재', `${splash.length}개`);
 else fail('iOS 스플래시', 'apple-touch-startup-image 없음(홈 화면 앱 시작 화면)');
