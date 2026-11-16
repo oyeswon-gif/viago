@@ -15,7 +15,7 @@
 | 검사 | 파일 | 막는 실수 |
 |---|---|---|
 | 문법 | `tools/ci/check-syntax.mjs` | 깨진 JS·HTML 인라인 스크립트 (M13) |
-| 껍데기 일관성 | `tools/ci/check-shell.mjs` | SW `VERSION`·`?v=` 쿼리 불일치, 캐시 목록에 없는 파일, 404 스플래시, head 중복 메타 (M4·M5·M14) |
+| 껍데기 일관성 | `tools/ci/check-shell.mjs` | SW `VERSION`·`?v=` 쿼리 불일치, 캐시 목록에 없는 파일, iOS 시작 화면 7종 누락·옛 그림, head 중복 메타 (M4·M5·M14·M23) |
 | 자산 지문 | `tools/ci/shell-fingerprint.json` | 코드만 고치고 SW 버전을 안 올려 옛 코드가 남는 문제 (M4) |
 | 비밀키·개인정보 | `tools/ci/scan-secrets.mjs` | 서비스 계정 키·토큰·전화번호·실여행 데이터 커밋 (M6) |
 | 회귀 불변식 | `tools/ci/regression.test.mjs` | 지도 카메라 덮어쓰기, 캐시 우선, 초대 게이트 숨김, idToken 누락, `<label>` 안 input, 반지 앱 경로 접근, 인라인 지도 제스처/기본값 저장 경로, 실행 화면·캡처 해상도·충전 체크 (M1·M2·M3·M7·M10·M15·M19·M23·M24) |
@@ -161,11 +161,12 @@
 - **규칙**: ① 사람 구분·1/2 정산·납부자 선택은 **화면에 없다**(v31). 저장된 `payer` 는 지우지 않지만 그리지도 않는다 — 총 지출(¥/≈₩)·건수·(있으면) `트래블로그 잔액`·`충전 제외` 한 줄만 둔다. ② 그래프는 여행 일차(`days[].date` + `start` 연도)별로 카테고리 누적값을 SVG 로 직접 그리고, `누적|일별` 토글·범례 탭(강조+목록 필터)을 함께 움직인다. 지출 시각은 **기기 기준 날짜**로 일차에 붙이고(UTC 문자열을 자르지 않는다) 여행 밖 날짜는 가까운 일차로 붙인다. ③ 거래내역 캡처(v32)는 파서가 **세 갈래**로 읽는다 — ⓐ OCR 단어의 y좌표로 행을 묶고 오른쪽 금액 열과 왼쪽 상호를 짝짓는 목록 파서(시각이 없고 `+`/`-` 부호만 있는 캡처도 읽는다) ⓑ `合計`/`小計`/`お預り`/`お釣り`/`TOTAL`/`합계`/`결제금액` 신호가 있으면 **종이 영수증 1건**(합계 금액만, 거스름·받은 돈·단품 제외) ⓒ 그래도 구조가 안 잡히면 **편집 가능한 1건 초안**(0건으로 끝나지 않는다). `잔액`·`적용환율`·`수수료`·`방문 후기` 같은 줄은 금액으로 세지 않는다. **통화 충전(`+`, `일본 JPY`, `하나머니 → JPY`)만** 지출 아님으로 체크를 풀고 `스이카 충전` 같은 교통 충전은 지출로 둔다. ④ OCR 은 `tesseract.js`(kor+eng, fast) CDN 을 **누를 때만** 불러오고, 일본어(가나·한자)·영수증 낱말·낮은 신뢰도·0건이면 **jpn+eng 로 한 번 더 읽어** 나은 결과를 쓴다. 사진은 기기 밖으로 보내지 않는다. 로드 실패·오프라인이어도 수동 입력은 그대로 동작한다. ⑤ 확인 시트에서 **이름·금액을 눌러 바로 고칠 수 있고**(금액은 `[data-amount]` 입력), `인식된 원문 보기` 로 OCR 원문을 펼쳐 숫자를 대조할 수 있다. ⑥ 일정 장소명과 부분 일치하면 철자를 보정하고 카테고리를 그 장소에 맞춘다.
 - **자동**: CI R18~R20 + `node tests/e2e/expenses-tab.mjs`(파서 단위 테스트 + 실제 `IMG_5310`·`IMG_5312` OCR + 일본 영수증 픽스처 `tests/fixtures/receipt-jp-donki.png` 를 jpn 으로 실측 + 금액 편집).
 
-## M23. 시작 화면 — iOS 스플래시는 걷고, 앱이 그리는 실행 화면(`#launchCover`) 하나만 (v33)
+## M23. 시작 화면 — iOS 스플래시 7종도 새 지구본·VIAGO 그림이어야 하고, 앱이 그리는 `#launchCover` 가 그 자리를 잇는다 (v34)
 
-- **증상**: 홈 화면 앱을 누르면 옛 파란 화살표 스플래시(`apple-touch-startup-image`)가 먼저 뜨거나, 반대로 `VIAGO / 함께 떠나는 여행` 실행 화면이 아예 안 뜬다(2026-11-16 재원 님 제보).
-- **규칙**: ① `<link rel="apple-touch-startup-image">` 는 **두지 않는다**(옛 그림이 먼저 뜨는 원인). ② 앱이 직접 그리는 실행 화면(`#launchCover`)은 **새 지구본·비행기 아이콘**(`app-icon-180.png`, 72×72·둥근 모서리 18px·은은한 그림자) + `VIAGO` + `함께 떠나는 여행` 으로 둔다. ③ `z-index:9999` — 지도(leaflet) 컨트롤이 400~1000 이라 100 으로는 위에 그려진다. ④ 첫 화면이 준비되면 `hideLaunchCover()` 로 걷고(280ms 페이드), **어떤 경로로 열려도 5초 뒤에는 반드시** 걷는다(멈춘 화면 방지). ⑤ `body.booting`+`#bootState` 문구는 그대로 둔다. ⑥ 옛 클립은 iOS 가 만든 시점의 스플래시를 기억하므로, 클립을 새로 추가해야 옛 화면이 완전히 사라진다(M20 ②).
-- **자동**: CI R21(시작 화면 링크 부재 + `#launchCover` 마크업·CSS·`hideLaunchCover` 존재 + 마크가 `app-icon-180.png` 72×72·18px + 5초 안전 타이머).
+- **증상**: 홈 화면 아이콘을 누르면 **옛 파란 화살표 화면**이 0.5초 먼저 뜬 뒤 `VIAGO / 함께 떠나는 여행` 실행 화면으로 넘어간다(2026-11-16 19:24 재원 님 화면 녹화 — 1179×2556 아이폰). v31 이 `splash/` 그림을 새 아이콘으로 바꿨고 v32 는 링크까지 걷었는데도 옛 그림이 그대로 나왔다.
+- **원인**: ① v32 에서 `apple-touch-startup-image` 7줄을 지워 iOS 가 시작 화면 그림을 아예 못 받았고, 그 자리에 **웹 클립을 만들 때 저장해 둔 옛 그림(파란 화살표)** 이 남아 있었다. ② v31 이 만든 `splash/*.png` 는 아이콘만 있고 `VIAGO`·`함께 떠나는 여행` 글자가 없어서 `#launchCover` 와 그림이 달랐다(그대로 두면 두 화면이 어긋난다).
+- **규칙**: ① `apple-touch-startup-image` **7종을 반드시 둔다** — `375x812`·`390x844`·`393x852`·`402x874`·`414x896`·`430x932`·`440x956`, 각각 `media="(device-width: …px) and (device-height: …px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"`, `414x896` 은 2배 화면(iPhone 11/XR)용으로 같은 파일을 `-webkit-device-pixel-ratio: 2` 로 한 줄 더 둔다. ② 그림은 **`tools/gen-splash.mjs` 로만 만든다** — `journey-design.css` 의 `#launchCover` 규칙과 `index.html` 의 마크업을 그대로 읽어 3배 해상도(1125×2436 … 1320×2868)로 찍으므로, 스플래시와 실행 화면의 구도·글자 위치가 어긋나지 않는다(아이콘은 `app-icon-512.png`, 글꼴은 Pretendard — iOS 의 SF/Apple SD Gothic Neo 와 가장 가까움). ③ 앱이 직접 그리는 실행 화면(`#launchCover`)은 그대로 둔다 — **새 지구본·비행기 아이콘**(`app-icon-180.png`, 72×72·둥근 모서리 18px·은은한 그림자) + `VIAGO` + `함께 떠나는 여행`, `z-index:9999`, 첫 화면이 준비되면 `hideLaunchCover()` 로 걷고(280ms 페이드) **어떤 경로로 열려도 5초 뒤에는 반드시** 걷는다. ④ 그림을 다시 그렸으면 `node tools/ci/stamp.mjs --bump` 로 `?v=` 까지 올린다 — iOS·브라우저 캐시가 옛 그림을 계속 쓰지 않게. ⑤ `splash/*.png` 는 `SHELL_FILES` 에 넣지 않는다(iOS 전용, 오프라인 캐시 불필요). ⑥ **이미 홈 화면에 있는 클립은 iOS 가 웹 클립을 만들 때의 그림을 기억한다** — 링크를 되살려도 옛 그림이 한 번 더 보이면 홈 화면 아이콘을 **지웠다가 사파리에서 다시 추가**해야 한다(재원 님 안내, M20 ②). 앱 데이터는 Firestore + localStorage 에 있어 다시 추가하면 그대로 살아난다.
+- **자동**: CI R21(7종 링크·기기 규격 media·`orientation: portrait`·파일 존재·PNG 3배 해상도·`tools/ci/splash-fingerprint.json` 지문 일치 + `#launchCover` 마크업·CSS·`hideLaunchCover`·5초 안전 타이머). 픽셀 검수는 `splash/390x844.png`·`splash/393x852.png` 를 직접 열어 본다.
 
 ## M24. 가계부 캡처 — 충전 행 체크가 막히거나, 실기기에서 지출 줄이 통째로 빠짐 (CI, v33)
 
@@ -181,7 +182,7 @@
 1. `node tools/ci/run.mjs` 통과 (문법·껍데기·비밀키·불변식).
 2. 로컬 브라우저 검사: 390×844 · 1280×900에서 일정·이동 pill·인라인 미리보기·지도 카메라 유지 + `node tests/e2e/planb-brief.mjs`(플랜 B·전날 브리핑) + `node tests/e2e/expenses-tab.mjs`(가계부 v2·캡처 OCR) + `node tests/e2e/map-default.mjs`(하루 지도 기본값).
 3. 오프라인 검사: 온라인 1회 → `setOffline(true)` 재실행에서 일정·예약 메모가 그대로, 안내 문구 표시.
-4. SW `VERSION`과 `index.html`의 `?v=`를 함께 올리고 `node tools/ci/stamp.mjs`로 지문 갱신.
+4. SW `VERSION`과 `index.html`의 `?v=`를 함께 올리고 `node tools/ci/stamp.mjs --bump`로 지문 갱신. 시작 화면 그림을 다시 그렸으면 `node tools/gen-splash.mjs` 를 먼저 돌린다(그림 지문까지 다시 기록된다).
 5. `git push origin main`.
 6. GitHub Actions `VIAGO CI` 초록 확인(`gh run list -R oyeswon-gif/viago`).
 7. GitHub Pages `built` + 라이브 sha256 일치 확인(`node tools/ci/verify-live.mjs`).

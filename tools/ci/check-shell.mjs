@@ -1,7 +1,7 @@
 // tools/ci/check-shell.mjs — 껍데기 일관성: SW 버전·?v= 쿼리·캐시 목록·manifest·head·지문
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, read, exists, shellState, shellFingerprint, report } from './lib.mjs';
+import { ROOT, read, exists, shellState, shellFingerprint, sha256, report } from './lib.mjs';
 
 const state = shellState();
 const html = state.html;
@@ -89,11 +89,51 @@ else pass('title');
 if (!/<meta\s+name="description"/i.test(head)) fail('meta description', '없음');
 else pass('meta description');
 
-// 스플래시는 v32 에서 걷어냈다 — 링크가 남아 있으면 그 파일이 실제로 있는지만 확인한다(404 방지).
-const splash = [...head.matchAll(/<link\s+rel="apple-touch-startup-image"[^>]*href="([^"]+)"/g)].map(m => m[1]);
-const missingSplash = splash.map(h => h.replace(/^\//, '').replace(/\?[^/]*$/, '')).filter(f => !exists(f));  // ?v= 캐시 버스트 쿼리는 파일 경로가 아니다
-if (missingSplash.length) fail('iOS 스플래시 파일 존재', `404 대상: ${missingSplash.join(', ')}`);
-else pass('iOS 스플래시 없음', splash.length ? `${splash.length}개 링크(파일 확인됨)` : '시작 화면 링크 없음');
+// 7b) iOS 시작 화면(v34) — #launchCover 와 같은 그림 7종이 기기 규격별 media 로 연결돼 있어야 한다.
+//     (v32 에 링크를 걷어낸 뒤 홈 화면에서 옛 파란 화살표가 먼저 떴다. 그림은 tools/gen-splash.mjs 가 다시 그린다.)
+const SPLASH_SIZES = ['375x812', '390x844', '393x852', '402x874', '414x896', '430x932', '440x956'];
+const splashTags = [...head.matchAll(/<link\s+rel="apple-touch-startup-image"[^>]*>/g)].map(m => m[0]);
+const splashBySize = new Map();
+for (const tag of splashTags) {
+  const w = (tag.match(/device-width:\s*(\d+)px/) || [])[1];
+  const h = (tag.match(/device-height:\s*(\d+)px/) || [])[1];
+  const href = (tag.match(/href="([^"]+)"/) || [])[1] || '';
+  if (!w || !h) continue;
+  const size = `${w}x${h}`;
+  if (!splashBySize.has(size)) splashBySize.set(size, []);
+  splashBySize.get(size).push({
+    href,
+    file: href.replace(/^\.?\//, '').replace(/\?[^/]*$/, ''),   // ?v= 캐시 버스트 쿼리는 파일 경로가 아니다
+    ratio: (tag.match(/-webkit-device-pixel-ratio:\s*([\d.]+)/) || [])[1] || '',
+    portrait: /orientation:\s*portrait/.test(tag)
+  });
+}
+const lackSplash = SPLASH_SIZES.filter(s => !splashBySize.has(s));
+if (lackSplash.length) fail('iOS 시작 화면 7종', `링크 없음: ${lackSplash.join(', ')}`);
+else if (splashTags.length > SPLASH_SIZES.length + 1) fail('iOS 시작 화면 링크 수', `${splashTags.length}줄 — 7종(+414x896 2배 1불)이어야 합니다`);
+else pass('iOS 시작 화면 7종', `${splashTags.length}줄 · ${SPLASH_SIZES.join(' ')}`);
+
+let splashStamp = { files: {} };
+try { splashStamp = JSON.parse(read('tools/ci/splash-fingerprint.json')); } catch (e) { fail('iOS 시작 화면 지문', 'tools/ci/splash-fingerprint.json 없음 — node tools/gen-splash.mjs'); }
+const splashProblems = [];
+for (const size of SPLASH_SIZES) {
+  const [cw, ch] = size.split('x').map(Number);
+  const links = splashBySize.get(size) || [];
+  for (const l of links) {
+    if (!exists(l.file)) { splashProblems.push(`${size} → 404 ${l.file}`); continue; }
+    if (!l.portrait) splashProblems.push(`${size} orientation: portrait 없음`);
+    if (!['2', '3'].includes(l.ratio)) splashProblems.push(`${size} -webkit-device-pixel-ratio '${l.ratio}'`);
+    const buf = fs.readFileSync(path.join(ROOT, l.file));
+    const pw = buf.readUInt32BE(16), ph = buf.readUInt32BE(20);
+    if (l.ratio === '3' && (pw !== cw * 3 || ph !== ch * 3)) splashProblems.push(`${size} 그림 ${pw}×${ph} ≠ 3배 ${cw * 3}×${ch * 3}`);
+    const rec = splashStamp.files[l.file];
+    if (!rec) splashProblems.push(`${size} 지문 미기록 ${l.file} — node tools/gen-splash.mjs`);
+    else if (rec.sha256 !== sha256(buf)) splashProblems.push(`${size} 그림이 기록과 다름 ${l.file} (옛 파란 화살표로 되돌아갔거나 그림만 바뀜 — 다시 그린 뒤 node tools/ci/stamp.mjs --bump)`);
+  }
+}
+if (splashProblems.length) fail('iOS 시작 화면 그림', splashProblems.slice(0, 6).join(' / '));
+else pass('iOS 시작 화면 그림', '새 지구본·VIAGO 7종 · 기록된 지문과 일치');
+
 
 // 8) 껍데기 지문 (코드만 고치고 SW 버전을 안 올린 경우를 막는다)
 const stampPath = 'tools/ci/shell-fingerprint.json';

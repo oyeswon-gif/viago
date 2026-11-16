@@ -56,7 +56,7 @@ body{background:#f4f8ff;color:var(--ink)}
 .place-main{padding-left:55px;min-width:0}.place-main:before{left:31px;top:-4px;width:19px;height:19px;border:2px solid white;border-radius:50%;background:#0756e9;color:#fff;font-size:10px;z-index:1}.place-type-icon{display:inline-grid;place-items:center;flex:0 0 42px;width:42px;height:42px;color:#0756e9;background:#e8f2ff;border-radius:11px}.place-main>.place-type-icon{position:absolute;left:0;top:0}.place-type-icon svg{width:23px;height:23px}.today-place-row{display:flex;align-items:center;gap:11px}.today-place-row .today-place{min-width:0;overflow-wrap:anywhere}.today-note{margin-left:53px}
 @media(max-width:850px){.place-main{padding-left:54px}.trip-head{min-height:155px}.today-place-row .today-place{font-size:19px}}
 /* 실행 화면(v33): 새 지구본·비행기 아이콘 + VIAGO / 함께 떠나는 여행.
-   iOS 시작 화면 링크(apple-touch-startup-image)는 두지 않는다 — 옛 파란 화살표가 먼저 뜨지 않게. */
+   iOS 시작 화면(v34)도 splash/ 7종을 같은 규칙 그대로 그려 두었다(tools/gen-splash.mjs) — 옛 파란 화살표가 먼저 뜨지 않는다. */
 #launchCover{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;pointer-events:none;
   background:radial-gradient(120% 78% at 50% 30%,#ffffff 0%,#f5f9ff 56%,#e9f1fe 100%);transition:opacity .26s ease}
 #launchCover.leaving{opacity:0}

@@ -1,0 +1,61 @@
+{
+  "note": "iOS 시작 화면 7종(#launchCover 와 같은 그림). tools/gen-splash.mjs 가 다시 그리고 이 지문도 다시 씁니다. 지문이 바뀌면 node tools/ci/stamp.mjs --bump 로 ?v= 도 올려 iPhone 캐시를 갱신하세요.",
+  "files": {
+    "splash/375x812.png": {
+      "px": [
+        1125,
+        2436
+      ],
+      "bytes": 170135,
+      "sha256": "da4fd5384fe37223bb57468640bee7403567e42301a35101b2734b2dc391cf27"
+    },
+    "splash/390x844.png": {
+      "px": [
+        1170,
+        2532
+      ],
+      "bytes": 177069,
+      "sha256": "19d04a4d7a0242430da33532c31a0267d7a07e84227b41a7d82cbc8d51abb65b"
+    },
+    "splash/393x852.png": {
+      "px": [
+        1179,
+        2556
+      ],
+      "bytes": 179232,
+      "sha256": "6b6ca3c20aee51355f25a976b2d7fd058c72f30281ea8bcf71d554f9089a8074"
+    },
+    "splash/402x874.png": {
+      "px": [
+        1206,
+        2622
+      ],
+      "bytes": 183657,
+      "sha256": "aca5785fcacd721f95f7228b215e7da3d626c71117d0c95c6a4e9ab5a61e42ba"
+    },
+    "splash/414x896.png": {
+      "px": [
+        1242,
+        2688
+      ],
+      "bytes": 188781,
+      "sha256": "34aab1d38c9be0ff011facd8d0b3328ccfed8f461b595535a3332d09a84398f4"
+    },
+    "splash/430x932.png": {
+      "px": [
+        1290,
+        2796
+      ],
+      "bytes": 199325,
+      "sha256": "3cfdecab1d75497460a093fe5dbd94a25c208c351a0dc3f95bb6912a0a91e4a4"
+    },
+    "splash/440x956.png": {
+      "px": [
+        1320,
+        2868
+      ],
+      "bytes": 204445,
+      "sha256": "69a7dbefc425126c9b1ea05143f86ed18bbb9ba0439200c2a88a130b6e0acdfa"
+    }
+  }
+}

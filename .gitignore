@@ -9,3 +9,6 @@ current_schedule.json
 node_modules/
 tests/e2e/shots/
 node_modules
+
+# 스플래시 다시 그릴 때 받는 글꼴(배포본에는 넣지 않는다)
+tools/.splash-fonts/

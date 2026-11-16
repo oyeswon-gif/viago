@@ -146,8 +146,17 @@ check('R20 캡처: 충전은 지출에서 빼고 잔액만 후보로 남긴다',
 const captureSection = section(html, '// ── 거래내역 캡처', 'function bindExpenseForm');
 check('R20 캡처: 사진은 서버로 보내지 않는다', !!captureSection && !/FormData|apiFetch\(|authedFetch\(|fetch\(/.test(captureSection));
 
-// R21 — 실행 화면: iOS 시작 화면 링크는 없고, 앱이 그리는 #launchCover(새 아이콘 + VIAGO)만 둔다 (v33)
-check('R21 실행 화면: iOS 시작 화면 링크가 없다', !/rel="apple-touch-startup-image"/.test(html), 'apple-touch-startup-image ' + (html.match(/apple-touch-startup-image/g) || []).length + '건');
+// R21 — 실행 화면: iOS 시작 화면(새 지구본+VIAGO 7종)이 먼저 뜨고, 앱이 그리는 #launchCover 가 그 자리를 잇는다 (v34)
+const SPLASH_SIZES = ['375x812', '390x844', '393x852', '402x874', '414x896', '430x932', '440x956'];
+const splashLinks = [...html.matchAll(/<link\s+rel="apple-touch-startup-image"[^>]*>/g)].map(m => m[0]);
+const splashMissing = SPLASH_SIZES.filter(size => {
+  const [w, h] = size.split('x');
+  return !splashLinks.some(t => t.includes(`device-width: ${w}px`) && t.includes(`device-height: ${h}px`) && t.includes('-webkit-device-pixel-ratio: 3') && /orientation:\s*portrait/.test(t) && t.includes(`./splash/${size}.png?v=`));
+});
+check('R21 실행 화면: iOS 시작 화면 7종이 기기 규격 media 로 연결돼 있다', splashLinks.length >= 7 && !splashMissing.length, splashMissing.length ? `빠짐: ${splashMissing.join(', ')}` : `${splashLinks.length}줄`);
+const splashStamp = exists('tools/ci/splash-fingerprint.json') ? JSON.parse(read('tools/ci/splash-fingerprint.json')) : { files: {} };
+const splashNotRecorded = SPLASH_SIZES.filter(size => !((splashStamp.files || {})[`splash/${size}.png`] || {}).sha256);
+check('R21 실행 화면: 7종 그림이 새 지구본·VIAGO 그림으로 기록돼 있다(옛 파란 화살표로 되돌아가지 않음)', !splashNotRecorded.length && SPLASH_SIZES.every(size => { const r = splashStamp.files[`splash/${size}.png`]; const [w, h] = size.split('x').map(Number); return r.px[0] === w * 3 && r.px[1] === h * 3; }), splashNotRecorded.length ? `지문 없음: ${splashNotRecorded.join(', ')}` : 'splash-fingerprint.json · 3배 해상도');
 check('R21 실행 화면: #launchCover 마크업·CSS·hideLaunchCover 가 살아 있다',
   /id="launchCover"/.test(html) && /함께 떠나는 여행/.test(html) && /#launchCover\{/.test(css) && /#launchCover\.leaving\{/.test(css) && /function hideLaunchCover\(\)/.test(html));
 check('R21 실행 화면: 마크는 옛 파란 화살표가 아니라 새 지구본 앱 아이콘이다',
