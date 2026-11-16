@@ -6,7 +6,7 @@
 
 ## 쓰는 법 (5분)
 
-1. 작업 시작 전: 이 문서의 `M1~M16`을 훑고, 이번에 건드리는 영역의 항목을 기억해 둡니다.
+1. 작업 시작 전: 이 문서의 `M1~M21`을 훑고, 이번에 건드리는 영역의 항목을 기억해 둡니다.
 2. 작업 중: 같은 증상이 나오면 아래 "원인"을 먼저 읽습니다. 대부분 데이터가 아니라 **표시·캐시·타이밍** 문제입니다.
 3. 올리기 전: `node tools/ci/run.mjs` → 로컬 브라우저 검사(`tests/e2e/smoke.mjs`는 CI가, 실제 배포 전에는 재원 님 기기 확인) → 배포 절차 8단계.
 
@@ -160,7 +160,7 @@
 ## 배포 절차 8단계 (모두 확인해야 "완료")
 
 1. `node tools/ci/run.mjs` 통과 (문법·껍데기·비밀키·불변식).
-2. 로컬 브라우저 검사: 390×844 · 1280×900에서 일정·이동 pill·인라인 미리보기·지도 카메라 유지 + `node tests/e2e/planb-brief.mjs`(플랜 B·전날 브리핑).
+2. 로컬 브라우저 검사: 390×844 · 1280×900에서 일정·이동 pill·인라인 미리보기·지도 카메라 유지 + `node tests/e2e/planb-brief.mjs`(플랜 B·전날 브리핑) + `node tests/e2e/expenses-tab.mjs`(정산·가계부) + `node tests/e2e/map-default.mjs`(하루 지도 기본값).
 3. 오프라인 검사: 온라인 1회 → `setOffline(true)` 재실행에서 일정·예약 메모가 그대로, 안내 문구 표시.
 4. SW `VERSION`과 `index.html`의 `?v=`를 함께 올리고 `node tools/ci/stamp.mjs`로 지문 갱신.
 5. `git push origin main`.
